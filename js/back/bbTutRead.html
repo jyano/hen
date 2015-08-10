@@ -1,0 +1,1018 @@
+ 
+  They observe Mds, but don’t directly communicate with them.
+
+Controllers handle input (e.g., clicks, user actions)
+ and update Mds.
+
+ merge responsibility of Controller into Vw,  
+
+For this reason we refer to such frameworks as following MV* pattern; 
+that is, you’re likely to haveMd andVw, butdistinct Controller might not be present and other components may come into play.
+
+   
+
+There’slot more that goes into structuring app than tying togetherDOM manipulation 
+lib, templating, and routing. Mature MV* frameworks typically include not only pieces you would find yourself writing, 
+but also include sols to problems you’ll find yourself running into later on down road. This istime-saver that you shouldn’t underestimate val of.
+
+
+
+using dif pattern called Md2.
+ Rails does not notify views from md or   cos - it just passes md data directly to view.
+
+
+ even for server-side workflow of receiving rq from URL, 
+baking out HTML page as response and separating your business logic 
+from your interface has  benefits. 
+
+In same way that keeping your UI cleanly separated from your db records is useful in server-side frameworks, 
+it’s equally as useful to keep your UI cleanly separated from your data mds in 
+JavaScript (as we will read more about shortly).
+
+
+  Zend ->  Front Controller design pattern. -> layers MVC stack behindsingle point of entry. 
+  This single point of entry means that all HTTP requests
+ (e.g., http://www.example.com, http://www.example.com/whichever-page/, etc.)
+  are routed by server’s configuration to same handler, independent of URI.
+
+
+When Front Controller receives HTTP request it analyzes it and decides which class (Controller) and met (Action) to invoke. 
+
+The selected Controller Action takes over and interacts with appropriate Md to fulfill request. 
+
+The Controller receives data back from Md,
+ loads appropriate Vw, injects Md data into it, and returns response to  bw.
+
+For example, 
+let’s say we have our blog on www.example.com 
+and we want to edit article (with id=43)
+ and request http://www.example.com/article/edit/43:
+
+
+On server side, Front Controller would analyze URL and invoke Article Controller (corresponding to /article/ part of URI)
+ and its Edit Action (corresponding to /edit/ part of URI). Within Action there would becall to, let’s say,
+  Articles Md and its Articles::getEntry(43) met (43 corresponding to /43 at end of URI). 
+  
+  This would return blog article data from db for editing. 
+  The Article Controller would then load (article/edit) Vw which would include logic for injecting article’s data intoform suitable for editing its 
+  content, tt, and other (meta) data. Finally, resulting HTML response would be returned to  bw.
+
+
+As you can imagine,similar flow is necessary with POST requests after we presssave bt inform. The POST action URI would look like /article/save/43. 
+The request would go through same Controller, but this time Save Action would be invoked (due to /save/ URI chunk),
+ Articles Md would save edited article to db with Articles::saveEntry(43), and  bw would be redirected to /article/edit/43 URI for further editing.
+
+
+Finally, if user requested http://www.example.com/ Front Controller would invoke default Controller and Action; e.g., 
+the Index Controller and its Index action. Within Index Action there would becall to Articles md and its Articles::getLastEntries(10)
+ met which would return last 10 blog posts. The Controller would load blog/index Vw which would have basic logic for listing blog posts.
+
+The picture below shows this typical HTTP request/response lifecycle for server-side MVC:
+
+
+The Server receives HTTP request and routes it throughsingle entry point. 
+At that entry point, Front Controller analyzes request and, based on it,
+ invokes Action of appropriate Controller. This process is called routing.
+  The Action Md is asked to return and/or save submitted data. 
+  
+   Md comms with data source (e.g., db or API). 
+  Once Md completes its work it returns data  Co which then loads appropriate Vw. 
+  The Vw executes presentation logic (loops through articles and prints tts, content, etc.)
+   using supplied data. 
+   In end, HTTP response is returned to  bw.
+
+
+
+ ///
+
+
+
+Our example will need div el to which we can attach list of Td’s.
+ It will also need HTML tp containing placeholder for
+ Td item tt and completion checkbox which can be instantiated for Td item instances.
+  These are provided by following HTML:
+
+ 
+  <div id="td">   </div>
+
+  <script type="text/tp" id="item-tp">
+    <div class="view">
+      <input id="td_complete" type="checkbox" <%= completed ? 'checked="checked"' : '' %> />
+      <label><%= tt %></label>
+      <bt class="destroy"></bt>
+    </div>
+    <input class="edit" val="<%= tt %>">
+  </script>
+ 
+ 
+Td = bb.Md.x({    df: {  tt: '',  completed: false  }})
+
+
+td = new Td({  tt: 'Check atts property of logged mds in console.' })
+
+
+TdVw = $V({t:  'li',
+
+
+  tdTpl: _.tp(  $('#item-tp').h()  ), // Cache tp function for a single item.
+
+
+  ev: { 'dblclick label': 'edit',    'keypress .edit': 'updateOnEnter',   'blur .edit':   'close'  },
+
+
+  // Called when view is first created
+   // Later we'll look at: this.l2(someCl, 'all', this.render);
+      // but you can actually run this example right now by calling tdVw.r();
+  i: function() {    this.$el = $('#td') },
+
+
+  // Re-render tts of td item.
+    //     statement is replacing HTML of el  with result of instantiatingtp with md's atts.
+  r: function() {    this.$el.h( this.tdTpl( this.md.atts ) ); this.input = this.$('.edit');    return this;  },
+  edit: function() {  },    // executed when td label is double clicked
+  close: function() {  }, // executed when td loses focus
+  updateOnEnter: function( e ) {}    // executed on each keypress when in td edit mode,  but we'll wait for enter to get in action
+  
+})
+
+
+
+tdVw = new TdVw({m: td})
+
+ Each call to r() will replace content of li el using current Md data.
+
+
+
+
+
+  Td Md viewing happens in user interface in list of all Td items.
+ Within it, each Td is rendered with its tt and completed checkbox.
+  Md editing is done through “edit” Vw
+  where user who has selected spec Td edits its tt inform.
+
+  add our r() cb as Md subscriber,
+so Vw can be triggered to update when Md changes.
+
+You may wonder where user interaction comes into play here.
+When users click onTd el within Vw, it’s not Vw’s responsibility to know what to do next.
+A Controller makes this decision.
+In bb, this is achieved by adding event listener to Td’s el which delegates handling of click to event handler.
+
+
+
+
+   Variables are delimited usingvar syntax (e.g <%= tt %> for Underscore and {{tt}} for Handlebars).
+
+
+Handlebars.js:
+
+<div class="view">
+  <input class="toggle" type="checkbox" {{#if completed}} checked {{/if}}>
+  <label>{{tt}}</label>
+  <bt class="destroy"></bt>
+</div>
+<input class="edit" val="{{tt}}">
+Underscore.js Microtps:
+
+<div class="view">
+  <input class="toggle" type="checkbox" <%= completed ? 'checked' : '' %>>
+  <label><%= tt %></label>
+  <bt class="destroy"></bt>
+</div>
+<input class="edit" val="<%= tt %>">
+You may also use double curly brackets (i.e {{}}) (or any other tag you feel comfortable with) in Microtps.
+In case of curly brackets, this can be done by setting Underscore tpSettings attr as follows:
+
+_.tpSettings = { interpolate : /\{\{(.+?)\}\}/g };
+
+
+
+
+ 
+ role of navigation thus falls to“router”, which assists in managing app state
+  (e.g., allowing users to bookmarkparticular view they have navigated to).
+
+
+
+
+Controllers
+In our Tdo app,Controller would be responsible for handling changes user made in edit Vw forparticular Td,
+ updating spec Td Md whenuser has finished editing.
+ 
+ 
+  bb’s Vws typically contain “Controller” logic, and Routers are used to help manage app state,
+  but neither are true Controllers according to classical MVC.
+
+  bb   MV* family 
+  which approaches architecture in its own way. 
+  
+  distinguish between classical MVC and MV* 
+ 
+
+ MVC  variation of three other classical design patterns:
+  Observer (Publish/Subscribe),
+   Strategy, and Composite patterns.
+    may also use Factory and Decorator patterns.
+     
+     
+    read “JavaScript Design Patterns For Beginners”  
+
+As we’ve discussed, Mds rep app data,
+ while Vws handle what user is presented on screen. 
+  MVC relies on Publish/Subscribe for some of its core communication
+ 
+ 
+   When a Md is changed it “publishes” to rest of app that it has been updated. 
+   
+   The subscriberCo   then updates Vw accordingly. 
+   The observer-viewer nature of this relationship is what facilitates multiple Vws being attached to same Md.
+
+Cos facilitate Vws’ responses to  dif user ip and are example of Strategy pattern.
+ 
+
+ You can also use Console   multi-line editor using  Ctrl + Enter shortcut on Mac 
+ to move from end of one line to start of another.
+
+Td = bb.Md.x({}) //create md
+td1 = new Td() //    create Td inst w/o vals
+
+$l(_.jS(td1)) -> {}
+
+ 
+td2 = new Td({  tt: 'Check atts of both md instances in console.', completed: true})
+
+// Following logs: {"tt":"Check atts of both md instances in console.","completed":true}
+$l(_.jS(td2))
+
+
+Td = bb.Md.x({  i: function(){      $l('This md has been initd.')  }})
+td = new Td()
+
+Td = bb.Md.x({ df: { tt: '',    completed: false }})
+td1 = new Td()
+
+$l(_.jS(td1))-> {"tt":"","completed":false}
+
+
+td2 = new Td({  tt: 'Check atts of logged mds in console.'});
+
+  {"tt":"Check atts of logged mds in console.","completed":false}
+$l(_.jS(td2));
+
+toJSON()   returns copy of atts as object (notJSON string despite its name).
+ 
+Setting vals through .atts  bypasses triggers bound to md.
+ 
+
+Per = new bb.Md();
+ Per.on("change:name", function() { $l('Name changed'); });
+Per.s({n:'A'}) // log entry: Name changed
+
+Per.s({n: 'J'}, {silent: true}); // no log entry
+$l(Per.hasChanged('n')); // true: change was recorded
+$l(Per.hasChanged()); // true: SOMETHING changed
+  add listeners is in init() function as shown below:
+  Td = bb.Md.x({
+    df: { tt: '',   completed: false  },
+    i: function(){  $l('This md has been initd.');    this.on('change', function(){      $l('md vals changed.')  })  }
+})
+
+td = new Td();
+
+td.s('tt', 'listener trgd on attr val change'); $l('Title has changed: ' + td.g('tt'))
+td.s('completed', true); $l('Completed has changed: ' + td.g('completed'))
+td.s({  tt: 'mult attr changes trgs listner once',  completed: true })
+
+// Above logs:
+// This md has been initd.
+// - Values for this md have changed.
+// Title has changed: The listener is triggered whenever attr val changes.
+// - Values for this md have changed.
+// Completed has changed: true
+// - Values for this md have changed.
+
+You can also listen for changes to individual atts inbb md. In following example, we logmessage whenever spec attr (the tt of our Td md) is altered.
+
+Td = bb.Md.x({
+  df: {  tt: '',  completed: false },
+  i: function(){    $l('This md has been initd.');
+    this.on('change:tt', function(){        $l('Title val for this md has changed.')   })  },
+
+  setTitle: function(newTitle){    this.set({ tt: newTitle }) }
+})
+
+td = new Td();
+
+// Both of following changes trigger listener:
+td.set('tt', 'Check what\'s logged.');
+td.setTitle('Go fishing on Sunday.');
+
+// But, this change type is not observed, so no listener is triggered:
+td.set('completed', true);
+$l('Td set as completed: ' + td.get('completed'));
+
+// Above logs:
+// This md has been initd.
+// Title val for this md has changed.
+// Title val for this md has changed.
+// Td set as completed: true
+
+
+
+///
+
+
+we walk you through impl of your first bb app.
+
+Exercise 1: Tds - Your First bb.js App
+
+ build bb Td List app exhibited on TdMVC.com.
+ 
+ 
+  architecture  level. We’ll need:
+
+a Td md to describe individual td items
+a TdList cl to store and persist tds
+a way of creating tds
+a way to displaylisting of tds
+a way to edit existing tds
+a way to marktd as completed
+a way to delete tds
+a way to filter items that have been completed or are remaining
+Essentially  CRUD 
+
+
+  
+  <script src="js/lib/backbone.localStorage.js"></script>
+   
+ 
+ 
+You   need base.css and bg.png,which should live in assets directory.
+  
+   you can see demo of final app at TdMVC.com.
+ 
+ 
+Now let’s populate body of index.html.
+ We’ll need <input> for creating new tds,
+ <ul id="td-list" /> for listing actual tds,
+ and footer where we can later insert statistics 
+ and links for performing operations such as clearing completed tds.
+  We’ll add following markup immediately
+ inside our body tag before script els:
+
+  <section id="tdapp">
+    <header id="header">
+      <h1>tds</h1>
+      <input id="new-td" placeholder="What needs to be done?" autofocus>
+    </header>
+    <section id="main">
+      <input id="toggle-all" type="checkbox">
+      <label for="toggle-all">Mark all as complete</label>
+      <ul id="td-list"></ul>
+    </section>
+    <footer id="footer"></footer>
+  </section>
+  <div id="info">
+    <p>Double-click to edittd</p>
+    <p>Written by <a href="https://github.com/addyosmani">Addy Osmani</a></p>
+    <p>Part of <a href="http://tdmvc.com">TdMVC</a></p>
+  </div>
+  
+Tps
+
+To complete index.html,
+ we need to add tps which we will use to dynamically 
+ create HTML by injecting md data into their placeholders.
+ One way of including tps in page is by using cust script tags. 
+ These don’t get evaluated by  bw, 
+ which just interprets them as plain text.
+ Underscore micro-templating can then access tps,
+  rendering fragments of HTML.
+
+
+We’ll start by filling in #item-tp which will be used to display individual td items.
+
+  <!-- index.html -->
+
+  <script type="text/tp" id="item-tp">
+    <div class="view">
+      <input class="toggle" type="checkbox" <%= completed ? 'checked' : '' %>>
+      <label><%= tt %></label>
+      <bt class="destroy"></bt>
+    </div>
+    <input class="edit" val="<%= tt %>">
+  </script>
+  
+ 
+We also need to define #stats-tp tp which we will use to populate footer.
+
+  <!-- index.html -->
+
+  <script type="text/tp" id="stats-tp">
+    <span id="td-count"><strong><%= remaining %></strong> <%= remaining === 1 ? 'item' : 'items' %> left</span>
+    <ul id="filters">
+      <li>
+        <a class="selected" href="#/">All</a>
+      </li>
+      <li>
+        <a href="#/active">Active</a>
+      </li>
+      <li>
+        <a href="#/completed">Completed</a>
+      </li>
+    </ul>
+    <% if (completed) { %>
+    <bt id="clear-completed">Clear completed (<%= completed %>)</bt>
+    <% } %>
+  </script>
+  
+  
+The #stats-tp displays number of remaining incomplete items and containslist of hyperlinks
+  which will be used to perform actions when we implement our router.
+ It also contains bt which can be used to clear all of completed items.
+
+  
+
+  app = app || {};
+ 
+  app.Td = bb.Md.x({
+    df: {  tt: '',  completed: false   },
+    toggle: function() {this.save({ completed: !this.get('completed')})}
+  })
+  
+ 
+Td  cl uses LocalStorage adapter to override bb’s default sync() operation
+  with one that will persist our Td records to HTML5 Local Storage.
+Through local storage, they’re saved between page requests.
+
+
+  <script>
+
+
+
+  // js/cls/tds.js
+
+  app = app || {};
+
+  TdList = bb.Cl.x({
+    md: app.Td,
+    localStorage: new bb.LocalStorage('tds-backbone'),  // Save all of td items under `"tds-backbone"` namespace.
+    // Filter down list of all td items that are finished.
+    completed: function() {return this.filter(function( td ) { return td.get('completed')   })   },
+  // Filter down list to only td items that are still not finished.
+    remaining: function(){return this.without.apply(this, this.completed())},
+    nextOrder: function() {return this[0]? this.last().get('order')+1:1 },
+  // We keep Tds in seq order, despite being saved by unord  GUID in db.  gens next order number for new items.
+    comparator: function( td ) {  return td.get('order')}  // Tds are sorted by their original insertion order.
+  })
+  // Create our global cl of **Tds**.
+
+  app.Tds = new TdList()
+
+  </script>
+
+
+The cl’s completed() and remaining() mets return array of finished and unfinished tds,
+
+
+A nextOrder() met implements sequence generator, comparator() sorts items by their insertion order.
+
+
+
+
+  we’ll use el controller pattern. consists of two views:
+          one controls cl of items
+          other deals with each indiv  item.
+
+  AppVw will handle
+     creation of new tds
+     rendering of initial td list.
+
+  Instances of TdVw will be assoc with each individual Td record
+    - can handle edit-in-place, updating, and destroying their associated td.
+
+
+ lot for us to cover in AppVw, so we’ll split our discussion into two sections.
+
+  <script>
+
+
+
+  // js/views/app.js
+
+  app = app || {};
+
+  // The Application
+
+
+
+  app.AppVw = $V({  //  top-level piece of UI.
+
+
+    el: '#tdapp',
+
+
+    statsTp: _.tp( $('#stats-tp').h() ),  // Our tp for line of statistics at bottom of app.
+
+    // At init we bind to relevant evs on `Tds` cl, when items are added or changed.
+
+      i: function() {
+
+          this.allCheckbox = this.$('#toggle-all')[0];
+          this.$input = this.$('#new-td');
+          this.$footer = this.$('#footer');
+          this.$main = this.$('#main');
+
+          this.l2(app.Tds, 'add', this.addOne);
+          this.l2(app.Tds, 'reset', this.addAll);
+    },
+
+
+
+    // Addsingle td item to list by creatingview for it, and appending its el to `<ul>`.
+    addOne: function( td ) {
+      view = new app.TdVw({ md: td });
+      $('#td-list').A( view.r().el );
+    },
+
+    // Add all items in **Tds** cl at once.
+
+
+    addAll: function() {
+        this.$('#td-list').h('');
+        app.Tds.each(this.addOne, this)
+    }
+
+
+  })
+
+
+
+      </script>
+
+
+
+A few notable features are present in our initial version of AppVw, 
+includingstats Tp,
+ init met that’s implicitly called on instantiation, 
+ and several view- spec mets.
+
+
+An el (el) property storesselector targeting DOM el with ID of tdapp. 
+In case of our app, el refers to matching <section id="tdapp" /> el in index.html.
+
+The call to _.tp uses Underscore’s micro-templating to constructstatsTp object from our #stats-tp.
+ We will use this tp later when we render our view.
+
+Now let’s takelook at init function.
+ First, it’s using jQ to cache els it will be using into local pops (recall that this.$() finds els relative to this.$el). 
+ Then it’s binding to two evs on Tds cl: add and reset. Since we’re delegating handling of updates and deletes to TdVw view,
+  we don’t need to worry about those here. 
+  The two pieces of logic are:
+
+When add event is fired addOne() met is called and passed new md. addOne() creates instance of TdVw view, renders it, 
+and appends resulting el to our Td list.
+
+Whenreset event occurs (i.e., we update cl in bulk as happens when Tds are loaded from Local Storage), addAll() is called,
+ which iterates over all of Tds currently in our cl and fires addOne() for each item.
+
+Note that we were able to use this within addAll() to refer to view because l2() implicitly set cb’s context to view when it created binding.
+
+Now, let’s add some more logic to complete our AppVw!
+
+
+  // js/views/app.js
+
+      <script>
+          
+ 
+  app = app || {};
+
+  // The Application
+ 
+  // Our overall **AppVw** is top-level piece of UI.
+  app.AppVw = bb.V.x({
+
+    // Instead of generatingnew el, bind to existing skeleton of
+    // App already present in HTML.
+    el: '#tdapp',
+
+    // Our tp for line of statistics at bottom of app.
+    statsTp: _.tp( $('#stats-tp').h() ),
+
+   
+    // Delegated evs for creating new items, and clearing completed ones.
+    evs: {
+
+      'keypress #new-td': 'createOnEnter',
+      'click #clear-completed': 'clearCompleted',
+      'click #toggle-all': 'toggleAllComplete'
+    },
+
+
+
+    // At init we bind to relevant evs on `Tds`
+    // cl, when items are added or changed. Kick things off by
+    // loading any preexisting tds that might be saved in *localStorage*.
+    
+    i: function() {
+      this.allCheckbox = this.$('#toggle-all')[0]
+      this.$input = this.$('#new-td')
+
+      this.$main = this.$('#main')
+
+        this.$footer = this.$('#footer')
+
+        this.l2(app.Tds, 'add', this.addOne)
+        this.l2(app.Tds, 'reset', this.addAll)
+        this.l2(app.Tds, 'change:completed', this.filterOne)
+        this.l2(app.Tds,'filter', this.filterAll)
+        this.l2(app.Tds, 'all', this.r)
+        app.Tds.fetch()
+    },
+
+
+
+    //Re-rendering App just means refreshing statistics -- rest of app doesn't change.
+    
+    r: function() {
+      
+      completed = app.Tds.completed().length
+      remaining = app.Tds.remaining().length
+
+      if ( app.Tds[0] ) { this.$main.show();   this.$footer.show();
+
+        this.$footer.h(this.statsTp({          completed: completed,  remaining: remaining  }));
+
+        this.$('#filters li a').xK('selected').filter('[href="#/' + ( app.TdFilter || '' ) + '"]').K('selected');
+      } 
+      
+      else {  this.$main.hide();        this.$footer.hide()    }
+
+      this.allCheckbox.checked = !remaining;
+    },
+
+    // Addsingle td item to list by creatingview for it, and appending its el to `<ul>`.
+    addOne: function( td ) {   view = new app.TdVw({ md: td });    $('#td-list').A( view.r().el )    },
+
+   
+    addAll: function() { this.$('#td-list').h('');  app.Tds.each(this.addOne, this)    }, // Add all items in **Tds** cl at once.
+
+    filterOne : function (td){td.trigger('visible')},
+
+    
+    filterAll : function () {      app.Tds.each(this.filterOne, this)   },
+
+
+       newAttributes: function() {return { tt: this.$input.val().trim(),   order: app.Tds.nextOrder(),        completed: false}    },
+
+    
+        // If you hit return in main input field, create new Td md, persisting it to localStorage.
+   
+    createOnEnter: function( event ) {      if ( event.which !== ENTER_KEY || !this.$input.val().trim() ) { return;    }
+      app.Tds.create( this.newAttributes() ); this.$input.val('') },
+
+   clearCompleted: function() { _.iv(app.Tds.completed(), 'destroy'); return false}, // Clear all completed td items, destroying their mds.
+
+   toggleAllComplete: function() {completed = this.allCheckbox.checked;    app.Tds.each(function(td){td.save({'completed': completed }) })}})
+
+
+          </script>
+  
+We have added logic for creating new tds, editing them, and filtering them based on their completed status.
+
+evs: We’ve defined evs hash containing declarative cbs for our DOM evs. It binds those evs to following mets:
+createOnEnter(): Createsnew Td md and persists it in localStorage whenuser hits enter inside <input/> field.
+Also resets main <input/> field val to prepare it for next entry. The md is populated by newAttributes(),
+ which returns object literal composed of tt, order, and completed state of new item. 
+ Note that this is referring to view and not DOM el since cb was bound using evs hash.
+clearCompleted(): Removes items in td list that have been marked as completed when user clicks clear-completed checkbox 
+(this checkbox will be in footer populated by #stats-tp).
+toggleAllComplete():
+ Allows user to mark all of items in td list as completed by clicking toggle-all checkbox.
+
+init(): We’ve bound cbs to several additional evs:
+We’ve bound filterOne() cb on Tds cl forchange:completed event.
+  This listens for changes to completed flag for any md in cl.
+The affected td is passed to cb which triggerscust visible event on md.
+We’ve boundfilterAll() cb forfilter event, which workslittle similar to addOne() and addAll().
+ Its responsibility is to toggle which td items are visible based on filter currently selected in UI 
+ (all, completed or remaining) via calls to filterOne().
+We’ve used special all event to bind any event triggered on Tds cl to view’s render met (discussed below).
+
+The init() met completes by fetching prevly saved tds from localStorage.
+
+r(): Several things are happening in our r() met:
+The #main and #footer sections are displayed or hidden
+ depending on whether there are any tds in cl.
+
+The footer is populated with HTML produced by instantiating statsTp with num  of completed and remaining td items.
+The HTML produced by preceding step contains list of filter links. 
+The val of app.TdFilter, which will be set by our router, 
+is being used to apply class ‘selected’ to link corresponding to currently selected filter.
+ This will result in conditional CSS styling being applied to that filter.
+The allCheckbox is updated based on whether there are remaining tds.
+
+
+
+
+
+
+Now let’s look at TdVw view. makes sure view updates when td does.
+To enable this functionality,  we add ev lstnrs to vw that lstn for evs on indi td’s HTML repation.
+
+
+  // js/views/tds.js
+
+      <script>
+
+
+  app = app || {}
+
+  // Td Item Vw // The DOM el fortd item...
+  
+  app.TdVw = $V({
+
+  
+    t: 'li',
+
+   
+    tp: _.tp( $('#item-tp').h() ), // Cache tp function forsingle item.
+
+    
+    evs: {  'dblclick label': 'edit',  'keypress .edit': 'updateOnEnter',  'blur .edit': 'close' },// The DOM evs  spec to item.
+
+    // The TdVw listens for changes to its md, re-rendering. Since there's
+    //one-to-one correspondence between**Td** and**TdVw** in this
+    // app, we setdirect reference on md for convenience.
+    i: function() { this.l2(this.md, 'change', this.render)    },
+
+    r: function() {      this.$el.h( this.tp( this.md.atts ) );      this.$input = this.$('.edit');      return this}, // Re-renders tts of td item.
+    edit: function() { this.$el.K('editing');     this.$input.focus()   },   // Switch this view into `"editing"` mode, displaying input field.
+    close: function() {            if ( val  = this.$input.val().trim() ) {  this.md.save({ tt: val  });      };  this.$el.xK('editing') },    // Close `"editing"` mode, saving changes to td.
+    updateOnEnter: function(e){if(e.which===ENTER_KEY){this.close()}} // If you hit `enter`, we're through editing item.
+
+
+  })
+
+      </script>
+
+
+
+In init() constructor, 
+we set uplistener that monitorstd md’s change event.
+ Asresult, when td gets updated, app will re-render view and visually reflect its changes.
+  Note that md passed in arguments hash by our AppVw is automatically avail to us as this.md.
+
+In r() met, we render our Underscore.js #item-tp, which was prevly compiled into this.tp 
+using Underscore’s _.tp() met. 
+This returns HTML fragment that replaces content of view’s el
+ (an li el was implicitly created for us based on tagName property).
+ In other words, rendered tp is now present under this.el and can be appended to td list in user interface.
+  r()
+  finishes by caching input el within instantiated tp into this.$input.
+
+Our evs hash includes three cbs:
+
+edit(): changes current view into editing mode whenuser double-clicks on existing item in td list. 
+This allows them to change existing val of item’s tt attr.
+updateOnEnter(): checks that user has hit return/enter key and executes close() function.
+close(): trims val of current text in our <input/> field, 
+ensuring that we don’t process it further if it does not contain any text (e.g ‘’).
+ Ifvalid val has been provided, we save changes to current td md and close editing mode 
+ by removing corresponding CSS class.
+Startup
+So now we have two views: AppVw and TdVw. 
+The former needs to be instantiated on page load so its code gets executed.
+ This can be accomplished through jQ’s ready() utility, which will executefunction when DOM is loaded.
+
+
+  // js/app.js
+
+  app = app || {};
+  ENTER_KEY = 13;
+
+  $(function() {
+
+    // Kick things off by creating **App**.
+    new app.AppVw();
+
+  });
+In action
+Let’s pause and ensure that work we’ve done so far functions as intended.
+
+If you are following along, open file://*path*/index.html in your  bw and monitor its console. 
+If all is well, you shouldn’t see any JavaScript errors other than regarding router.js file that we haven’t created yet.
+ The td list should be blank as we haven’t yet created any tds.
+  Plus, there is some additional work we’ll need to do before user interface fully functions.
+
+However,few things can be tested through JavaScript console.
+
+In console, addnew td item: app.Tds.create({ tt: 'My first Td item'}); and hit return.
+
+
+If all is functioning properly, this should log new td we’ve just added to tds cl. 
+The newly created td is also saved to Local Storage and will be avail on page refresh.
+
+app.Tds.create() executescl met (Cl.create(atts, [ops])) 
+which instantiatesnew md item of type passed into cl definition, in our case app.Td:
+
+
+  // from our js/cls/tds.js
+
+  TdList = bb.Cl.x({
+
+      md: app.Td // md type used by cl.create() to instantiate new md in cl
+      ...
+  )};
+Run following in console to check it out:
+
+secondTd = app.Tds.create({ tt: 'My second Td item'});
+secondTd instanceof app.Td // returns true
+Now refresh page and we should be able to see fruits of our labour.
+
+The tds added through console should still appear in list since they are populated from Local Storage.
+      Also, we should be able to createnew td by typingtt and pressing enter.
+
+
+Excellent, we’re making great progress,
+ but what about completing and deleting tds?
+
+Completing & deleting tds
+The next part of our tutorial is going to cover completing and deleting tds.
+ These two actions are  spec to each Td item,
+  so we need to add this functionality to TdVw view. 
+  We will do so by adding 
+  togglecompleted() 
+  and 
+  clear() 
+  mets along with corresponding entries in evs hash.
+
+
+  // js/views/tds.js
+
+      <script>
+
+
+  app = app || {};
+
+  // Td Item Vw  // The DOM el for td item...
+  
+  
+  app.TdVw = bb.V.x({
+
+  
+    tagName: 'li',
+    tp: _.tp( $('#item-tp').h() ),   // Cache tp function forsingle item.
+
+    // The DOM evs  spec to item.
+    evs: {      'click .toggle': 'togglecompleted',       'dblclick label': 'edit',      'click .destroy': 'clear',           *
+      'keypress .edit': 'updateOnEnter',
+      'blur .edit': 'close' },
+
+    // The TdVw listens for changes to its md, re-rendering. Since there's
+    //one-to-one correspondence between**Td** and**TdVw** in this
+    // app, we setdirect reference on md for convenience.
+    i: function() {
+      this.l2(this.md, 'change', this.render);
+      this.l2(this.md, 'destroy', this.rm);        *
+      this.l2(this.md, 'visible', this.toggleVisible); *
+    },
+
+    // Re-render tts of td item.
+    r: function() {
+      this.$el.h( this.tp( this.md.atts ) );
+
+      this.$el.toggleClass( 'completed', this.md.get('completed') ); *
+      this.toggleVisible();    this.$input = this.$('.edit');
+      return this;
+    },
+
+
+    toggleVisible:function(){this.$el.toggleClass( 'hidden',  this.isHidden())},//    * - Toggles visibility of item
+
+
+  //  * - Determines if item should be hidden
+    isHidden : function () {isCompleted = this.md.get('completed')
+    
+    // hidden cases only
+      return (!isCompleted && app.TdFilter === 'completed')  || (isCompleted && app.TdFilter === 'active')     },
+
+ 
+    togglecompleted: function() {     this.md.toggle()    },  // * - Toggle `"completed"` state of md.
+
+    // Switch this view into `"editing"` mode, displaying input field.
+    edit: function() {  this.$el.K('editing');    this.$input.focus() },
+
+
+    // Close `"editing"` mode, saving changes to td.
+    close: function() {
+      val = this.$input.val().trim();
+      if ( val ) {        this.md.save({ tt: val })      } else {    this.clear(); *      }
+      this.$el.xK('editing');
+    },
+
+
+
+    // If you hit `enter`, we're through editing item.
+    
+    updateOnEnter: function( e ) {      if ( e.which === ENTER_KEY ) {     this.close()      }    },
+
+  //  * - Remove item, destroy md from *localStorage* and delete its view.
+    clear: function() {      this.md.destroy();    }
+  
+  })
+      </script>
+The key part of this is two event handlers we’ve added, 
+a togglecompleted event on td’s checkbox, 
+andclick event on td’s <bt class="destroy" /> bt.
+
+Let’s look at evs that occur when we click checkbox fortd item:
+
+The togglecompleted() function is invoked which calls toggle() on td md.
+toggle() toggles completed status of td and calls save() on md.
+The save generateschange event on md which is bound to our TdVw’s r() met. 
+We’ve addedstatement in r() which toggles completed class 
+on el depending on md’s completed state. The associated CSS changes
+ color of tt text and strikesline through it when td is completed.
+The save also results inchange:completed event on md which is handled by
+ AppVw’s filterOne() met. If we look back at AppVw, we see that filterOne()
+  will triggervisible event on md. This is used in conjunction with filtering
+   in our routes and cls so that we only display item if its completed state falls
+    in line with current filter. In our update to TdVw, we bound md’s visible event
+     to toggleVisible() met. This met uses new isHidden() met to determine if
+      td should be visible and updates it accordingly.
+Now let’s look at what happens when we click ontd’s destroy bt:
+
+The clear() met is invoked which calls destroy() on td md.
+The td is deleted from local storage anddestroy event is triggered.
+In our update to TdVw, we bound md’s destroy event to view’s inherited rm() met.
+      This met deletes view and automatically rms associated el from DOM.
+ Since we used l2() to bind view’s listeners to its md,
+      rm() also unbinds listening cbs from md ensuring thatmemory leak does not occur.
+destroy() also rms md from Tds cl, which triggersrm event on cl.
+Since AppVw has its r() met bound to all evs on Tds cl, that view is rendered and stats in footer are updated.
+That’s all there is to it!
+
+If you want to see example of those, see complete source.
+
+Td routing
+Finally, we move on to routing, which will allow us to easily filter list of items that are active as well as those which have been completed.
+We’ll be supporting following routes:
+
+#/ (all - default)
+#/active
+#/completed
+
+When route changes, td list will be filtered onmd level and selected class on filter links in footer will be toggled as described above.
+ When item is updated whilefilter is active it will be updated accordingly (e.g., if filter is active and item is checked, it will be hidden).
+  The active filter is persisted on reload.
+
+
+  // js/routers/router.js
+
+  // Td Router
+  // ----------
+<script>
+
+
+  app = app || {};
+
+  Workspace = bb.Rt.x({
+    routes:{
+      '*filter': 'setFilter'
+    },
+
+    setFilter: function( param ) {
+      // Set current filter to be used
+      if (param) {
+        param = param.trim();
+      }
+      app.TdFilter = param || '';
+
+      // Triggercl filter event, causing hiding/unhiding
+      // of Td view items
+      app.Tds.trigger('filter');
+    }
+  });
+
+  app.TdRouter = new Workspace();
+  bb.history.start();
+
+      </script>
+
+
+Our router uses *splat to set updefault route which passes string after ‘#/’ in URL to setFilter() which sets app.TdFilter to that string.
+
+
+      As we can see in line app.Tds.trigger('filter'),
+      once filter has been set, we simply trigger ‘filter’ on our Tds cl to toggle which items are visible and which are hidden.
+
+      Recall that our AppVw’s filterAll() met is bound to cl’s filter event and that any event on cl will cause AppVw to re-render.
+
+      Finally, we create instance of our router and call bb.history.start() to route initial URL during page load.
+
+
+
+
+

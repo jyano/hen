@@ -1,0 +1,163 @@
+$ UI's wdg fct makes it easy to build wdgs 
+that extend the functionality of existing wdgs. 
+Doing so allows you to build powerful wdgs on top of an existing base, 
+as well as make small tweaks to an existing wdg's functionality.
+
+
+***Creating Widget Extensions
+Creating wdgs with the wdg fct is done by
+ passing the name of the wdg 
+ and
+  a ptt object to $.wdg(). 
+  
+  The following creates a "sDlg" wdg in the "custom" namespace.
+
+$.wdg( "custom.sDlg", {} );
+
+To allow for extension,
+ $.wdg() optionally accepts the constructor of a wdg to use as a par . 
+When specg a par  wdg, pass it as 2nd arg - after wdg's name, before wdg's ptt ob 
+
+  create  "sDlg" wdg in the "custom" namespace again
+  this time 
+  the constructor of $ UI's dlg wdg ($.ui.dlg) is passed 
+(indctg: the sDlg wdg   should use $ UI's dlg wdg as a par)
+
+$.wdg( "custom.sDlg", $.ui.dlg, {} );
+ sDlg,dlg   essentially equiv wdgs, but w dif names/nspaces 
+
+ we can add mets to its ptt ob 
+A wdg's ptt ob  is the final arg  passed to $.wdg().
+ 
+$.wdg( "custom.sDlg", $.ui.dlg, {    red: function() { 
+       this.element.css( "color", "red" ) }}) 
+ $.d('me red').sDlg().sDlg( "red" );// Create a new <div>, 
+
+convert it into a sDlg, and call the red() method.
+Now the sDlg has a red() method that will change the color of its text to red.
+ Note how the wdg fct auto- sets this to the wdg's inst object. 
+ For a full list of the mets and properties available on the inst, 
+ see the wdg fct's API-docs
+
+
+
+
+
+***Extg Existg Mets
+spec met  w   same n as the met you want to vride on the ptt ob
+   
+ override dlg's open() met
+    Since dlgs auto-open by df,  "open" will be logd when  code runs
+
+$.wdg( "custom.sDlg", $.ui.dlg, {open:function(){$l("open")}})
+
+
+$.d().sDlg()
+
+  there's a problem.
+Since we overrode the df bh of open(), the dlg no longer displays on the screen.
+When we place mets on the ptt ob
+ we are !actually vridg   orig  met  - rather,
+ we are placing  new met  at a higher levl in   ptt chain.
+
+To use par's mets, wdgfct has 2 mets: _super(), _superApply()
+
+
+_super() and _superApply()
+invoke mets of the same name in the parent wdg.
+
+    _super() is run to invoke dlg's open() and open the dlg.
+
+$.wdg( "custom.sDlg", $.ui.dlg, {   open: function() { 
+ $l( "open" );return this._super() }}) // Invoke the parent wdg's open().
+
+
+$.d().sDlg() 
+
+
+ _super() accepts arg-ls  like Function.ptt.call()    reqs args  passed as arg-ls
+
+ _superApply() arg-arr like Function.ptt.apply()   reqs args  as arr
+
+
+
+
+$.wg(
+"custom.sDlg", 
+$.ui.dlg, 
+{_setOption:function(k,v){this._super(k,v);this._superApply(arguments)}}
+ 
+ 
+)
+        
+        
+        
+      
+
+
+
+
+***Redefining Widgets
+$ UI 1.9 added the ability for wdgs to redefine themselves.
+ Therefore,
+  instead of creating a new wdg,
+   we can pass $.wdg() an existing wdg's name and constructor.
+    The following example adds the same logging in open(), 
+    but doesn't create a new wdg to do so.
+
+
+$.wdg( "ui.dlg", $.ui.dlg, {
+open:function(){$l("open");return this._super()}})
+
+$.d().dlg()
+
+
+
+
+With this approach 
+you can extend an existing wdg's method 
+and still have access to the original mets 
+using _super() 
+- all without creating a new wdg.
+
+***Widgets and Polymorphism
+
+  warn: when interacting with wdg extensions and their plugins: 
+
+ par wdg's plugin cannot be used  to iv  mets on  child wdg els 
+   
+ $.wdg('custom.sDlg',$.ui.dlg,{}); dlg=$.d().sDlg();
+
+  !work: dlg.dlg( "close" )    works: dlg.sDlg( "close" )  
+
+ par wdg's plug, dlg(), !can iv close() met  on an a sDlg el 
+ 
+
+***Customizing Individual Instances
+All  exs   so far have extended mets on the wdg's ptt. 
+Mets vridden on the ptt affect all insts of   wdg.
+both insts of the dlg use the same open() met
+$.wdg( "ui.dlg", $.ui.dlg, {open: function(){$l("open"); return this._super()}})
+
+ Cr 2 dlgs, both use   same open(), so "open" is logged twice.
+
+$.d().dlg();$.d().dlg()
+
+
+
+sometimes you only need change bh for a 1inst of the wdg
+ 
+dlgInstance = $.d().dlg().data( "ui-dlg" ) 
+To do this, obtain ref  to the inst
+// Retrieve the dlg's inst and store it.                                    
+
+dlgInstance.close = function(){$l("close")}
+//override  method  Override the close() method for this dlg
+
+$.d().dlg();// Create a second dlg
+
+$( ":data(ui-dlg)" ).dlg( "close" )
+
+// Select both dlgs and call close() on each of them.// "close" will only be logged once
+
+ overriding mess for indiv insts  perfect  for one-off customizations 

@@ -1,0 +1,96 @@
+ construct rx:   (1)   rx lit   /ab+c/  provide compilation of the rx on script load,   better performance if rx const
+   (2)    RegExp ob constructor fn     new RegExp("ab+c")   provides runtime compilation, use when pt changing|?
+
+
+simp lit  /abc/  ==  chars 'abc' together
+*  0+ occ of prec item         /ab*c/  = *  char comb in which a single 'a' is followed by 0+ 'b's,
+ then imm folby 'c'.      "cbbabbbbcdebc" M  'abbbbc'
+ '\' that precedes a !spc char:   next char is spec (!lit)   '\b'!M any char, forms spc wB char
+  '\'   preceding   spcl char: the next char   !spc            \ must esc itself
+
+            /a*/ relies on  spc char '*' to mat  0+  a's            /a\*/ de-spc  '*' ,   M 'a*'
+ ^	== beg  of ip.    If   mltln   true,    M imm  af  line break char.        /^A/      !M 'A' in "an A",      M   'A' in "An E".
+    $  = end of input.   if mltln   true,   mats imm  bf   line break char.      /t$/       !M 't' in "eater",  M it in "eat".
+     *  ~ {0,} mats prcd  char 0+      /bo*/      'boooo' M "A ghost booooed"      'b' M "A bird warbled"     !M "A goat grunted"
++ ~ {1,}  mats the prec  char 1+      /a+/      M 'a'/"candy",  M all the a's in "caaaaaaandy",  !M "cndy".
+    ?	~ {0,1} mats the prec  char 0|1 time       /e?le?/ M 'el' | "angel"    M   'le' | "angle"    M 'l' |"oslo"
+    if used imm aft  *  quantifiers  ( *   +   ?  {  } )  non-greedifies quantifier    (matg LEAST)  (df is greedy (mat  as MANY chars as poss ))
+appg /\d+/ to "123abc"  M "123"  but appg /\d+?/ to that same str M "1".
+
+.  == any sing char !newline char          /.n/  M  ('an' , 'on') | "nay an apple is on the tree", !M 'nay'.
+  capturing    (x)      M 'x', rems mat    The '(foo)' and '(bar)' in the pt /(foo) (bar) \1 \2/   mat,    rem 1st two words in the str "foo bar foo bar".
+    \1 and \2 in   pt mat  str's last two words    \1, \2, \n are used in the matchg part of the rx
+      In the replacement part of a regex the syntax  $1, $2, $n must be used    'bar foo'.replace( /(...) (...)/, '$2 $1' ).
+(?:x) Mats 'x' but !rem  the mat  The '()' are called !cap'()' &  let you df subexpressions for rx operators to work with.
+ /(?:foo){1,2}/.   If expr was /foo{1,2}/,
+  {1,2} chars  apply only to   last 'o' in 'foo'.
+	   With the !cap'()',  the {1,2} appls to entire word 'foo'.
+  lookahead    x(?=y)  Mats 'x'   if 'x' is folld by 'y'
+      /Jack(?=Sprat)/    mats 'Jack'  if folld by 'Sprat'           /Jack(?=Sprat|Frost)/
+      mats 'Jack'  if it is foll  by 'Sprat' | 'Frost'     !M 'Sprat' , 'Frost'
+        neg lookahead    x(?!y)       'x' if 'x' !folld by 'y'.    /\d+(?!\.)/   mats  num  onlif !folld by a dec  pt
+     /\d+(?!\.)/.exec("3.141")   M'141', !M  '3.141'
+    x|y   ==  'x' or 'y'.     /green|red/     M 'green' | "green apple" , 'red' | "red apple."
+{n}	M exactly n occ of the precg char    N must be +int .
+/a{2}/  doesn't match the 'a' in "candy," M all of the a's in "caandy,"    M 1st two a's in "caaandy."
+{n,m} Where n and m are pos ints and n <= m.  M at least n and at most m occ  of  prec  char  When m is omitted,
+ it's treated as ∞
+
+  /a{1,3}/  !M "cndy",M'a' |"candy,"   M 1st two a's in "caandy,"    M 1st three a's in "caaaaaaandy".
+   when matg "caaaaaaandy",  M = "aaa",   even though orig str > num a's
+    char set [xyz]  ==  one of chars in '[]'  inclg esc-seqs
+    spc chars  '.'  '*'    !specl in  char set, no need to esc            can spec  a rng of chars with '-'
+ [a-d]  ~ [abcd]    M ('b'| "brisket"   'c' |"city")         /[a-z.]+/ and /[\w.]+/   M    "test.i.ng"
+    neg char set [^xyz]  == * !in '[]'
+ * that works in the norm  char set works here  (  spec rng of chars using a '-'  )
+      [^abc] ~ [^a-c]
+      initially M(  'r' | "brisket"   'h' | "chop" )
+     '[]' nec to mat lit bSp char  [\b]  !~ \b   ==  bSp (U+0008).
+\b == word boundary (wBd) ,  word char(wCh)
+
+wBd == posn wher wCh  !(folld|precd) by anthr wCh         matd wBd !incd in  mat          matd wBd len = 0          /\bm/  M   'm'|"moon"
+/oo\b/  !M 'oo' in "moon",          b/c 'oo' is followed by 'n' which is a word char
+/oon\b/  M 'oon' | "moon", b/c 'oon' is end of   str,  thus !folby  wCh
+/\w\b\w/ will never M anything,  b/c a wCh can !be folby both a non-word and a wCh
+
+
+   "word" chars  solely:  up/low  Roman alph , dec  nums, '_'
+  all else are word breaks ( accents "é"  "ü"  are word breaks )
+
+
+'\B':  'Mats a non-word boundary.'+
+'This mats a position where the previous and next char are of the same type: ' +
+'Either both must be words, or both must be non-words. ' + 'The beginning and end of a str are considered non-words
+     /\B../ mats 'oo' in "noonday", and /y\B./ mats 'ye' in "possibly yesterday."
+ \cX :    'Where X is a char ranging from A to Z'+  'Mats a control char in a str'
+    /\cM/     mats control-M (U+000D) in a str.
+   \d   Mats a num. Equivalent to [0-9].
+    /\d/ or /[0-9]/    mats '2' in "B2 is the suite number."
+\D ~ [^0-9]    Mats any !digit char
+ /\D/ ~ /[^0-9]/  mats 'B' in "B2 is the suite number."
+\f	M form feed (U+000C)        \n	Mats a line feed (U+000A)        \r	Mats a carriage return (U+000D).
+\s  == a sing wSp char, including sp, tab, form feed, line feed.
+~ [ \f\n\r\t\v​\u00a0\u1680​\u180e\u2000​-\u200a​\u2028\u2029\u202f\u205f​\u3000].
+/\s\w*/      mats ' bar' in "foo bar."
+\S  ~ [^ \f\n\r\t\v​\u00a0\u1680​\u180e\u2000-\u200a​\u2028\u2029​\u202f\u205f​\u3000] == sing char other than wSp
+ /\S\w*/  M  'foo' in "foo bar."
+\t	== tab (U+0009)      \v	== vert  tab (U+000B)
+\w ~ [A-Za-z0-9_] == any alnum  char incl '_'       /\w/            M ( 'a'|"apple"     '5'|"$5.28"    '3'|"3D" )
+\W  ~ [^A-Za-z0-9_] == any non-word char       ( /\W/       /[^A-Za-z0-9_]/  ) M '%'| "50%."
+\n  = n pos int
+ back-ref   to t  last substr matg the n parenthetical in the rx  (counting left '()')
+  /apple(,)\sorange\1/ mats 'apple, orange,' in "apple, orange, cherry, peach."
+\0	==  NULL (U+0000) char. !folby another num,  b/c \0<digits> is an octalesc sequence.
+\xhh	  M char with the code hh (two hexadecimal digits)
+\uhhhh	Mats the char with the code
+ hhhh (four hexadecimal digits).
+
+Escaping user input to be treated as a lit str:     function escapeRegExp(str){  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") }
+REMEMBERING WITH  '()'  - Parentheses around any part of the rx pt        cause that part of the matched substr to be remembered.
+ Once remembered,  the substr can be recalled for other use   ills additional escaped and special chars
+       indicates that part of the pt should be remembered           '()' are used to remember the 1st matched nums
+   /Chapter (\d+)\.\d*/  === 'Chapter ', 1+ nums,'.',0+nums
+   M "Open Chapter 4.3, paragraph 6" , '4' remembered            !M "Chapter 3 and 4" (!period after the '3')
+   match a substr   without causing the matched part to be remembered,  within the '()' preface the pt with ?:.        (?:\d+) M 1+   numes but does not remember
+
+    

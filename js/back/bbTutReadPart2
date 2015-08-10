@@ -1,0 +1,1911 @@
+
+
+
+
+
+Unlike some more traditional programming languages, the current iteration of JavaScript (ECMA-262)
+doesn’t provide developers with the means to import such modules of code in a clean, organized manner.
+
+Instead, developers are left to fall back on variations of the
+module or object literal patterns
+combined with script tags or a script loader.
+With many of these, module scripts are strung together in the DOM with namespaces being described by a single global object
+where it’s still possible to have name collisions.
+There’s also no clean way to handle dependency management without some manual effort or third party tools.
+
+
+Whilst native solutions to these problems may be arriving via ES6
+(the next version of the official JavaScript specification) modules proposal,
+the good news is that writing modular JavaScript has never been easier and you can start doing it today.
+
+In this next part of the book, we’re going to look at how to use AMD modules and RequireJS to cleanly wrap units of code
+in your application into manageable modules.
+We’ll also cover an alternate approach called Lumbar which uses routes to determine when modules are loaded.
+
+
+
+RequireJS is a popular script loader written by James Burke - a developer who has been quite instrumental in helping shape the AMD module format,
+which we’ll discuss shortly. Amongst other things RequireJS helps you to load multiple script files, define modules with or without dependencies,
+and load in non-script dependencies such as text files.
+
+Maintainability problems with multiple script files
+You might be thinking that there is little benefit to RequireJS. After all, you can simply load in your JavaScript files through multiple <script> tags, which is very straightforward. However, doing it that way has a lot of drawbacks, including increasing the HTTP overhead.
+
+Every time the browser loads in a file you’ve referenced in a <script> tag, it makes an HTTP request to load the file’s contents. It has to make a new HTTP request for each file you want to load, which causes problems.
+
+Browsers are limited in how many parallel requests they can make, so often it’s slow to load multiple files, as it can only do a certain number at a time. This number depends on the user’s settings and browser, but is usually around 4-8. When working on bb applications it’s good to split your app into multiple JS files, so it’s easy to hit that limit quickly. This can be negated by minifying your code into one file as part of a build process, but does not help with the next point.
+Scripts are loaded synchronously. This means that the browser cannot continue page rendering while the script is loading.
+What tools like RequireJS do is load scripts asynchronously. This means we have to adjust our code slightly, you can’t just swap out <script> els for a small piece of RequireJS code, but the benefits are very worthwhile:
+
+Loading the scripts asynchronously means the load process is non-blocking. The browser can continue to render the rest of the page as the scripts are being loaded, speeding up the initial load time.
+We can load modules in more intelligently, having more control over when they are loaded and ensuring that modules which have dependencies are loaded in the right order.
+Need for better dependency management
+Dependency management is a challenging subject, in particular when writing JavaScript in the browser. The closest thing we have to dependency management by default is simply making sure we order our <script> tags such that code that depends on code in another file is loaded after the file it depends on. This is not a good approach. As I’ve already discussed, loading multiple files in that way is bad for performance; needing them to be loaded in a certain order is very brittle.
+
+Being able to load code on an as-needed basis is something RequireJS is very good at. Rather than load all our JavaScript code in during initial page load, a better approach is to dynamically load modules when that code is required. This avoids loading all the code when the user first hits your application, consequently speeding up initial load times.
+
+Think about the GMail web client for a moment. When a user initially loads the page on their first visit, Google can simply hide widgets such as the chat module until the user has indicated (by clicking ‘expand’) that they wish to use it. Through dynamic dependency loading, Google could load up the chat module at that time, rather than forcing all users to load it when the page first inits. This can improve performance and load times and can definitely prove useful when building larger applications. As the codebase for an application grows this becomes even more important.
+
+The important thing to note here is that while it’s absolutely fine to develop applications without a script loader, there are significant benefits to utilizing tools like RequireJS in your application.
+
+Asynchronous Module Definition (AMD)
+RequireJS implements the AMD Specification which defines a method for writing modular code and managing dependencies. The RequireJS website also has a section documenting the reasons behind implementing AMD:
+
+The AMD format comes from wanting a module format that was better than today’s “write a bunch of script tags with implicit dependencies that you have to manually order” and something that was easy to use directly in the browser. Something with good debugging characteristics that did not require server-specific tooling to get started.
+Writing AMD modules with RequireJS
+As discussed above, the overall goal for the AMD format is to provide a solution for modular JavaScript that developers can use today. The two key concepts you need to be aware of when using it with a script-loader are the define() method for defining modules and the require() method for loading dependencies. define() is used to define named or unnamed modules using the following signature:
+
+define(
+    module_id /*optional*/,
+    [dependencies] /*optional*/,
+    definition function /*function for instantiating the module or object*/
+);
+As you can tell by the inline comments, the module_id is an optional argument which is typically only required when non-AMD concatenation tools are being used (there may be some other edge cases where it’s useful too). When this argument is left out, we call the module ‘anonymous’. When working with anonymous modules, RequireJS will use a module’s file path as its module id, so the adage Don’t Repeat Yourself (DRY) should be applied by omitting the module id in the define() invocation.
+
+The dependencies argument is an array reping all of the other modules that this module depends on and the third argument is a factory that can either be a function that should be executed to instantiate the module or an object.
+
+A barebones module (compatible with RequireJS) could be defined using define() as follows:
+
+// A module ID has been omitted here to make the module anonymous
+
+define(['foo', 'bar'],
+    // module definition function
+    // dependencies (foo and bar) are mapped to function pams
+    function ( foo, bar ) {
+        // return a value that defines the module export
+        // (i.e the functionality we want to expose for consumption)
+
+        // create your module here
+        myModule = {
+            doStuff:function(){
+                $l('Yay! Stuff');
+            }
+        }
+
+        return myModule;
+});
+Note: RequireJS is intelligent enough to automatically infer the ‘.js’ extension to your script file names. As such, this extension is generally omitted when specifying dependencies.
+
+Alternate syntax
+There is also a sugared version of define() available that allows you to declare your dependencies as local vars using require(). This will feel familiar to anyone who’s used node, and can be easier to add or remove dependencies. Here is the previous snippet using the alternate syntax:
+
+// A module ID has been omitted here to make the module anonymous
+
+define(function(require){
+        // module definition function
+    // dependencies (foo and bar) are defined as local vars
+    foo = require('foo'),
+        bar = require('bar');
+
+    // return a value that defines the module export
+    // (i.e the functionality we want to expose for consumption)
+
+    // create your module here
+    myModule = {
+        doStuff:function(){
+            $l('Yay! Stuff');
+        }
+    }
+
+    return myModule;
+});
+The require() method is typically used to load code in a top-level JavaScript file or within a module should you wish to dynamically fetch dependencies. An example of its usage is:
+
+// Consider 'foo' and 'bar' are two external modules
+// In this example, the 'exports' from the two modules loaded are passed as
+// function arguments to the cb (foo and bar)
+// so that they can similarly be accessed
+
+require( ['foo', 'bar'], function ( foo, bar ) {
+    // rest of your code here
+    foo.doSomething();
+});
+Addy’s post on Writing Modular JS covers the AMD specification in much more detail. Defining and using modules will be covered in this book shortly when we look at more structured examples of using RequireJS.
+
+Getting Started with RequireJS
+Before using RequireJS and bb we will first set up a very basic RequireJS project to demonstrate how it works. The first thing to do is to Download RequireJS. When you load in the RequireJS script in your HTML file, you need to also tell it where your main JavaScript file is located. Typically this will be called something like “app.js”, and is the main entry point for your application. You do this by adding in a data-main attr to the script tag:
+
+<script data-main="app" src="lib/require.js"></script>
+Now, RequireJS will automatically load app.js for you.
+
+RequireJS Configuration
+In the main JavaScript file that you load with the data-main attr you can configure how RequireJS loads the rest of your application. This is done by calling require.config, and passing in an object:
+
+require.config({
+    // your configuration key/values here
+    baseUrl: "app", // generally the same directory as the script used in a data-main attr for the top level script
+    paths: {}, // set up cust paths to libraries, or paths to RequireJS plugins
+    shim: {}, // used for setting up all Shims (see below for more detail)
+});
+The main reason you’d want to configure RequireJS is to add shims, which we’ll cover next. To see other configuration options available to you, I recommend checking out the RequireJS documentation.
+
+RequireJS Shims
+Ideally, each library that we use with RequireJS will come with AMD support. That is, it uses the define method to define the library as a module. While bb and Underscore have added AMD support in recent years, we’re going to show an example of how to shim a library that does not using RequireJS.
+
+To demonstrate this, first let’s shim Underscore, and then we’ll shim bb too. Shims are very simple to implement:
+
+require.config({
+    shim: {
+        'lib/underscore': {
+            exports: '_'
+        }
+    }
+});
+Note that when specifying paths for RequireJS you should omit the .js from the end of script names.
+
+The important line here is exports: '_'. This line tells RequireJS that the script in 'lib/underscore.js' creates a global var called _ instead of defining a module. Now when we list Underscore as a dependency RequireJS will know to give us the _ global var as though it was the module defined by that script. We can set up a shim for bb too:
+
+require.config({
+    shim: {
+        'lib/underscore': {
+          exports: '_'
+        },
+        'lib/backbone': {
+            deps: ['lib/underscore', 'jquery'],
+            exports: 'bb'
+        }
+    }
+});
+Again, that configuration tells RequireJS to return the global bb var that bb exports, but this time you’ll notice that bb’s dependencies are defined. This means whenever this:
+
+require( 'lib/backbone', function( bb ) {...} );
+Is run, it will first make sure the dependencies are met, and then pass the global bb object into the cb function. You don’t need to do this with every library, only the ones that don’t support AMD. For example, jQuery does support it, as of jQuery 1.7.
+
+If you’d like to read more about general RequireJS usage, the RequireJS API docs are incredibly thorough and easy to read.
+
+Custom Paths
+Typing long paths to file names like lib/backbone can get tedious. RequireJS lets us set up cust paths in our configuration object. Here, whenever I refer to “underscore”, RequireJS will look for the file lib/underscore.js:
+
+require.config({
+    paths: {
+        'underscore': 'lib/underscore'
+    }
+});
+Of course, this can be combined with a shim:
+
+require.config({
+    paths: {
+        'underscore': 'lib/underscore'
+    },
+    shim: {
+        'underscore': {
+          exports: '_'
+        }
+    }
+});
+Just make sure that you refer to the cust path in your shim settings, too. Now you can do
+
+require( ['underscore'], function(_) {
+// code here
+});
+to shim Underscore but still use a cust path.
+
+Require.js and bb Examples
+Now that we’ve taken a look at how to define AMD modules, let’s review how to go about wrapping components like views and collections so that they can also be easily loaded as dependencies for any parts of your application that require them. At its simplest, a bb model may just require bb and Underscore.js. These are dependencies, so we can define those when defining the new modules. Note that the following examples presume you have configured RequireJS to shim bb and Underscore, as discussed previously.
+
+Wrapping models, views, and other components with AMD
+For example, here is how a model is defined.
+
+define(['underscore', 'backbone'], function(_, bb) {
+  myModel = bb.Model.x({
+
+    // Default atts
+    df: {
+      content: 'hello world',
+    },
+
+    // A dummy init method
+    i: function() {
+    },
+
+    clear: function() {
+      this.destroy();
+      this.view.remove();
+    }
+
+  });
+  return myModel;
+});
+Note how we alias Underscore.js’s instance to _ and bb to just bb, making it very trivial to convert non-AMD code over to using this module format. For a view which might require other dependencies such as jQuery, this can similarly be done as follows:
+
+define([
+  'jquery',
+  'underscore',
+  'backbone',
+  'collections/mycollection',
+  'views/myview'
+  ], function($, _, bb, myCollection, myView){
+
+  AppView = bb.View.x({
+  ...
+Aliasing to the dollar-sign ($) once again makes it very easy to encapsulate any part of an application you wish using AMD.
+
+Doing it this way makes it easy to organize your bb application as you like. It’s recommended to separate modules into folders. For example, individual folders for models, collections, views and so on. RequireJS doesn’t care about what folder structure you use; as long as you use the correct path when using require, it will happily pull in the file.
+
+As part of this chapter I’ve made a very simple bb application with RequireJS that you can find on Github. It is a stock application for a manager of a shop. They can add new items and filter down the items based on price, but nothing more. Because it’s so simple it’s easier to focus purely on the RequireJS part of the implementation, rather than deal with complex JavaScript and bb logic too.
+
+At the base of this application is the Item model, which describes a single item in the stock. Its implementation is very straight forward:
+
+define( ["lib/backbone"], function ( bb ) {
+  Item = bb.Model.x({
+    df: {
+      price: 35,
+      photo: "http://www.placedog.com/100/100"
+    }
+  });
+  return Item;
+});
+Converting an individual model, collection, view or similar into an AMD, RequireJS compliant one is typically very straight forward. Usually all that’s needed is the first line, calling define, and to make sure that once you’ve defined your object - in this case, the Item model, to return it.
+
+Let’s now set up a view for that individual item:
+
+define( ["lib/backbone"], function ( bb ) {
+  ItemView = bb.View.x({
+    tagName: "div",
+    className: "item-wrap",
+    template: _.tp($("#itemTemplate").html()),
+
+    render: function() {
+      this.$el.html(this.template(this.model.atts));
+      return this;
+    }
+  });
+  return ItemView;
+});
+This view doesn’t actually depend on the model it will be used with, so again the only dependency is bb. Other than that it’s just a regular bb view. There’s nothing special going on here, other than returning the object and using define so RequireJS can pick it up. Now let’s make a collection to view a list of items. This time we will need to reference the Item model, so we add it as a dependency:
+
+define(["lib/backbone", "models/item"], function(bb, Item) {
+  Cart = bb.Collection.x({
+    model: Item,
+    i: function() {
+      this.on("add", this.updateSet, this);
+    },
+    updateSet: function() {
+      items = this.models;
+    }
+  });
+  return Cart;
+});
+I’ve called this collection Cart, as it’s a group of items. As the Item model is the second dependency, I can bind the var Item to it by declaring it as the second argument to the cb function. I can then refer to this within my collection implementation.
+
+Finally, let’s have a look at the view for this collection. (This file is much bigger in the application, but I’ve taken some bits out so it’s easier to examine).
+
+define(["lib/backbone", "views/itemview"], function(bb, ItemView) {
+  ItemCollectionView = bb.View.x({
+    el: '#yourcart',
+    i: function(collection) {
+      this.collection = collection;
+      this.render();
+      this.collection.on("reset", this.render, this);
+    },
+    render: function() {
+      this.$el.html("");
+      this.collection.each(function(item) {
+        this.renderItem(item);
+      }, this);
+    },
+    renderItem: function(item) {
+      itemView = new ItemView({model: item});
+      this.$el.append(itemView.render().el);
+    },
+    // more methods here removed
+  });
+  return ItemCollectionView;
+});
+There really is nothing to it once you’ve got the general pattern. Define each “object” (a model, view, collection, router or otherwise) through RequireJS, and then specify them as dependencies to other objects that need them. Again, you can find this entire application on Github.
+
+If you’d like to take a look at how others do it, Pete Hawkins’ bb Stack repository is a good example of structuring a bb application using RequireJS. Greg Franko has also written an overview of how he uses bb and Require, and Jeremy Kahn’s post neatly describes his approach. For a look at a full sample application, the bb and Require version of the ToddoMVC application is a good starting point.
+
+Keeping Your Templates External Using RequireJS And The Text Plugin
+Moving your templates to external files is actually quite straight-forward, whether they are Underscore, Mustache, Handlebars or any other text-based template format. Let’s look at how we do that with RequireJS.
+
+RequireJS has a special plugin called text.js which is used to load in text file dependencies. To use the text plugin, follow these steps:
+
+Download the plugin from http://requirejs.org/docs/download.html#text and place it in either the same directory as your application’s main JS file or a suitable sub-directory.
+
+Next, include the text.js plugin in your initial RequireJS configuration options. In the code snippet below, we assume that RequireJS is being included in our page prior to this code snippet being executed.
+
+require.config( {
+    paths: {
+        'text': 'libs/require/text',
+    },
+    baseUrl: 'app'
+} );
+When the text! prefix is used for a dependency, RequireJS will automatically load the text plugin and treat the dependency as a text resource. A typical example of this in action may look like:
+require(['js/app', 'text!templates/mainView.html'],
+    function( app, mainView ) {
+        // the contents of the mainView file will be
+        // loaded into mainView for usage.
+    }
+);
+Finally we can use the text resource that’s been loaded for templating purposes. You’re probably used to storing your HTML templates inline using a script with a specific identifier.
+With Underscore.js’s micro-templating (and jQuery) this would typically be:
+
+HTML:
+
+<script type="text/template" id="mainViewTemplate">
+    <% _.e( person, function( person_item ){ %>
+        <li><%= person_item.get('name') %></li>
+    <% }); %>
+</script>
+JS:
+
+compiled_template = _.tp( $('#mainViewTemplate').html() );
+With RequireJS and the text plugin however, it’s as simple as saving the same template into an external text file (say, mainView.html) and doing the following:
+
+require(['js/app', 'text!templates/mainView.html'],
+    function(app, mainView){
+        compiled_template = _.tp( mainView );
+    }
+);
+That’s it! Now you can apply your template to a view in bb with something like:
+
+collection.someview.$el.html( compiled_template( { results: collection.models } ) );
+All templating solutions will have their own cust methods for handling template compilation, but if you understand the above, substituting Underscore’s micro-templating for any other solution should be fairly trivial.
+
+Optimizing bb apps for production with the RequireJS Optimizer
+Once you’re written your application, the next important step is to prepare it for deployment to production. The majority of non-trivial apps are likely to consist of several scripts and so optimizing, minimizing, and concatenating your scripts prior to pushing can reduce the number of scripts your users need to download.
+
+A command-line optimization tool for RequireJS projects called r.js is available to help with this workflow. It offers a number of capabilities, including:
+
+Concatenating specific scripts and minifying them using external tools such as UglifyJS (which is used by default) or Google’s Closure Compiler for optimal browser delivery, whilst preserving the ability to dynamically load modules
+Optimizing CSS and stylesheets by inlining CSS files imported using @import, stripping out comments, etc.
+The ability to run AMD projects in both Node and Rhino (more on this later)
+If you find yourself wanting to ship a single file with all dependencies included, r.js can help with this too. Whilst RequireJS does support lazy-loading, your application may be small enough that reducing HTTP requests to a single script file is feasible.
+
+You’ll notice that I mentioned the word ‘specific’ in the first bullet point. The RequireJS optimizer only concatenates module scripts that have been specified as string literals in require and define calls (which you’ve probably used). As clarified by the optimizer docs this means that bb modules defined like this:
+
+define(['jquery', 'backbone', 'underscore', 'collections/sample', 'views/test'],
+    function($, bb, _, Sample, Test){
+        //...
+    });
+will combine fine, however dynamic dependencies such as:
+
+models = someCondition ? ['models/ab', 'models/ac'] : ['models/ba', 'models/bc'];
+define(['jquery', 'backbone', 'underscore'].concat(models),
+    function($, bb, _, firstModel, secondModel){
+        //...
+    });
+will be ignored. This is by design as it ensures that dynamic dependency/module loading can still take place even after optimization.
+
+Although the RequireJS optimizer works fine in both Node and Java environments, it’s strongly recommended to run it under Node as it executes significantly faster there.
+
+To get started with r.js, grab it from the RequireJS download page or through NPM. To begin getting our project to build with r.js, we will need to create a new build profile.
+
+Assuming the code for our application and external dependencies are in app/libs, our build.js build profile could simply be:
+
+({
+  baseUrl: 'app',
+  out: 'dist/main.js',
+The paths above are relative to the baseUrl for our project and in our case it would make sense to make this the app folder. The out parameter informs r.js that we want to concatenate everything into a single file called main.js under the dist/ directory. Note that here we do need to add the .js extension to the filename. Earlier, we saw that when referencing modules by filenames, you don’t need to use the .js extension, however this is one case in which you do.
+
+Alternatively, we can specify dir, which will ensure the contents of our app directory are copied into this directory. e.g:
+
+({
+  baseUrl: 'app',
+  dir: 'release',
+  out: 'dist/main.js'
+Additional options that can be specified such as modules and appDir are not compatible with out, however let’s briefly discuss them in case you do wish to use them.
+
+modules is an array where we can explicitly specify the module names we would like to have optimized.
+
+    modules: [
+        {
+            name: 'app',
+            exclude: [
+                // If you prefer not to include certain
+                // libs exclude them here
+            ]
+        }
+appDir - when specified, ourbaseUrl is relative to this parameter. If appDir is not defined, baseUrl is simply relative to the build.js file.
+
+    appDir: './',
+Back to our build profile, the main parameter is used to specify our main module - we are making use of include here as we’re going to take advantage of Almond - a stripped down loader for RequireJS modules which is useful should you not need to load modules in dynamically.
+
+  include: ['libs/almond', 'main'],
+  wrap: true,
+include is another array which specifies the modules we want to include in the build. By specifying “main”, r.js will trace over all modules main depends on and will include them. wrap wraps modules which RequireJS needs into a closure so that only what we export is included in the global environment.
+
+  paths: {
+    backbone: 'libs/backbone',
+    underscore: 'libs/underscore',
+    jquery: 'libs/jquery',
+    text: 'libs/text'
+  }
+})
+
+The remainder of the build.js file would be a regular paths configuration object.
+We can compile our project into a target file by running:
+
+node r.js -o build.js
+which should place our compiled project into dist/main.js.
+
+The build profile is usually placed inside the ‘scripts’ or ‘js’ directory of your project.
+As per the docs, this file can however exist anywhere you wish,
+ but you’ll need to edit the contents of your build profile accordingly.
+
+That’s it. As long as you have UglifyJS/Closure tools setup correctly,
+r.js should be able to easily optimize your entire bb project in just a few key-strokes.
+
+If you would like to learn more about build profiles,
+James Burke has a heavily commented sample file with all the possible options available.
+
+Exercise 3: Your First Modular bb + RequireJS App
+
+In this chapter, we’ll look at our first practical bb & RequireJS project - how to build a modular Toddo application.
+ Similar to exercise 1, the application will allow us to add new toddos, edit new toddos and clear toddo items that have been marked as completed. For a more advanced practical, see the section on mobile bb development.
+
+The complete code for the application can can be found in the practicals/modular-toddo-app folder of this repo
+(thanks to Thomas Davis and Jérôme Gravel-Niquet). Alternatively grab a copy of my side-project
+ ToddoMVC which contains the sources to both AMD and non-AMD versions.
+
+Overview
+Writing a modular bb application can be a straight-forward process. There are however, some key conceptual differences to be aware of if opting to use AMD as your module format of choice:
+
+As AMD isn’t a standard native to JavaScript or the browser, it’s necessary to use a script loader (such as RequireJS or curl.js) in order to support defining components and modules using this module format. As we’ve already reviewed, there are a number of advantages to using the AMD as well as RequireJS to assist here.
+Models, views, controllers and routers need to be encapsulated using the AMD-format. This allows each component of our bb application to cleanly manage dependencies (e.g collections required by a view) in the same way that AMD allows non-bb modules to.
+Non-bb components/modules (such as utilities or application helpers) can also be encapsulated using AMD. I encourage you to try developing these modules in such a way that they can both be used and tested independent of your bb code as this will increase their ability to be re-used elsewhere.
+Now that we’ve reviewed the basics, let’s take a look at developing our application. For reference, the structure of our app is as follows:
+
+index.html
+...js/
+    main.js
+    .../models
+            toddo.js
+    .../views
+            app.js
+            toddos.js
+    .../collections
+            toddos.js
+    .../templates
+            stats.html
+            toddos.html
+    ../libs
+        .../backbone
+        .../jquery
+        .../underscore
+        .../require
+                require.js
+                text.js
+...css/
+Markup
+The markup for the application is relatively simple and consists of three primary parts: an input section for entering new toddo items (create-toddo), a list section to display existing items (which can also be edited in-place) (toddo-list) and finally a section summarizing how many items are left to be completed (toddo-stats).
+
+<div id="toddoapp">
+
+      <div class="content">
+
+        <div id="create-toddo">
+          <input id="new-toddo" placeholder="What needs to be done?" type="text" />
+          <span class="ui-tooltip-top">Press Enter to save this task</span>
+        </div>
+
+        <div id="toddos">
+          <ul id="toddo-list"></ul>
+        </div>
+
+        <div id="toddo-stats"></div>
+
+      </div>
+
+</div>
+The rest of the tutorial will now focus on the JavaScript side of the practical.
+
+Configuration options
+If you’ve read the earlier chapter on AMD, you may have noticed that explicitly needing to define each dependency a bb module (view, collection or other module) may require with it can get a little tedious. This can however be improved.
+
+In order to simplify referencing common paths the modules in our application may use, we use a RequireJS configuration object, which is typically defined as a top-level script file. Configuration objects have a number of useful capabilities, the most useful being mode name-mapping. Name-maps are basically a key:value pair, where the key defines the alias you wish to use for a path and the value reps the true location of the path.
+
+In the code-sample below, you can see some typical examples of common name-maps which include: backbone, underscore, jquery and depending on your choice, the RequireJS text plugin, which assists with loading text assets like templates.
+
+main.js
+
+require.config({
+  baseUrl:'../',
+  paths: {
+    jquery: 'libs/jquery/jquery-min',
+    underscore: 'libs/underscore/underscore-min',
+    backbone: 'libs/backbone/backbone-optamd3-min',
+    text: 'libs/require/text'
+  }
+});
+
+require(['views/app'], function(AppView){
+  app_view = new AppView;
+});
+The require() at the end of our main.js file is simply there so we can load and instantiate the primary view
+for our application (views/app.js). You’ll commonly see both this and the configuration object
+included in most top-level script files for a project.
+
+In addition to offering name-mapping, the configuration object can be used to define additional properties such as waitSeconds
+ - the number of seconds to wait before script loading times out and locale, should you wish to load up i18n bundles
+ for cust languages. The baseUrl is simply the path to use for module lookups.
+
+For more information on configuration objects, please feel free to check out the excellent guide to them in the RequireJS docs.
+
+Modularizing our models, views and collections
+Before we dive into AMD-wrapped versions of our bb components,
+ let’s review a sample of a non-AMD view. The following view listens for changes to its model (a Toddo item)
+ and re-renders if a user edits the value of the item.
+
+ToddoView = bb.View.x({
+
+    //... is a list tag.
+    tagName:  'li',
+
+    // Cache the template function for a single item.
+    template: _.tp($('#item-template').html()),
+
+    // The DOM evs specific to an item.
+    evs: {
+      'click .check'              : 'toggleDone',
+      'dblclick div.toddo-content' : 'edit',
+      'click span.toddo-destroy'   : 'clear',
+      'keypress .toddo-input'      : 'updateOnEnter'
+    },
+
+    // The ToddoView listens for changes to its model, re-rendering. Since there's
+    // a one-to-one correspondence between a **Toddo** and a **ToddoView** in this
+    // app, we set a direct reference on the model for convenience.
+    i: function() {
+      this.listenTo(this.model, 'change', this.render);
+      this.model.view = this;
+    },
+    ...
+Note how for templating the common practice of referencing a script by an ID (or other selector) and obtaining its value is used. This of course requires that the template being accessed is implicitly defined in our markup. The following is the ‘embedded’ version of our template being referenced above:
+
+<script type="text/template" id="item-template">
+      <div class="toddo <%= done ? 'done' : '' %>">
+        <div class="display">
+          <input class="check" type="checkbox" <%= done ? 'checked="checked"' : '' %> />
+          <div class="toddo-content"></div>
+          <span class="toddo-destroy"></span>
+        </div>
+        <div class="edit">
+          <input class="toddo-input" type="text" value="" />
+        </div>
+      </div>
+</script>
+
+Whilst there is nothing wrong with the template itself,
+ once we begin to develop larger applications requiring multiple templates,
+  including them all in our markup on page-load can quickly become both unmanageable and come with performance costs.
+   We’ll look at solving this problem in a minute.
+
+Let’s now take a look at the AMD-version of our view.
+As discussed earlier, the ‘module’ is wrapped using AMD’s define() which allows us to specify the dependencies our view requires.
+ Using the mapped paths to ‘jquery’ etc.
+  simplifies referencing common dependencies and instances of dependencies are themselves mapped to
+  local vars that we can access (e.g ‘jquery’ is mapped to $).
+
+views/toddo.js
+
+define([
+  'jquery',
+  'underscore',
+  'backbone',
+  'text!templates/toddos.html'
+  ], function($, _, bb, toddosTemplate){
+  ToddoView = bb.View.x({
+
+    //... is a list tag.
+    tagName:  'li',
+
+    // Cache the template function for a single item.
+    template: _.tp(toddosTemplate),
+
+    // The DOM evs specific to an item.
+    evs: {
+      'click .check'              : 'toggleDone',
+      'dblclick div.toddo-content' : 'edit',
+      'click span.toddo-destroy'   : 'clear',
+      'keypress .toddo-input'      : 'updateOnEnter'
+    },
+
+    // The ToddoView listens for changes to its model, re-rendering. Since there's
+    // a one-to-one correspondence between a **Toddo** and a **ToddoView** in this
+    // app, we set a direct reference on the model for convenience.
+    i: function() {
+      this.listenTo(this.model, 'change', this.render);
+      this.model.view = this;
+    },
+
+    // Re-render the contents of the toddo item.
+    render: function() {
+      this.$el.html(this.template(this.model.atts));
+      this.setContent();
+      return this;
+    },
+
+    // Use `jQuery.text` to set the contents of the toddo item.
+    setContent: function() {
+      content = this.model.get('content');
+      this.$('.toddo-content').text(content);
+      this.input = this.$('.toddo-input');
+      this.input.on('blur', this.close);
+      this.input.val(content);
+    },
+    ...
+From a maintenance perspective, there’s nothing logically different in this version of our view, except for how we approach templating.
+
+Using the RequireJS text plugin (the dependency marked text), we can actually store all of the contents for the template we looked at earlier in an external file (toddos.html).
+
+templates/toddos.html
+
+<div class="toddo <%= done ? 'done' : '' %>">
+    <div class="display">
+      <input class="check" type="checkbox" <%= done ? 'checked="checked"' : '' %> />
+      <div class="toddo-content"></div>
+      <span class="toddo-destroy"></span>
+    </div>
+    <div class="edit">
+      <input class="toddo-input" type="text" value="" />
+    </div>
+</div>
+There’s no longer a need to be concerned with IDs for the template as we can map its contents to a local var (in this case toddosTemplate). We then simply pass this to the Underscore.js templating function _.tp() the same way we normally would have the value of our template script.
+
+Next, let’s look at how to define models as dependencies which can be pulled into collections. Here’s an AMD-compatible model module, which has two default values: a content attr for the content of a Toddo item and a boolean done state, allowing us to trigger whether the item has been completed or not.
+
+models/toddo.js
+
+define(['underscore', 'backbone'], function(_, bb) {
+  ToddoModel = bb.Model.x({
+
+    // Default atts for the toddo.
+    df: {
+      // Ensure that each toddo created has `content`.
+      content: 'empty toddo...',
+      done: false
+    },
+
+    i: function() {
+    },
+
+    // Toggle the `done` state of this toddo item.
+    toggle: function() {
+      this.save({done: !this.get('done')});
+    },
+
+    // Remove this Toddo from *localStorage* and delete its view.
+    clear: function() {
+      this.destroy();
+      this.view.remove();
+    }
+
+  });
+  return ToddoModel;
+});
+As per other types of dependencies, we can easily map our model module to a local var (in this case Toddo) so it can be referenced as the model to use for our ToddosCollection. This collection also supports a simple done() filter for narrowing down Toddo items that have been completed and a remaining() filter for those that are still outstanding.
+
+collections/toddos.js
+
+define([
+  'underscore',
+  'backbone',
+  'libs/backbone/localstorage',
+  'models/toddo'
+  ], function(_, bb, Store, Toddo){
+
+    ToddosCollection = bb.Collection.x({
+
+    // Reference to this collection's model.
+    model: Toddo,
+
+    // Save all of the toddo items under the `toddos` namespace.
+    localStorage: new Store('toddos'),
+
+    // Filter down the list of all toddo items that are finished.
+    done: function() {
+      return this.filter(function(toddo){ return toddo.get('done'); });
+    },
+
+    // Filter down the list to only toddo items that are still not finished.
+    remaining: function() {
+      return this.without.apply(this, this.done());
+    },
+    ...
+In addition to allowing users to add new Toddo items from views (which we then insert as models in a collection), we ideally also want to be able to display how many items have been completed and how many are remaining. We’ve already defined filters that can provide us this information in the above collection, so let’s use them in our main application view.
+
+views/app.js
+
+define([
+  'jquery',
+  'underscore',
+  'backbone',
+  'collections/toddos',
+  'views/toddo',
+  'text!templates/stats.html'
+  ], function($, _, bb, Toddos, ToddoView, statsTemplate){
+
+  AppView = bb.View.x({
+
+    // Instead of generating a new el, bind to the existing skeleton of
+    // the App already present in the HTML.
+    el: $('#toddoapp'),
+
+    // Our template for the line of statistics at the bottom of the app.
+    statsTemplate: _.tp(statsTemplate),
+
+    // ...evs, init() etc. can be seen in the complete file
+
+    // Re-rendering the App just means refreshing the statistics -- the rest
+    // of the app doesn't change.
+    render: function() {
+      done = Toddos.done().length;
+      this.$('#toddo-stats').html(this.statsTemplate({
+        total:      Toddos.length,
+        done:       Toddos.done().length,
+        remaining:  Toddos.remaining().length
+      }));
+    },
+    ...
+Above, we map the second template for this project,
+ templates/stats.html to statsTemplate which is used for rendering the overall done and remaining states.
+ This works by simply passing our template the length of our overall Toddos collection
+  (Toddos.length - the number of Toddo items created so far) and similarly the length (counts) for items that have been completed
+   (Toddos.done().length) or are remaining (Toddos.remaining().length).
+
+The contents of our statsTemplate can be seen below.
+ It’s nothing too complicated, but does use ternary conditions
+  to evaluate whether we should state there’s “1 item” or “2 items” in a particular state.
+
+<% if (total) { %>
+        <span class="toddo-count">
+          <span class="number"><%= remaining %></span>
+          <span class="word"><%= remaining == 1 ? 'item' : 'items' %></span> left.
+        </span>
+      <% } %>
+      <% if (done) { %>
+        <span class="toddo-clear">
+          <a href="#">
+            Clear <span class="number-done"><%= done %></span>
+            completed <span class="word-done"><%= done == 1 ? 'item' : 'items' %></span>
+          </a>
+        </span>
+      <% } %>
+The rest of the source for the Toddo app mainly consists of code for handling user and application evs, but that rounds up most of the core concepts for this practical.
+
+To see how everything ties together, feel free to grab the source by cloning this repo or browse it online to learn more. I hope you find it helpful!
+
+Note: While this first practical doesn’t use a build profile as outlined in the chapter on using the RequireJS optimizer, we will be using one in the section on building mobile bb applications.
+
+Route-based module loading
+This section will discuss a route based approach to module loading as implemented in Lumbar by Kevin Decker. Like RequireJS, Lumbar is also a modular build system, but the pattern it implements for loading routes may be used with any build system.
+
+The specifics of the Lumbar build tool are not discussed in this book. To see a complete Lumbar based project with the loader and build system see Thorax which provides boilerplate projects for various environments including Lumbar.
+
+JSON-based module configuration
+RequireJS defines dependencies per file, while Lumbar defines a list of files for each module in a central JSON configuration file, outputting a single JavaScript file for each defined module. Lumbar requires that each module (except the base module) define a single router and a list of routes. An example file might look like:
+
+ {
+    "modules": {
+        "base": {
+            "scripts": [
+                "js/lib/underscore.js",
+                "js/lib/backbone.js",
+                "etc"
+            ]
+        },
+        "pages": {
+            "scripts": [
+                "js/routers/pages.js",
+                "js/views/pages/index.js",
+                "etc"
+            ],
+            "routes": {
+                "": "index",
+                "contact": "contact"
+            }
+        }
+    }
+}
+Every JavaScript file defined in a module will have a module object in scope which contains the name and routes for the module. In js/routers/pages.js we could define a bb router for our pages module like so:
+
+new (bb.Router.x({
+    routes: module.routes,
+    index: function() {},
+    contact: function() {}
+}));
+Module loader Router
+A little used feature of bb.Router is its ability to create multiple routers that listen to the same set of routes. Lumbar uses this feature to create a router that listens to all routes in the application. When a route is matched, this master router checks to see if the needed module is loaded. If the module is already loaded, then the master router takes no action and the router defined by the module will handle the route. If the needed module has not yet been loaded, it will be loaded, then bb.history.loadUrl will be called. This reloads the route, causes the master router to take no further action and the router defined in the freshly loaded module to respond.
+
+A sample implementation is provided below. The config object would need to contain the data from our sample configuration JSON file above, and the loader object would need to implement isLoaded and loadModule methods. Note that Lumbar provides all of these implementations, the examples are provided to create your own implementation.
+
+// Create an object that will be used as the prototype
+// for our master router
+handlers = {
+    routes: {}
+};
+
+_.e(config.modules, function(module, moduleName) {
+    if (module.routes) {
+        // Generate a loading cb for the module
+        cbName = "loader_" moduleName;
+        handlers[cbName] = function() {
+            if (loader.isLoaded(moduleName)) {
+                // Do nothing if the module is loaded
+                return;
+            } else {
+                //the module needs to be loaded
+                loader.loadModule(moduleName, function() {
+                    // Module is loaded, reloading the route
+                    // will trigger cb in the module's
+                    // router
+                    bb.history.loadUrl();
+                });
+            }
+        };
+        // Each route in the module should trigger the
+        // loading cb
+        _.e(module.routes, function(methodName, route) {
+            handlers.routes[route] = cbName;
+        });
+    }
+});
+
+// Create the master router
+new (bb.Router.x(handlers));
+Using NodeJS to handle pushState
+window.history.pushState support (serving bb routes without a hash mark) requires that the server be aware of what URLs your bb application will handle, since the user should be able to enter the app at any of those routes (or hit reload after navigating to a pushState URL).
+
+Another advantage to defining all routes in a single location is that the same JSON configuration file provided above could be loaded by the server, listening to each route. A sample implementation in NodeJS and Express:
+
+fs = require('fs'),
+    _ = require('underscore'),
+    express = require('express'),
+    server = express(),
+    config = JSON.parse(fs.readFileSync('path/to/config.json'));
+
+_.e(config.modules, function(module, moduleName) {
+    if (module.routes) {
+        _.e(module.routes, function(methodName, route) {
+            server.get(route, function(req, res) {
+                  res.sendFile('public/index.html');
+            });
+        });
+    }
+});
+This assumes that index.html will be serving out your bb application. The bb.History object can handle the rest of the routing logic as long as a root option is specified. A sample configuration for a simple application that lives at the root might look like:
+
+bb.history || (bb.history = new bb.History());
+bb.history.start({
+  pushState: true,
+  root: '/'
+});
+
+
+An asset package alternative for dependency management
+For more than trivial views,
+ DocumentCloud have a home-built asset packager called Jammit,
+  which has easy integration with Underscore.js templates and can also be used for dependency management.
+
+
+Jammit expects your JavaScript templates (JST) to live alongside any ERB templates you’re using in the form of .jst files.
+ It packages the templates into a global JST object which can be used to render templates into strings.
+  Making Jammit aware of your templates is straight-forward - just add an entry for something like views/**/*.jst to your app package in assets.yml.
+
+To provide Jammit dependencies you simply write out an assets.yml file that either listed the dependencies in order
+ or used a combination of free capture directories (for example: /**/*.js, templates/*.js, and specific files).
+
+A template using Jammit can derive it’s data from the collection object that is passed to it:
+
+this.$el.html(JST.myTemplate({ collection: this.collection }));
+Paginating bb.js Requests & Collections
+
+Introduction
+Pagination is a ubiquitous problem we often find ourselves needing to solve on the web
+- perhaps most predominantly when working with service APIs and JavaScript-heavy clients which consume them.
+It’s also a problem that is often under-refined as most of us consider pagination relatively easy to get right.
+This isn’t however always the case as pagination tends to get more tricky than it initially seems.
+
+Before we dive into solutions for paginating data for your bb applications,
+let’s define exactly what we consider pagination to be:
+
+Pagination is a control system allowing users to browse through pages of search results (or any type of content) which is continued.
+Search results are the canonical example, but pagination today is found on news sites, blogs, and discussion boards, often in the form of Previous and Next links.
+More complete pagination systems offer granular control of the specific pages you can navigate to, giving the user more power to find what they are looking for.
+
+
+It isn’t a problem limited to pages requiring some visual controls for pagination either
+- sites like Facebook, Pinterest, and Twitter have demonstrated that there are many contexts where infinite paging is also useful. Infinite paging is, of course, when we pre-fetch (or appear to pre-fetch) content from a subsequent page and add it directly to the user’s current page, making the experience feel “infinite”.
+
+Pagination is very context-specific and depends on the content being displayed. In the Google search results, pagination is important as they want to offer you the most relevant set of results in the first 1-2 pages. After that, you might be a little more selective (or random) with the page you choose to navigate to. This differs from cases where you’ll want to cycle through consecutive pages for (e.g., for a news article or blog post).
+
+Pagination is almost certainly content and context-specific, but as Faruk Ates has previously pointed out the principles of good pagination apply no matter what the content or context is. As with everything extensible when it comes to bb, you can write your own pagination to address many of these content-specific types of pagination problems. That said, you’ll probably spend quite a bit of time on this and sometimes you just want to use a tried and tested solution that just works.
+
+On this topic, we’re going to go through a set of pagination components I (and a group of contributors) wrote for bb.js, which should hopefully come in useful if you’re working on applications which need to page bb Collections. They’re part of an extension called bb.Paginator.
+
+bb.Paginator
+Note: As of bb.Paginator 2.0, the API to the project has changed and includes updates which break backwards compatibility. The below section refers to bb.Paginator 1.0 which can still be downloaded here.
+
+When working with data on the client-side, the three types of pagination we are most likely to run into are:
+
+Requests to a service layer (API) - For example, query for results containing the term ‘Paul’ - if 5,000 results are available only display 20 results per page (leaving us with 250 possible result pages that can be navigated to).
+
+This problem actually has quite a great deal more to it, such as maintaining persistence of other URL pams (e.g sort, query, order) which can change based on a user’s search configuration in a UI. One also has to think of a clean way of hooking views up to this pagination so you can easily navigate between pages (e.g., First, Last, Next, Previous, 1,2,3), manage the number of results displayed per page and so on.
+
+Further client-side pagination of data returned - e.g we’ve been returned a JSON response containing 100 results. Rather than displaying all 100 to the user, we only display 20 of these results within a navigable UI in the browser.
+
+Similar to the request problem, client-pagination has its own challenges like navigation once again (Next, Previous, 1,2,3), sorting, order, switching the number of results to display per page and so on.
+
+Infinite results - with services such as Facebook, the concept of numeric pagination is instead replaced with a ‘Load More’ or ‘View More’ bt. Triggering this normally fetches the next ‘page’ of N results but rather than replacing the previous set of results loaded entirely, we simply append to them instead.
+
+A request pager which simply appends results in a view rather than replacing on each new fetch is effectively an ‘infinite’ pager.
+
+Let’s now take a look at exactly what we’re getting out of the box:
+
+bb.Paginator is a set of opinionated components for paginating collections of data using bb.js. It aims to provide both solutions for assisting with pagination of requests to a server (e.g an API) as well as pagination of single-loads of data, where we may wish to further paginate a collection of N results into M pages within a view.
+
+
+bb.Paginator supports two main pagination components:
+
+bb.Paginator.requestPager: For pagination of requests between a client and a server-side API
+bb.Paginator.clientPager: For pagination of data returned from a server which you would like to further paginate within the UI (e.g 60 results are returned, paginate into 3 pages of 20)
+Live Examples
+If you would like to look at examples built using the components included in the project, links to official demos are included below and use the Netflix API so that you can see them working with an actual data source.
+
+bb.Paginator.requestPager()
+bb.Paginator.clientPager()
+Infinite Pagination (bb.Paginator.requestPager())
+Diacritic Plugin
+Paginator.requestPager
+In this section we’re going to walk through using the requestPager. You would use this component when working with a service API which itself supports pagination. This component allows users to control the pagination settings for requests to this API (i.e navigate to the next, previous, N pages) via the client-side.
+
+The idea is that pagination, searching, and filtering of data can all be done from your bb application without the need for a page reload.
+
+
+1. Create a new Paginated collection
+First, we define a new Paginated collection using bb.Paginator.requestPager() as follows:
+
+
+PaginatedCollection = bb.Paginator.requestPager.x({
+2. Set the model for the collection as normal
+Within our collection, we then (as normal) specify the model to be used with this collection followed by the URL (or base URL) for the service providing our data (e.g the Netflix API).
+
+
+        model: model,
+3. Configure the base URL and the type of the request
+We need to set a base URL. The type of the request is GET by default, and the dataType is jsonp in order to enable cross-domain requests.
+
+    paginator_core: {
+      // the type of the request (GET by default)
+      type: 'GET',
+
+      // the type of reply (jsonp by default)
+      dataType: 'jsonp',
+
+      // the URL (or base URL) for the service
+      // if you want to have a more dynamic URL, you can make this a function
+      // that returns a string
+      url: 'http://odata.netflix.com/Catalog/People(49446)/TitlesActedIn?'
+    },
+Gotchas!
+If you use dataType NOT jsonp, please remove the cb cust parameter inside the server_api configuration.
+
+4. Configure how the library will show the results
+We need to tell the library how many items per page we would like to see, etc…
+
+    paginator_ui: {
+      // the lowest page index your API allows to be accessed
+      firstPage: 0,
+
+      // which page should the paginator start from
+      // (also, the actual page the paginator is on)
+      currentPage: 0,
+
+      // how many items per page should be shown
+      perPage: 3,
+
+      // a default number of total pages to query in case the API or
+      // service you are using does not support providing the total
+      // number of pages for us.
+      // 10 as a default in case your service doesn't return the total
+      totalPages: 10
+    },
+5. Configure the pams we want to send to the server
+Only the base URL won’t be enough for most cases, so you can pass more pams to the server. Note how you can use fns instead of hardcoded values, and you can also refer to the values you specified in paginator_ui.
+
+    server_api: {
+      // the query field in the request
+      '$filter': '',
+
+      // number of items to return per request/page
+      '$top': function() { return this.perPage },
+
+      // how many results the request should skip ahead to
+      // custize as needed. For the Netflix API, skipping ahead based on
+      // page * number of results per page was necessary.
+      '$skip': function() { return this.currentPage * this.perPage },
+
+      // field to sort by
+      '$orderby': 'ReleaseYear',
+
+      // what format would you like to request results in?
+      '$format': 'json',
+
+      // cust pams
+      '$inlinecount': 'allpages',
+      '$cb': 'cb'
+    },
+Gotchas!
+If you use $cb, please ensure that you did use the jsonp as a dataType inside your paginator_core configuration.
+
+6. Finally, configure Collection.parse() and we’re done
+The last thing we need to do is configure our collection’s parse() method. We want to ensure we’re returning the correct part of our JSON response containing the data our collection will be populated with, which below is response.d.results (for the Netflix API).
+
+You might also notice that we’re setting this.totalPages to the total page count returned by the API. This allows us to define the maximum number of (result) pages available for the current/last request so that we can clearly display this in the UI. It also allows us to influence whether clicking say, a ‘next’ bt should proceed with a request or not.
+
+        parse: function (response) {
+            // Be sure to change this based on how your results
+            // are structured (e.g d.results is Netflix specific)
+            tags = response.d.results;
+            //Normally this.totalPages would equal response.d.__count
+            //but as this particular NetFlix request only returns a
+            //total count of items for the search, we divide.
+            this.totalPages = Math.ceil(response.d.__count / this.perPage);
+            return tags;
+        }
+    });
+
+});
+Convenience methods:
+For your convenience, the following methods are made available for use in your views to interact with the requestPager:
+
+Collection.goTo( n, options ) - go to a specific page
+Collection.nextPage( options ) - go to the next page
+Collection.prevPage( options ) - go to the previous page
+Collection.howManyPer( n ) - set the number of items to display per page
+requestPager collection’s methods .goTo(), .nextPage() and .prevPage() are all extensions of the original bb Collection.fetch() methods. As so, they all can take the same option object as a parameter.
+
+This option object can use success and error pams to pass a function to be executed after server answer.
+
+Collection.goTo(n, {
+  success: function( collection, response ) {
+    // called is server request success
+  },
+  error: function( collection, response ) {
+    // called if server request fail
+  }
+});
+To manage cb, you could also use the jqXHR returned by these methods to manage cb.
+
+Collection
+  .requestNextPage()
+  .done(function( data, textStatus, jqXHR ) {
+    // called is server request success
+  })
+  .fail(function( data, textStatus, jqXHR ) {
+    // called if server request fail
+  })
+  .always(function( data, textStatus, jqXHR ) {
+    // do something after server request is complete
+  });
+});
+If you’d like to add the incoming models to the current collection, instead of replacing the collection’s contents, pass {update: true, remove: false} as options to these methods.
+
+Collection.prevPage({ update: true, remove: false });
+Paginator.clientPager
+The clientPager is used to further paginate data that has already been returned by the service API. Say you’ve requested 100 results from the service and wish to split this into 5 pages of paginated results, each containing 20 results at a client level - the clientPager makes it trivial to do this.
+
+
+Use the clientPager when you prefer to get results in a single “load” and thus avoid making additional network requests each time your users want to fetch the next “page” of items. As the results have all already been requested, it’s just a case of switching between the ranges of data actually presented to the user.
+
+1. Create a new paginated collection with a model and URL
+As with requestPager, let’s first create a new Paginated bb.Paginator.clientPager collection, with a model:
+
+    PaginatedCollection = bb.Paginator.clientPager.x({
+
+        model: model,
+2. Configure the base URL and the type of the request
+We need to set a base URL. The type of the request is GET by default, and the dataType is jsonp in order to enable cross-domain requests.
+
+    paginator_core: {
+      // the type of the request (GET by default)
+      type: 'GET',
+
+      // the type of reply (jsonp by default)
+      dataType: 'jsonp',
+
+      // the URL (or base URL) for the service
+      url: 'http://odata.netflix.com/v2/Catalog/Titles?&'
+    },
+3. Configure how the library will show the results
+We need to tell the library how many items per page we would like to see, etc…
+
+    paginator_ui: {
+      // the lowest page index your API allows to be accessed
+      firstPage: 1,
+
+      // which page should the paginator start from
+      // (also, the actual page the paginator is on)
+      currentPage: 1,
+
+      // how many items per page should be shown
+      perPage: 3,
+
+      // a default number of total pages to query in case the API or
+      // service you are using does not support providing the total
+      // number of pages for us.
+      // 10 as a default in case your service doesn't return the total
+      totalPages: 10,
+
+      // The total number of pages to be shown as a pagination
+      // list is calculated by (pagesInRange * 2) + 1.
+      pagesInRange: 4
+    },
+4. Configure the pams we want to send to the server
+Only the base URL won’t be enough for most cases, so you can pass more pams to the server. Note how you can use fns instead of hardcoded values, and you can also refer to the values you specified in paginator_ui.
+
+    server_api: {
+      // the query field in the request
+      '$filter': 'substringof(\'america\',Name)',
+
+      // number of items to return per request/page
+      '$top': function() { return this.perPage },
+
+      // how many results the request should skip ahead to
+      // custize as needed. For the Netflix API, skipping ahead based on
+      // page * number of results per page was necessary.
+      '$skip': function() { return this.currentPage * this.perPage },
+
+      // field to sort by
+      '$orderby': 'ReleaseYear',
+
+      // what format would you like to request results in?
+      '$format': 'json',
+
+      // cust pams
+      '$inlinecount': 'allpages',
+      '$cb': 'cb'
+    },
+5. Finally, configure Collection.parse() and we’re done
+And finally we have our parse() method, which in this case isn’t concerned with the total number of result pages available on the server as we have our own total count of pages for the paginated data in the UI.
+
+    parse: function (response) {
+            tags = response.d.results;
+            return tags;
+        }
+
+    });
+Convenience methods:
+As mentioned, your views can hook into a number of convenience methods to navigate around UI-paginated data. For clientPager these include:
+
+Collection.goTo(n, options) - go to a specific page
+Collection.prevPage(options) - go to the previous page
+Collection.nextPage(options) - go to the next page
+Collection.howManyPer(n) - set how many items to display per page
+Collection.setSort(sortBy, sortDirection) - update sort on the current view. Sorting will automatically detect if you’re trying to sort numbers (even if they’re strored as strings) and will do the right thing.
+Collection.setFilter(filterFields, filterWords) - filter the current view. Filtering supports multiple words without any specific order, so you’ll basically get a full-text search ability. Also, you can pass it only one field from the model, or you can pass an array with fields and all of them will get filtered. Last option is to pass it an object containing a comparison method and rules. Currently, only levenshtein method is available.
+The goTo(), prevPage(), and nextPage() fns do not require the options param since they will be executed synchronously. However, when specified, the success cb will be invoked before the function returns. For example:
+
+nextPage(); // this works just fine!
+nextPage({success: function() { }}); // this will call the success function
+The options param exists to preserve (some) interface unification between the requestPaginator and clientPaginator so that they may be used interchangeably in your bb.Views.
+
+  this.collection.setFilter(
+    {'Name': {cmp_method: 'levenshtein', max_distance: 7}}
+    , "Amreican P" // Note the switched 'r' and 'e', and the 'P' from 'Pie'
+  );
+Also note that the Levenshtein plugin should be loaded and enabled using the useLevenshteinPlugin var. Last but not less important: performing Levenshtein comparison returns the distance between two strings. It won’t let you search lengthy text. The distance between two strings means the number of characters that should be added, removed or moved to the left or to the right so the strings get equal. That means that comparing “Something” in “This is a test that could show something” will return 32, which is bigger than comparing “Something” and “ABCDEFG” (9). Use Levenshtein only for short texts (titles, names, etc).
+
+Collection.doFakeFilter(filterFields, filterWords) - returns the models count after fake-applying a call to Collection.setFilter.
+
+Collection.setFieldFilter(rules) - filter each value of each model according to rules that you pass as argument. Example: You have a collection of books with ‘release year’ and ‘author’. You can filter only the books that were released between 1999 and 2003. And then you can add another rule that will filter those books only to authors who’s name start with ‘A’. Possible rules: function, required, min, max, range, minLength, maxLength, rangeLength, oneOf, equalTo, containsAllOf, pattern. Passing this an empty rules set will remove any FieldFilter rules applied.
+
+
+  my_collection.setFieldFilter([
+    {field: 'release_year', type: 'range', value: {min: '1999', max: '2003'}},
+    {field: 'author', type: 'pattern', value: new RegExp('A*', 'igm')}
+  ]);
+
+  //Rules:
+  //
+  //my_= 'green';
+  //
+  //{field: 'color', type: 'equalTo', value: my_var}
+  //{field: 'color', type: 'function', value: function(field_value){ return field_value == my_var; } }
+  //{field: 'color', type: 'required'}
+  //{field: 'number_of_colors', type: 'min', value: '2'}
+  //{field: 'number_of_colors', type: 'max', value: '4'}
+  //{field: 'number_of_colors', type: 'range', value: {min: '2', max: '4'} }
+  //{field: 'color_name', type: 'minLength', value: '4'}
+  //{field: 'color_name', type: 'maxLength', value: '6'}
+  //{field: 'color_name', type: 'rangeLength', value: {min: '4', max: '6'}}
+  //{field: 'color_name', type: 'oneOf', value: ['green', 'yellow']}
+  //{field: 'color_name', type: 'pattern', value: new RegExp('gre*', 'ig')}
+  //{field: 'color_name', type: 'containsAllOf', value: ['green', 'yellow', 'blue']}
+Collection.doFakeFieldFilter(rules) - returns the models count after fake-applying a call to Collection.setFieldFilter.
+Implementation notes:
+You can use some vars in your View to rep the actual state of the paginator.
+
+totalUnfilteredRecords - Contains the number of records, including all records filtered in any way. (Only available in clientPager)
+totalRecords - Contains the number of records
+currentPage - The actual page were the paginator is at.
+perPage - The number of records the paginator will show per page.
+totalPages - The number of total pages.
+startRecord - The position of the first record shown in the current page (eg 41 to 50 from 2000 records) (Only available in clientPager)
+endRecord - The position of the last record shown in the current page (eg 41 to 50 from 2000 records) (Only available in clientPager)
+pagesInRange - The number of pages to be drawn on each side of the current page. So if pagesInRange is 3 and currentPage is 13 you will get the numbers 10, 11, 12, 13(selected), 14, 15, 16.
+<!-- sample template for pagination UI -->
+<script type="text/html" id="tmpServerPagination">
+
+  <div class="row-fluid">
+
+    <div class="pagination span8">
+      <ul>
+        <% _.e (pageSet, function (p) { %>
+        <% if (currentPage == p) { %>
+          <li class="active"><span><%= p %></span></li>
+        <% } else { %>
+          <li><a href="#" class="page"><%= p %></a></li>
+        <% } %>
+        <% }); %>
+      </ul>
+    </div>
+
+    <div class="pagination span4">
+      <ul>
+        <% if (currentPage > firstPage) { %>
+          <li><a href="#" class="serverprevious">Previous</a></li>
+        <% }else{ %>
+          <li><span>Previous</span></li>
+        <% }%>
+        <% if (currentPage < totalPages) { %>
+          <li><a href="#" class="servernext">Next</a></li>
+        <% } else { %>
+          <li><span>Next</span></li>
+        <% } %>
+        <% if (firstPage != currentPage) { %>
+          <li><a href="#" class="serverfirst">First</a></li>
+        <% } else { %>
+          <li><span>First</span></li>
+        <% } %>
+        <% if (totalPages != currentPage) { %>
+          <li><a href="#" class="serverlast">Last</a></li>
+        <% } else { %>
+          <li><span>Last</span></li>
+        <% } %>
+      </ul>
+    </div>
+
+  </div>
+
+  <span class="cell serverhowmany"> Show <a href="#"
+    class="selected">18</a> | <a href="#" class="">9</a> | <a href="#" class="">12</a> per page
+  </span>
+
+  <span class="divider">/</span>
+
+  <span class="cell first records">
+    Page: <span class="label"><%= currentPage %></span> of <span class="label"><%= totalPages %></span> shown
+  </span>
+
+</script>
+Plugins
+Diacritic.js
+
+A plugin for bb.Paginator that replaces diacritic characters (´, ˝, ̏, ˚,~ etc.) with characters that match them most closely. This is particularly useful for filtering.
+
+
+To enable the plugin, set this.useDiacriticsPlugin to true, as can be seen in the example below:
+
+Paginator.clientPager = bb.Collection.x({
+
+    // Default values used when sorting and/or filtering.
+    i: function(){
+      this.useDiacriticsPlugin = true; // use diacritics plugin if available
+    ...
+Bootstrapping
+By default, both the clientPager and requestPager will make an initial request to the server in order to populate their internal paging data. In order to avoid this additional request, it may be beneficial to bootstrap your bb.Paginator instance from data that already exists in the dom.
+
+bb.Paginator.clientPager:
+
+
+// Extend the bb.Paginator.clientPager with your own configuration options
+MyClientPager =  bb.Paginator.clientPager.x({paginator_ui: {}});
+// Create an instance of your class and populate with the models of your entire collection
+aClientPager = new MyClientPager([{id: 1, title: 'foo'}, {id: 2, title: 'bar'}]);
+// Invoke the bootstrap function
+aClientPager.bootstrap();
+Note: If you intend to bootstrap a clientPager, there is no need to specify a ‘paginator_core’ object in your configuration (since you should have already populated the clientPager with the entirety of its necessary data)
+
+bb.Paginator.requestPager:
+
+
+// Extend the bb.Paginator.requestPager with your own configuration options
+MyRequestPager =  bb.Paginator.requestPager.x({paginator_ui: {}});
+// Create an instance of your class with the first page of data
+aRequestPager = new MyRequestPager([{id: 1, title: 'foo'}, {id: 2, title: 'bar'}]);
+// Invoke the bootstrap function and configure requestPager with 'totalRecords'
+aRequestPager.bootstrap({totalRecords: 50});
+Note: Both the clientPager and requestPager bootstrap function will accept an options param that will be extended by your bb.Paginator instance. However the ‘totalRecords’ property will be set implicitly by the clientPager.
+
+More on bb bootstrapping
+
+Styling
+You’re of course free to custize the overall look and feel of the paginators as much as you wish. By default, all sample applications make use of Twitter Bootstrap for styling links, bts and drop-downs.
+
+CSS classes are available to style record counts, filters, sorting and more:
+
+
+Classes are also available for styling more granular els like page counts within breadcrumb > pages e.g .page, .page selected:
+
+
+There’s a tremendous amount of flexibility available for styling and as you’re in control of templating too, your paginators can be made to look as visually simple or complex as needed.
+
+Conclusions
+Although it’s certainly possible to write your own cust pagination classes to work with bb Collections, bb.Paginator tries to take care of much of this for you.
+
+It’s highly configurable, avoiding the need to write your own paging when working with Collections of data sourced from your database or API. Use the plugin to help tame large lists of data into more manageable, easily navigatable, paginated lists.
+
+Additionally, if you have any questions about bb.Paginator (or would like to help improve it), feel free to post to the project issues list.
+
+bb Boilerplate And Grunt-BBB
+
+Boilerplates provide us a starting point for working on projects. They’re a base for building upon using the minimum required code to get something functional put together. When you’re working on a new bb application, a new Model typically only takes a few lines of code to get working.
+
+That alone probably isn’t enough however, as you’ll need a Collection to group those models, a View to render them and perhaps a router if you’re looking to making specific views of your Collection data bookmarkable. If you’re starting on a completely fresh project, you may also need a build process in place to produce an optimized version of your app that can be pushed to production.
+
+This is where boilerplate solutions are useful. Rather than having to manually write out the initial code for each piece of your bb app, a boilerplate could do this for you, also ideally taking care of the build process.
+
+bb Boilerplate (or just BB) provides just this. It is an excellent set of best practices and utilities for building bb.js applications, created by bb contributor Tim Branyen. He took the the gotchas, pitfalls and common tasks he ran into while heavily using bb to build apps and crafted BB as a result of this experience.
+
+Grunt-BBB or Boilerplate Build Buddy is the companion tool to BB, which offers scaffolding, file watcher and build capabilities. Used together with BB it provides an excellent base for quickly starting new bb applications.
+
+
+Out of the box, BB and Grunt-BBB provide us with:
+
+bb, Lodash (an Underscore.js alternative) and jQuery with an HTML5 Boilerplate foundation
+Boilerplate and scaffolding support, allowing us to spend minimal time writing boilerplate for modules, collections and so on.
+A build tool for template pre-compilation and, concatenation & minification of all our libraries, application code and stylesheets
+A Lightweight node.js webserver
+Notes on build tool steps:
+
+Template pre-compilation: using a template library such as Underscore micro-templating or Handlebars.js generally involves three steps: (1) reading a raw template, (2) compiling it into a JavaScript function and (3) running the compiled template with your desired data. Precompiling eliminates the second step from runtime, by moving this process into a build step.
+Concatenation is the process of combining a number of assets (in our case, script files) into a single (or fewer number) of files to reduce the number of HTTP requests required to obtain them.
+Minification is the process of removing unnecessary characters (e.g white space, new lines, comments) from code and compressing it to reduce the overall size of the scripts being served.
+Getting Started
+bb Boilerplate and Grunt-BBB
+To get started we’re going to install Grunt-BBB, which will include bb Boilerplate and any third-party dependencies it might need such as the Grunt build tool.
+
+We can install Grunt-BBB via NPM by running:
+
+npm install -g bbb
+That’s it. We should now be good to go.
+
+A typical workflow for using grunt-bbb, which we will use later on is:
+
+Initialize a new project (bbb init)
+Add new modules and templates (bbb init:module)
+Preview changes using the built in server (bbb server)
+Run the build tool (bbb build)
+Lint JavaScript, compile templates, build your application using r.js, minify CSS and JavaScript (using bbb release)
+Creating a new project
+Let’s create a new directory for our project and run bbb init to kick things off. A number of project sub-directories and files will be stubbed out for us, as shown below:
+
+$ bbb init
+Running "init" task
+This task will create one or more files in the current directory, based on the
+environment and the answers to a few questions. Note that answering "?" to any
+question will show question-specific help and answering "none" to most questions
+will leave its value blank.
+
+"bbb" template notes:
+This tool will help you install, configure, build, and maintain your bb
+Boilerplate project.
+Writing app/app.js...OK
+Writing app/config.js...OK
+Writing app/main.js...OK
+Writing app/router.js...OK
+Writing app/styles/index.css...OK
+Writing favicon.ico...OK
+Writing grunt.js...OK
+Writing index.html...OK
+Writing package.json...OK
+Writing readme.md...OK
+Writing test/jasmine/index.html...OK
+Writing test/jasmine/spec/example.js...OK
+Writing test/jasmine/vendor/jasmine-html.js...OK
+Writing test/jasmine/vendor/jasmine.css...OK
+Writing test/jasmine/vendor/jasmine.js...OK
+Writing test/jasmine/vendor/jasmine_favicon.png...OK
+Writing test/jasmine/vendor/MIT.LICENSE...OK
+Writing test/qunit/index.html...OK
+Writing test/qunit/tests/example.js...OK
+Writing test/qunit/vendor/qunit.css...OK
+Writing test/qunit/vendor/qunit.js...OK
+Writing vendor/h5bp/css/main.css...OK
+Writing vendor/h5bp/css/normalize.css...OK
+Writing vendor/jam/backbone/backbone.js...OK
+Writing vendor/jam/backbone/package.json...OK
+Writing vendor/jam/backbone.layoutmanager/backbone.layoutmanager.js...OK
+Writing vendor/jam/backbone.layoutmanager/package.json...OK
+Writing vendor/jam/jquery/jquery.js...OK
+Writing vendor/jam/jquery/package.json...OK
+Writing vendor/jam/lodash/lodash.js...OK
+Writing vendor/jam/lodash/lodash.min.js...OK
+Writing vendor/jam/lodash/lodash.underscore.min.js...OK
+Writing vendor/jam/lodash/package.json...OK
+Writing vendor/jam/require.config.js...OK
+Writing vendor/jam/require.js...OK
+Writing vendor/js/libs/almond.js...OK
+Writing vendor/js/libs/require.js...OK
+
+Initialized from template "bbb".
+
+Done, without errors.
+Let’s review what has been generated.
+
+index.html
+This is a fairly standard stripped-down HTML5 Boilerplate foundation with the notable exception of including RequireJS at the bottom of the page.
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>bb Boilerplate</title>
+
+  <!-- Application styles. -->
+  <!--(if target dummy)><!-->
+  <link rel="stylesheet" href="/app/styles/index.css">
+  <!--<!(endif)-->
+</head>
+<body>
+  <!-- Application container. -->
+  <main role="main" id="main"></main>
+
+  <!-- Application source. -->
+  <!--(if target dummy)><!-->
+  <script data-main="/app/config" src="/vendor/js/libs/require.js"></script>
+  <!--<!(endif)-->
+
+</body>
+</html>
+RequireJS - the AMD (Asynchronous Module Definition) module and script loader - will assist us with managing the modules in our application. We’ve already covered it in the last chapter, but let’s recap what this particular block does in terms of the Boilerplate:
+
+<script data-main="/app/config" src="/vendor/js/libs/require.js"></script>
+The data-main attr is used to inform RequireJS to load app/config.js (a configuration object) after it has finished loading itself. You’ll notice that we’ve omitted the .js extension here as RequireJS can automatically add this for us, however it will respect your paths if we do choose to include it regardless. Let’s now look at the config file being referenced.
+
+config.js
+A RequireJS configuration object allows us to specify aliases and paths for dependencies we’re likely to reference often (e.g., jQuery), bootstrap properties like our base application URL, and shim libraries that don’t support AMD natively.
+
+This is what the config file in bb Boilerplate looks like:
+
+// Set the require.js configuration for your application.
+require.config({
+
+  // Initialize the application with the main application file and the JamJS
+  // generated configuration file.
+  deps: ["../vendor/jam/require.config", "main"],
+
+  paths: {
+    // Put paths here.
+  },
+
+  shim: {
+    // Put shims here.
+  }
+
+})
+
+
+The first option defined in the above config is deps: ["../vendor/jam/require.config", "main"].
+ This informs RequireJS to load up additional RequireJS configuration as well a a main.js file,
+  which is considered the entry point for our application.
+
+You may notice that we haven’t specified any other path information for main.
+ Require will infer the default baseUrl using the path from our data-main attr in index.html.
+ In other words, our baseUrl is app/ and any scripts we require will be loaded relative to this location.
+ We could use the baseUrl option to override this default if we wanted to use a different location.
+
+
+The next block is paths, which we can use to specify paths relative to the baseUrl
+as well as the paths/aliases to dependencies we’re likely to regularly reference.
+
+After this comes shim, an important part of our RequireJS configuration which allows us to load libraries which are not AMD compliant.
+The basic idea here is that rather than requiring all libraries to implement support for AMD, the shim takes care of the hard work for us.
+
+Going back to deps, the contents of our require.config file can be seen below.
+
+jam = {
+    "packages": [
+        {
+            "name": "backbone",
+            "location": "../vendor/jam/backbone",
+            "main": "backbone.js"
+        },
+        {
+            "name": "backbone.layoutmanager",
+            "location": "../vendor/jam/backbone.layoutmanager",
+            "main": "backbone.layoutmanager.js"
+        },
+        {
+            "name": "jquery",
+            "location": "../vendor/jam/jquery",
+            "main": "jquery.js"
+        },
+        {
+            "name": "lodash",
+            "location": "../vendor/jam/lodash",
+            "main": "./lodash.js"
+        }
+    ],
+    "version": "0.2.11",
+    "shim": {
+        "backbone": {
+            "deps": [
+                "jquery",
+                "lodash"
+            ],
+            "exports": "bb"
+        },
+        "backbone.layoutmanager": {
+            "deps": [
+                "jquery",
+                "backbone",
+                "lodash"
+            ],
+            "exports": "bb.LayoutManager"
+        }
+    }
+}
+
+The jam object is to support configuration of Jam
+- a package manager for the front-end which helps
+install, upgrade and configure the dependencies used by your project.
+It is currently the package manager of choice for bb Boilerplate.
+
+
+Under the packages array,
+a number of dependencies are specified for inclusion, such as bb, the bb.LayoutManager plugin, jQuery and Lo-dash.
+
+For those curious about bb.LayoutManager,
+ it’s a bb plugin that provides a foundation for assembling layouts and views within bb.
+
+Additional packages you install using Jam will have a corresponding entry added to packages.
+
+
+Next, we have main.js,
+which defines the entry point for our application.
+ We use a global require() method to load an array containing any other scripts needed,
+ such as our application app.js and our main router router.js.
+ Note that most of the time, we will only use require() for bootstrapping an application and a similar method called define() for all other purposes.
+
+The function defined after our array of dependencies is a cb which doesn’t fire until these scripts have loaded.
+ Notice how we’re able to locally alias references to “app” and “router” as app and Router for convenience.
+
+require([
+  // Application.
+  "app",
+
+  // Main Router.
+  "router"
+],
+
+function(app, Router) {
+
+  // Define your master router on the application namespace and trigger all
+  // navigation from this instance.
+  app.router = new Router();
+
+  // Trigger the initial route and enable HTML5 History API support, set the
+  // root folder to '/' by default.  Change in app.js.
+  bb.history.start({ pushState: true, root: app.root });
+
+  // All navigation that is relative should be passed through the navigate
+  // method, to be processed by the router. If the link has a `data-bypass`
+  // attr, bypass the delegation completely.
+  $(document).on("click", "a[href]:not([data-bypass])", function(evt) {
+    // Get the absolute anchor href.
+    href = { prop: $(this).prop("href"), attr: $(this).attr("href") };
+    // Get the absolute root.
+    root = location.protocol + "//" + location.host + app.root;
+
+    // Ensure the root is part of the anchor href, meaning it's relative.
+    if (href.prop.slice(0, root.length) === root) {
+      // Stop the default event to ensure the link will not cause a page
+      // refresh.
+      evt.preventDefault();
+
+      // `bb.history.navigate` is sufficient for all Routers and will
+      // trigger the correct evs. The Router's internal `navigate` method
+      // calls this anyways.  The fragment is sliced from the root.
+      bb.history.navigate(href.attr, true);
+    }
+  });
+
+});
+Inline, bb Boilerplate includes boilerplate code for initializing our router with HTML5 History API support and handling other navigation scenarios, so we don’t have to.
+
+app.js
+Let us now look at our app.js module. Typically, in non-bb Boilerplate applications, an app.js file may contain the core logic or module references needed to kick start an app.
+
+In this case however, this file is used to define templating and layout configuration options as well as utilities for consuming layouts. To a beginner, this might look like a lot of code to comprehend, but the good news is that for basic apps, you’re unlikely to need to heavily modify this. Instead, you’ll be more concerned with modules for your app, which we’ll look at next.
+
+define([
+  "backbone.layoutmanager"
+], function() {
+
+  // Provide a global location to place configuration settings and module
+  // creation.
+  app = {
+    // The root path to run the application.
+    root: "/"
+  };
+
+  // Localize or create a new JavaScript Template object.
+  JST = window.JST = window.JST || {};
+
+  // Configure LayoutManager with bb Boilerplate defaults.
+  bb.LayoutManager.configure({
+    // Allow LayoutManager to augment bb.View.prototype.
+    manage: true,
+
+    prefix: "app/templates/",
+
+    fetch: function(path) {
+      // Concatenate the file extension.
+      path = path + ".html";
+
+      // If cached, use the compiled template.
+      if (JST[path]) {
+        return JST[path];
+      }
+
+      // Put fetch into `async-mode`.
+      done = this.async();
+
+      // Seek out the template asynchronously.
+      $.get(app.root + path, function(contents) {
+        done(JST[path] = _.tp(contents));
+      });
+    }
+  });
+
+  // Mix bb.Events, modules, and layout management into the app object.
+  return _.x(app, {
+    // Create a cust object with a nested Views object.
+    module: function(additionalProps) {
+      return _.x({ Views: {} }, additionalProps);
+    },
+
+    // Helper for using layouts.
+    useLayout: function(name, options) {
+      // Enable var arity by allowing the first argument to be the options
+      // object and omitting the name argument.
+      if (_.isObject(name)) {
+        options = name;
+      }
+
+      // Ensure options is an object.
+      options = options || {};
+
+      // If a name property was specified use that as the template.
+      if (_.isString(name)) {
+        options.template = name;
+      }
+
+      // Create a new Layout with options.
+      layout = new bb.Layout(_.x({
+        el: "#main"
+      }, options));
+
+      // Cache the reference.
+      return this.layout = layout;
+    }
+  }, bb.Events);
+
+});
+Note: JST stands for JavaScript templates and generally refers to templates which have been (or will be) precompiled as part of a build step. When running bbb release or bbb debug, Underscore/Lo-dash templates will be precompiled to avoid the need to compile them at runtime within the browser.
+
+Creating bb Boilerplate Modules
+Not to be confused with simply being just an AMD module, a bb Boilerplate module is a script composed of a:
+
+Model
+Collection
+Views (optional)
+We can easily create a new Boilerplate module using grunt-bbb once again using init:
+
+# Create a new module
+$ bbb init:module
+
+# Grunt prompt
+Please answer the following:
+[?] Module Name foo
+[?] Do you need to make any changes to the above before continuing? (y/N)
+
+Writing app/modules/foo.js...OK
+Writing app/styles/foo.styl...OK
+Writing app/templates/foo.html...OK
+
+Initialized from template "module".
+
+Done, without errors.
+This will generate a module foo.js as follows:
+
+// Foo module
+define([
+  // Application.
+  "app"
+],
+
+// Map dependencies from above array.
+function(app) {
+
+  // Create a new module.
+  Foo = app.module();
+
+  // Default Model.
+  Foo.Model = bb.Model.x({
+
+  });
+
+  // Default Collection.
+  Foo.Collection = bb.Collection.x({
+    model: Foo.Model
+  });
+
+  // Default View.
+  Foo.Views.Layout = bb.Layout.x({
+    template: "foo"
+  });
+
+  // Return the module for AMD compliance.
+  return Foo;
+
+});
+Notice how boilerplate code for a model, collection and view have been scaffolded out for us.
+
+Optionally, we may also wish to include references to plugins such as the bb LocalStorage or Offline adapters. One clean way of including a plugin in the above boilerplate could be:
+
+// Foo module
+define([
+  // Application.
+  "app",
+  // Plugins
+  'plugins/backbone-localstorage'
+],
+
+// Map dependencies from above array.
+function(app, Store) {
+
+  // Create a new module.
+  Foo = app.module();
+
+  // Default Model.
+  Foo.Model = bb.Model.x({
+    // Save all of the items under the `"foo"` namespace.
+    localStorage: new Store('foo-backbone'),
+  });
+
+  // Default Collection.
+  Foo.Collection = bb.Collection.x({
+    model: Foo.Model
+  });
+
+  // Default View.
+  Foo.Views.Layout = bb.Layout.x({
+    template: "foo"
+  });
+
+  // Return the module for AMD compliance.
+  return Foo;
+
+});
+router.js
+Finally, let’s look at our application router which is used for handling navigation. The default router bb Boilerplate generates for us includes sane defaults out of the box and can be easily extended.
+
+define([
+  // Application.
+  "app"
+],
+
+function(app) {
+
+  // Defining the application router, you can attach sub routers here.
+  Router = bb.Router.x({
+    routes: {
+      "": "index"
+    },
+
+    index: function() {
+
+    }
+  });
+
+  return Router;
+
+});
+If however we would like to execute some module-specific logic, when the page loads (i.e when a user hits the default route), we can pull in a module as a dependency and optionally use the bb LayoutManager to attach Views to our layout as follows:
+
+define([
+  // Application.
+  'app',
+
+  // Modules
+  'modules/foo'
+],
+
+function(app, Foo) {
+
+  // Defining the application router, you can attach sub routers here.
+  Router = bb.Router.x({
+    routes: {
+      '': 'index'
+    },
+
+    index: function() {
+            // Create a new Collection
+            collection = new Foo.Collection();
+
+            // Use and configure a 'main' layout
+            app.useLayout('main').setViews({
+                    // Attach the bar View into the content View
+                    '.bar': new Foo.Views.Bar({
+                            collection: collection
+                    })
+             }).render();
+    }
+  });
+
+  // Fetch data (e.g., from localStorage)
+  collection.fetch();
+
+  return Router;
+
+});
+Other Useful Tools & Projects
+When working with bb, you usually need to write a number of different classes and files for your application. Scaffolding tools such as Grunt-BBB can help automate this process by generating basic boilerplates for the files you need for you.
+
+Yeoman
+If you appreciated Grunt-BBB but would like to explore a tool for assisting with your broader development workflow, I’m happy to recommend a tool I’ve been helping with called Yeoman.
+
+
+Yeoman is a workflow comprised of a collection of tools and best practices for helping you develop more efficiently. It’s comprised of yo (a scaffolding tool), Grunt(a build tool) and Bower (a client-side package manager).
+
+Where Grunt-BBB focuses on offering an opionated start for bb projects, Yeoman allows you to scaffold apps using bb (or other libraries and frameworks), get bb plugins directly from the command-line and compile your CoffeeScript, Sass or other abstractions without additional effort.
+
+
+You may also be interested in Brunch, a similar project which uses skeleton boilerplates to generate new applications.
+
+bb DevTools
+When building an application with bb, there’s some additional tooling available for your day-to-day debugging workflow.
+
+bb DevTools was created to help with this and is a Chrome DevTools extension allowing you to inspect evs, syncs, View-DOM bindings and what objects have been instantiated.
+
+A useful View hierarchy is displayed in the Elements panel. Also, when you inspect a DOM el the closest View will be exposed via $view in the console.
+
+
+At the time of writing, the project is currently available on GitHub.
+
+Conclusions
+In this section we reviewed bb Boilerplate and learned how to use the bbb tool to help us scaffold out our application.
+
+If you would like to learn more about how this project helps structure your app, BBB includes some built-in boilerplate sample apps that can be easily generated for review.
+
+These include a boilerplate tutorial project (bbb init:tutorial) and an implementation of my ToddoMVC project (bbb init:toddomvc). I recommend checking these out as they’ll provide you with a more complete picture of how bb Boilerplate, its templates, and so on fit into the overall setup for a web app.
+
+For more about Grunt-BBB, remember to take a look at the official project repository. There is also a related slide-deck available for those interested in reading more.

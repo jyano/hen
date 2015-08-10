@@ -1,0 +1,90 @@
+Compass Grid Backgrounds
+The grid-background mixins allow you to generate fixed, fluid and elastic grid-images on-the-fly using css3 gradients. These can be used for testing both horizontal and vertical grids.
+
+This file can be imported using: @import "compass/layout/grid-background"
+
+Imports
+
+Background Size – Specify the background size for all browsers.
+Images – Specify linear gradients and radial gradients for many browsers.
+Configurable Variables help
+
+$grid-background-column-color rgba(100, 100, 225, 0.25)
+
+Set the color of your columns
+
+$grid-background-gutter-color rgba(0, 0, 0, 0)
+
+Set the color of your gutters
+
+$grid-background-total-columns 24
+
+Set the total number of columns in your grid
+
+$grid-background-column-width 30px
+
+Set the width of your columns
+
+$grid-background-gutter-width 10px
+
+Set the width of your gutters
+
+$grid-background-offset 0px
+
+Set the offset, if your columns are padded in from the container edge
+
+$grid-background-baseline-color rgba(0, 0, 0, 0.5)
+
+Set the color of your baseline
+
+$grid-background-baseline-height 1.5em
+
+Set the height of your baseline grid
+
+$show-column-grid-backgrounds true
+
+toggle your columns grids on and off
+
+$show-baseline-grid-backgrounds true
+
+toggle your vertical grids on and off
+
+$show-grid-backgrounds true
+
+toggle all your grids on and off
+
+$grid-background-force-fluid false
+
+optionally force your grid-image to remain fluid no matter what units you used to declared your grid.
+
+Functions
+
+view source
+get-baseline-gradient($color)
+Create the gradient needed for baseline grids
+
+view source
+build-grid-background($total, $column, $gutter, $offset, $column-color, $gutter-color)
+Create the color-stops needed for horizontal grids
+
+view source
+get-column-gradient($total, $column, $gutter, $offset, $column-color, $gutter-color, $force-fluid)
+Return the gradient needed for horizontal grids
+
+view source
+get-column-fluid-grid($total, $column, $gutter, $offset, $column-color, $gutter-color)
+Convert a grid from fixed units into percentages.
+
+Mixins
+
+view source
+baseline-grid-background($baseline, $color)
+Add just the baseline grid to an element's background
+
+view source
+column-grid-background($total, $column, $gutter, $offset, $column-color, $gutter-color, $force-fluid)
+Add just the horizontal grid to an element's background
+
+view source
+grid-background($total, $column, $gutter, $baseline, $offset, $column-color, $gutter-color, $baseline-color, $force-fluid)
+Add both horizontal and baseline grids to an element's background

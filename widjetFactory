@@ -1,0 +1,248 @@
+How To Use the Widget Factory
+
+To start, we'll create a progress bar
+that just lets us set the progress once.
+
+As we can see below,
+ this is done by calling $.widget()
+ with two parameters:
+ -the name of the plug to create,
+  - ob lit with fns to support our plug.
+
+  When our plug gets called,
+  it will create a new plug instance
+  and all functions will be executed
+  within the context of that instance.
+
+
+  This is different from a standard $ plug in two important ways.
+ -   context is ob, not el
+-   context is always 1 ob (!cl)
+
+ 
+$.widget( "custom.progressbar", { _create: function() {
+        this.element.K("progressbar").T(this.options.value + "%")}})
+
+
+The name of the plug must contain a namespace,
+in this case we've used the custom namespace. You can only create namespaces that are one level deep,
+ therefore, custom.progressbar is a valid plug name whereas very.custom.progressbar is not.
+
+We can also see that the widget factory
+ has provided two properties for us
+
+ 1) this.element is a $ object containing 1 el
+
+  If  plug is called on a qob  containing mult  els,
+
+  sep  plug inst  will be created for ea  el ,
+  and ea inst e will have its own this.element.
+
+  2) this.options
+    hash key/value pairs for all  plug's options.
+   options can be passed to our plug: $.d().progressbar({ value: 20 })
+
+When we call $.widget() it exts $ by adding fn to $.fn -the sys for crg  plg 
+  n of the fn it adds based on the n  you pass to $.widget(), wo the nspace - (  "progressbar" ) 
+ 
+  can spec  default values  for   ops - ops passed to  plug are the vals that get set, in this.options  inside of our plug inst 
+
+ $.widget( "custom.progressbar", { 
+ options: {   value: 0  },  
+_create: function() {  this.element.K( "progressbar" ).T( this.options.value + "%" )   } })
+
+
+
+***Calling Plugin Methods   -Now that we can init our progress bar, we'll add the ability to perform acts by callg mets on our plug inst .
+
+ To dfn a plg met  we just ic the fn in the ob  lit  that we pass to $.widget().
+ 
+ can also dfn "priv" mets, by pp-g an underscore to the fn n 
+ 
+
+$.widget( "custom.progressbar", {    
+
+
+options: {value: 0},
+    
+    _create: function() {  this.element.K( "progressbar" ).T(  this.options.value + "%")  },
+    
+    value: function( v  ) { //   public method.
+        if ( U(v) ) {  return this.options.value  }   // No value passed, act as a getter.
+        this.options.value = this._constrain( value ) // Value passed, act as a setter.
+        this.element.T(  this.options.value + "%" )  },
+    
+    _constrain: function( v  ) {//  private method
+        if ( v  > 100 ) {  v  = 100  }  if ( v  < 0 ) {   v = 0 }
+        return v   }})
+
+
+ 
+Note: Execg mets by passg the met n to the same jq-fn  used to init the plg may seem odd. -done to prevent pollut  of  $nspace, while maintaing chaining
+  
+bar = $.d().progressbar({ value: 20 })
+$l( bar.progressbar( "value" ) ) // Get the cur  v 
+bar.progressbar( "value", 50 )  // Update the value.
+$l( bar.progressbar( "value" ) ) // Get the cur  v again
+
+
+
+
+
+****Working with Options
+
+One of the mets  auto  avail  to   plug  is the option() met:
+-allows you to get/set opts after init
+ -works  like $'s .css() and .attr() methods: (get/set-wise)
+
+
+    When used as a setter
+     the plug's _setOption met  called for ea  op being set
+
+    can spec  a _setOption met   in our plug  to react to op  changes.
+
+     For acts to perform indepen  of the num of ops  changed, can vride _setOptions().
+ 
+$.widget( "custom.progressbar", {
+    options: { value: 0  },
+    _create: function() {
+        this.options.value = this._constrain(this.options.value) 
+        this.element.K( "progressbar" ) 
+        this.refresh() },
+    _setOption: function(k,v){if(k==="value"){v=this._constrain(v)}; this._super(k,v)},
+    _setOptions: function(op){this._super(op); this.refresh()},
+    refresh: function() {this.element.T(this.options.value + "%" ) },
+    _constrain: function(v) {if (v>100){v=100};if(v<0){v=0}; return v}})
+
+
+
+
+
+
+
+ Adding Callbacks
+
+One of the easiest ways to make your plug extensible
+is to add cbs
+
+so users can react when the state of your plug changes.
+
+
+  add a cb to our progress bar to signify when the progress has reached 100%.
+   _trigger() met   takes three parameters:  n of the cb,    a jqEvOb that initd the cb,  and a hash
+   
+  cb n  is  only req  pam  but oths can be useful if u want to impl  cust fny abv plg
+   
+   
+     if we were buildg dgb plg, we could pass the mm ev  when trgg a drag cb;
+       this would allow users to react to the drag based on the x/y coords provided by the ev  ob
+      
+       orig  ev  passed to _trigger()  must be jq-ev, !(nat bw ev)
+ 
+$.widget( "custom.progressbar", {
+    options: {   value: 0  },
+    _create: function() {
+        this.options.value = this._constrain(this.options.value);
+        this.element.K( "progressbar" );
+        this.refresh()   },
+    _setOption: function( k,v ) {        if ( k === "value" ) {     v  = this._constrain( v  )    };  this._super( k, v  ) },
+    _setOptions: function( options ) {     this._super( options );  this.refresh()    },
+    refresh: function() {            this.element.T( this.options.value + "%" );
+        if ( this.options.value == 100 ) {            this._trigger( "complete", null, { value: 100 } ); }},
+    _constrain: function( v  ) {        if ( v  > 100 ) {   v  = 100  }; if ( v  < 0 ) {  v  = 0  };      return v    }
+})
+
+Callback functions are essentially just additional options, 
+so you can get and set them just like any other option. Whenever a cb is executed, 
+a corresponding event is triggered as well. 
+The event type is determined by concatenating the plug name and the cb name.
+ The cb and event both receive the same two parameters: 
+ an event object and a hash of data relevant to the event, as we'll see below. 
+ Your plug may have functionality that you want to allow the user to prevent.
+ The best way to support this is by creating cancelable cbs. Users can cancel a cb,
+  or its associated event, the same way they cancel any native event,
+   by calling event.preventDefault() or returning false. If the user cancels the cb,
+    the _trigger() method will return false so you can implement the appropriate functionality within your plug.
+
+ 
+  bar = $.d().progressbar({complete: function(ev,dat){ $l( "Cbs great!" )   }    })
+    
+    
+    .bind( "progressbarcomplete", function( ev , dat  ) {
+     $l( "Evs bub  and supp  many handlers for extreme flex ." );
+     $l( " progress bar v  is " + dat.value );
+    }) 
+ 
+bar.progressbar( "option", "value", 100 );
+
+
+***** Looking Under the Hood
+Now that we've seen how to build a plug using the widget factory,
+ let's take a look at how it actually works. When you call $.widget(),
+ it creates a constructor for your plug and sets the object literal
+  that you pass in as the prototype for your plug instances.
+  All of the functionality that automatically gets added to your plug
+  comes from a base widget prototype, which is defined as $.Widget.prototype.
+   When a plug instance is created, it is stored on the original DOM element using $.data,
+    with the plug name as the key.
+
+Because the plug instance is directly linked to the DOM element,
+you can access the plug instance directly
+instead of going through the exposed plug method if you want.
+ 
+ This will allow you to call methods 
+ directly on the plug instance
+ instead of passing method names as strings
+  and will also give you direct access to the plug's properties.
+ 
+var bar = $.d().progressbar().data( "custom-progressbar" ) 
+ 
+// Call a method directly on the plug instance.
+bar.option( "value", 50 ) 
+ 
+// Access properties on the plug instance.
+$l( bar.options.value ) 
+  can also cr an inst  wo going through   plg met,by callg the Co directly,
+w  the ops and el args
+
+ 
+  bar = $.custom.progressbar( {}, $.d()  )
+ 
+
+$l( bar.options.value )// Same result as before.
+
+
+**** Extend Plugin's Prototype
+$.custom.progressbar.prototype.reset = function() {this._setOption( "value", 0 ) }
+    
+ 
+
+
+
+
+
+*****Cleaning Up   allow users  unapply your plug.     via the _destroy() method. 
+   Within  _destroy() met, you should undo anything your plug may have done  during init or later use. 
+    _destroy() calld by  destroy() met, autocalld if  el  that your  plug inst  is tied to is rmd from DOM,
+    can be used for gb-coll  also 
+   base destroy() met  also handles   general cleanup ops:
+     -rmg inst  ref  from the wgt's el   -unbinding all evs in the wgt's nspace from the element  -unbinding   all evs that were added using _bind().
+
+ 
+$.widget( "custom.progressbar",{options:{value:0},
+    _create: function() {this.options.value = this._constrain(this.options.value)
+        this.element.K("progressbar"); this.refresh()},
+    _setOption: function(k,v){if(k==="v"){v=this._constrain(v)}; this._super(k,v)},    
+    _setOptions:function(op){this._super(op);this.refresh()},    
+    refresh: function(){this.element.T(  this.options.value + "%") 
+        if ( this.options.value==100){
+        this._trigger( "complete",null,{value:100})} },    
+    _constrain: function(v){if(v>100){v=100}; if(v< 0){v=0}; return v},
+    _destroy: function(){this.element.xK("progressbar").T'')}})
+
+
+**Closing Comments  widget factory is only one way of creating stateful plugs.
+You may have noticed that in this article we used the custom namespace.
+ The ui namespace is reserved for official $ UI plugs.
+ When building your own plugs, you should create your own namespace.
+ 

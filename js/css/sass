@@ -1,0 +1,66 @@
+'$' store reuseable info ( cs, fo stacks ) in vars
+$fo-stack: Helv, sans-serif;    $primary-c: #333;
+bd {fo: 100% $fo-stack;    c: $primary-c;}        great for keeping  brand colors consistent
+bd { fo: 100% Helv, sans-serif; c: #333;}
+
+Nesting   same visual hierarchy of your HTML.    overly nested rules -> over-qualified CSS
+  some typical styls for a site's navigation:
+nav {ul {mg:0; pd:0; list-styl:none;}
+ li {dsply:i-b;}   a {  dsply: blk;  pd:6px 12px; tx-dcrtn: none;}  }   --->>>
+nav ul {   mg: 0;  pd: 0;  list-styl: none; }
+nav li {  dsply: i-b; }
+nav a {  dsply: blk;  pd: 6px 12px;  tx-dcrtn: none;}
+
+   '_' -> file is partial    _partial.scss     used  w @import directive
+ combine  'CSS' files into 1 file  ex: import _reset.scss into base.scss
+ _reset.scss:  html,bd,ul,ol {   mg: 0;  pd: 0;  }(!need ic .scss file ext)
+ base.scss file:    @import 'reset';    bd { fo: 100% Helv, serf;  C: #efefef; }
+ --->>>>   html, bd, ul, ol {  mg: 0;  pd: 0; }  bd {  fo: 100% Helv, serf;  C: #efefef;}
+
+
+
+
+@mixin-  make groups of paramtized CSS declarations
+
+@mixin bo-r($r){-WK-bo-r:$r; -moz-bo-r:$r; bo-r: $r;}
+.box { @include bo-r(10px); } (good for vendor prefixes)--->>>>>
+ .box {  -WK-bo-r: 10px;  -moz-bo-r: 10px;   -ms-bo-r: 10px;   bo-r: 10px; }
+ --we named our mixin bo-r,  used the var $r inside the parens  so we can pass in  r
+
+
+
+
+
+  @ext  : share CSS pops btwn sels
+  EX: messaging for zs, warns and sucess
+
+.msg {  bo: 1px solid #ccc;  pd: 10px;  c: #333; }
+    .suc {  @ext .msg;  bo-c: g;}
+
+.z {  @ext .msg;  bo-c: r;}
+
+   .warn {  @ext .msg; bo-c: yellow; }
+
+
+ apply .msg  pops     to .suc, .z, & .warn., avoid writing mult K names on HTML els
+
+
+.msg, .suc, .z, .warn {bo: 1px solid #cccccc; pd: 10px;    c: #333;}
+
+.suc {  bo-c: g; }
+  .z { bo-c: r; }
+ .warn {  bo-c: y; }
+
+
+
+
+
+
+
+
+
+
+*math   calc wids for an aside & art   ex: simp 960px fluid grid         .ct { w: 100%; }
+ac[r="main"] { fl: l; w: 600px / 960px * 100%;  }     aside[r="complim"] {fl: r; w: 300px / 960px * 100%; }
+convert px vals -> %s
+.ct { w: 100%; }      ac[role="main"] { flot: l;  w: 62.5%;  }     as[r="complim"] { flot: r; w: 31.25%;}

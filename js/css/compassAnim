@@ -1,0 +1,91 @@
+Compass Animation
+Provides a mixin for animation and all its sub-properties. See the CSS3 specification: animation.
+
+This file can be imported using: @import "compass/css3/animation"
+
+Imports
+
+Browser Support – Provides configuration options for the Compass Browser Support Matrix.
+Configurable Variables help
+
+$animation-support-threshold $graceful-usage-threshold
+
+The prefixed support threshold for animation. Defaults to the $graceful-usage-threshold.
+
+$default-animation-name null
+
+Name of any animation as a string.
+
+$default-animation-duration null
+
+Duration of the entire animation in seconds.
+
+$default-animation-delay null
+
+Delay for start of animation in seconds.
+
+$default-animation-timing-function null
+
+The timing function(s) to be used between keyframes. [ease | linear | ease-in | ease-out | ease-in-out | cubic-bezier($number, $number, $number, $number)]
+
+$default-animation-iteration-count null
+
+The number of times an animation cycle is played. [infinite | $number]
+
+$default-animation-direction null
+
+Whether or not the animation should play in reverse on alternate cycles. [normal | alternate]
+
+$default-animation-fill-mode null
+
+What values are applied by the animation outside the time it is executing. [none | forwards | backwards | both]
+
+$default-animation-play-state null
+
+Whether the animation is running or paused. [running | paused]
+
+Mixins
+
+view source
+keyframes($name)
+Create a named animation sequence that can be applied to elements later.
+
+$name    - The name of your animation.
+@content - The keyframes of the animation.
+view source
+animation-name
+Apply any number of animation names.
+
+view source
+animation-duration
+Apply any number of animation durations.
+
+view source
+animation-delay
+Apply any number of animation delays.
+
+view source
+animation-timing-function
+Apply any number of animation timing functions.
+
+view source
+animation-iteration-count
+Apply any number of animation iteration counts.
+
+view source
+animation-direction
+Apply any number of animation directions.
+
+view source
+animation-fill-mode
+Apply any number of animation fill modes.
+
+view source
+animation-play-state
+Apply any number of animation play states.
+
+view source
+animation
+Shortcut to apply any number of animations to an element, with all the settings.
+
+$animation... : Name and settings. [<values> | default]

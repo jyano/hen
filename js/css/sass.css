@@ -1,0 +1,139 @@
+The Sass @extend Feature
+The @extend directive
+
+-allows one selector to inherit the styles of another selector.
+
+- prevents code bloat
+       by grouping selectors
+      that share the same styles
+      into one rule.
+
+     ex:
+
+.square {  width: 200px;  height: 200px;  background-color: lightcoral;   }
+
+
+.circle {  @extend .square;  border-radius: 50%;   }
+
+
+
+
+Will compile to:
+
+.square, .circle {
+    width: 200px;
+    height: 200px;
+    background-color: lightcoral;
+}
+.circle {
+    border-radius: 50%;
+}
+
+
+It’s also possible for one selector to extend another selector that in turn extends a third:
+
+.ellipse {
+@extend .circle;  height: 120px;  }
+Compiles to:
+
+.square, .circle, .ellipse {
+    width: 200px;
+    height: 200px;
+    background-color: lightcoral;
+}
+.circle, .ellipse {
+    border-radius: 50%;
+}
+.ellipse {
+    height: 120px;
+}
+
+
+To break it down simply: one class can have all the styles of another class,
+as well as its own specific styles.
+
+Putting @extend to Work
+
+@extend can benefit us because our buttons can inherit everything in the .btn style block
+without having to explicitly state it
+in the markup.
+
+In our btn-theme mixin, let’s extend the .btn class:
+
+@mixin btn-theme($btn-color) {
+...
+@extend .btn;
+}
+
+
+Now every .btn class can be removed from the markup because the theme class will always inherit its styles.
+
+// Themes
+
+   .purple {
+   @include btn-theme($purple);
+       /* btn-theme mixin now inherits .btn styles */
+   }
+...
+But we’re still left with the presentational classes in the markup––they don’t mean anything but arbitrary colors at this point.
+
+<button class="purple">
+Button
+</button>
+  <button class="blue">
+Button
+</button>
+  The New “Silent Class”
+  Sass 3.2 introduced a special feature called placeholder selectors. They’re also referred to as “silent classes” because they won’t appear in our CSS output unless we @extend them.
+
+It’s usually better to extend a placeholder selector instead of a class selector, so let’s make our .btn class a silent class. This way it won’t “exist” in our CSS output until we’re ready to use it.
+
+A silent class is defined by using a % in front of the selector name:
+
+%btn  {
+...
+}
+We’ll also need to add the % when extended:
+
+@mixin btn-theme($btn-color) {
+...
+@extend %btn;
+}
+This is an extremely useful feature because we can now create an entire library of theme colors, but they won’t get created (or outputted) until we call them.
+
+Creating a Theme Library
+                                                                                                                                           Let’s create a new partial in the “scss” folder called “_themes.scss,” which we’ll need to import into “style.scss.”
+
+@import 'themes';
+In “_themes.scss” we can now create placeholder selectors of various color options––as many as we want. Check out the ones I created.
+
+Examples:
+
+%darkorange {
+ @include btn-theme(#FF8C00);
+ }
+%darkslategray {
+ @include btn-theme(#2F4F4F);
+ }
+Now we can give our HTML classes more meaningful names like:
+
+<button class="btn-delete">
+Delete
+</button>
+
+  <input type="submit" class="btn-submit">
+If we need to change a color theme, we can reference one from our themes library by simply changing the extended silent class in _buttons.scss.
+
+.btn-delete {
+@extend %firebrick;
+}
+.btn-submit {
+@extend %tomato;
+}
+And because they are silent classes, if any are reused, they will be properly extended in the CSS.
+
+Conclusion
+This is a more viable approach because we’ve created our solution entirely in the CSS and not the markup. I created a GitHub repo containing all the example code we discussed –– take a look.
+
+Have you used @extend or placeholder selectors in your project? Let us know in the comments below.
+

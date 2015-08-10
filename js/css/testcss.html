@@ -1,0 +1,112 @@
+<script>
+    /*
+
+   <head>     <style>
+         .task-list {
+             width: 250px;
+             float: left;
+             margin: 0 5px;
+             background-color: #e3e3e3;
+             min-height: 240px;
+             border-radius: 10px;
+             padding-bottom: 15px;
+         }
+
+         .task-list input, .task-list textarea {
+             width: 240px;
+             margin: 1px 5px;
+         }
+
+         .task-list input {
+             height: 30px;
+         }
+
+         .todo-task {
+             border-radius: 5px;
+             background-color: #fff;
+             width: 230px;
+             margin: 5px;
+             padding: 5px;
+         }
+
+         .task-list input[type="button"] {
+             width: 100px;
+             margin: 5px;
+         }
+
+         .todo-task > .task-header {
+             font-weight: bold;
+         }
+
+         .todo-task > .task-date {
+             font-size: small;
+             font-style: italic;
+         }
+
+         .todo-task > .task-description {
+             font-size: smaller;
+         }
+
+         h3 {
+             text-align: center;
+         }
+
+         #delete-div {
+             background-color: #fff;
+             border: 3px dotted #000;
+             margin: 10px;
+             height: 75px;
+             line-height: 75px;
+             text-align: center;
+         }</style>  </head>
+
+
+     */
+</script>
+
+
+
+<body>
+
+<div class="task-list" id="pending">
+    <h3>Pending</h3>
+    <!-- Sample task added manually to check look -->
+    <div class="todo-task">
+        <div class="task-header">Sample Header</div>
+        <div class="task-date">25/06/1992</div>
+        <div class="task-description">Lorem Ipsum Dolor Sit Amet</div>
+    </div>
+</div>
+
+<div class="task-list" id="inProgress">
+    <h3>In Progress</h3>
+</div>
+
+<div class="task-list" id="completed">
+    <h3>Completed</h3>
+</div>
+
+
+<div class="task-list">
+    <h3>Add a task</h3>
+
+    <form id="todo-form">
+        <input type="text" placeholder="Title" />
+        <textarea placeholder="Description"> </textarea>
+        <input type="text" placeholder="Due Date (dd/mm/yyyy)" />
+        <input type="button" class="btn btn-primary" value="Add Task" />
+    </form>
+
+    <input type="button" class="btn btn-primary" value="Clear Data" />
+    <div id="delete-div">     Drag Here to Delete    </div>
+
+</div>
+
+
+
+
+</body>
+
+
+
+<script>  </script>

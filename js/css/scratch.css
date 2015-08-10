@@ -1,0 +1,19 @@
+#top h1{padding:0px;margin:0px;}
+
+#ct{background-color:Blue;color:Red;width:90%;margin:10px auto;  border:1px solid gray;line-height:130%;}
+
+#top{padding:8px;background-color:green;  border-bottom:1px solid gray;}
+
+#ftr{color:Blue;background-color:Red;clear:both;margin:0px;padding:8px;  border-top:1px solid gray;}
+
+#lnav{float:left;width:160px;margin:0px;padding:8px;}
+
+#cont{margin-left:200px;border-left:1px solid gray;padding:16px;max-width:500px;}
+
+#lnav p{margin:0 0 8px 0;}
+
+#cont h2{margin:0 0 8px 0;}
+
+
+
+#top h1{padding:0px;margin:0px;}#ct{background-color:Blue;color:Red;width:90%;margin:10px auto;border:1px solid gray;line-height:130%;}#top{padding:8px;background-color:green;border-bottom:1px solid gray;}#ftr{color:Blue;background-color:Red;clear:both;margin:0px;padding:8px;border-top:1px solid gray;}#lnav{float:left;width:160px;margin:0px;padding:8px;}#cont{margin-left:200px;border-left:1px solid gray;padding:16px;max-width:500px;}#lnav p{margin:0 0 8px 0;}#cont h2{margin:0 0 8px 0;}

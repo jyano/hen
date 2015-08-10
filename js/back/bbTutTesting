@@ -1,0 +1,2218 @@
+
+Unit Testing
+
+One definition of unit testing is the process of taking the smallest piece of testable code in an application, isolating it from the remainder of your codebase, and determining if it behaves exactly as expected.
+
+For an application to be considered ‘well-tested’, each function should ideally have its own separate unit tests where it’s tested against the different conditions you expect it to handle. All tests must pass before functionality is considered ‘complete’. This allows developers to both modify a unit of code and its dependencies with a level of confidence about whether these changes have caused any breakage.
+
+A basic example of unit testing is where a developer asserts that passing specific values to a sum function results in the correct value being returned. For an example more relevant to this book, we may wish to assert that adding a new Toddo item to a list correctly adds a Model of a specific type to a Toddos Collection.
+
+When building modern web-applications, it’s typically considered best-practice to include automated unit testing as a part of your development process. In the following chapters we are going to look at three different solutions for unit testing your bb.js apps - Jasmine, QUnit and SinonJS.
+
+Jasmine
+
+Behavior-Driven Development
+In this section, we’ll be taking a look at how to unit test bb applications using a popular JavaScript testing framework called Jasmine from Pivotal Labs.
+
+Jasmine describes itself as a behavior-driven development (BDD) framework for testing JavaScript code. Before we jump into how the framework works, it’s useful to understand exactly what BDD is.
+
+BDD is a second-generation testing approach first described by Dan North (the authority on BDD) which attempts to test the behavior of software. It’s considered second-generation as it came out of merging ideas from Domain driven design (DDD) and lean software development. BDD helps teams deliver high-quality software by answering many of the more confusing questions early on in the agile process. Such questions commonly include those concerning documentation and testing.
+
+If you were to read a book on BDD, it’s likely that it would be described as being ‘outside-in and pull-based’. The reason for this is that it borrows the idea of ‘pulling features’ from Lean manufacturing which effectively ensures that the right software solutions are being written by a) focusing on the expected outputs of the system and b) ensuring these outputs are achieved.
+
+BDD recognizes that there are usually multiple stakeholders in a project and not a single amorphous user of the system. These different groups will be affected by the software being written in differing ways and will have varying opinions of what quality in the system means to them. It’s for this reason that it’s important to understand who the software will be bringing value to and exactly what in it will be valuable to them.
+
+Finally, BDD relies on automation. Once you’ve defined the quality expected, your team will want to check on the functionality of the solution being built regularly and compare it to the results they expect. In order to facilitate this efficiently, the process has to be automated. BDD relies heavily on the automation of specification-testing and Jasmine is a tool which can assist with this.
+
+BDD helps both developers and non-technical stakeholders:
+
+Better understand and represent the models of the problems being solved
+Explain supported test cases in a language that non-developers can read
+Focus on minimizing translation of the technical code being written and the domain language spoken by the business
+What this means is that developers should be able to show Jasmine unit tests to a project stakeholder and (at a high level, thanks to a common vocabulary being used) they’ll ideally be able to understand what the code supports.
+
+Developers often implement BDD in unison with another testing paradigm known as TDD (test-driven development). The main idea behind TDD is using the following development process:
+
+Write unit tests which describe the functionality you would like your code to support
+Watch these tests fail (as the code to support them hasn’t yet been written)
+Write code to make the tests pass
+Rinse, repeat, and refactor
+In this chapter we’re going to use BDD (with TDD) to write unit tests for a bb application.
+
+Note: I’ve seen a lot of developers also opt for writing tests to validate behavior of their code after having written it. While this is fine, note that it can come with pitfalls such as only testing for behavior your code currently supports, rather than the behavior needed to fully solve the problem.
+
+Suites, Specs, & Spies
+When using Jasmine, you’ll be writing suites and specifications (specs). Suites basically describe scenarios while specs describe what can be done in these scenarios.
+
+Each spec is a JavaScript function, described with a call to it() using a description string and a function. The description should describe the behaviour the particular unit of code should exhibit and, keeping in mind BDD, it should ideally be meaningful. Here’s an example of a basic spec:
+
+it('should be incrementing in value', function(){
+    counter = 0;
+    counter++;
+});
+On its own, a spec isn’t particularly useful until expectations are set about the behavior of the code. Expectations in specs are defined using the expect() function and an expectation matcher (e.g., toEqual(), toBeTruthy(), toContain()). A revised example using an expectation matcher would look like:
+
+it('should be incrementing in value', function(){
+    counter = 0;
+    counter++;
+    expect(counter).toEqual(1);
+});
+The above code passes our behavioral expectation as counter equals 1. Notice how easy it was to read the expectation on the last line (you probably grokked it without any explanation).
+
+Specs are grouped into suites which we describe using Jasmine’s describe() function, again passing a string as a description and a function as we did for it(). The name/description for your suite is typically that of the component or module you’re testing.
+
+Jasmine will use the description as the group name when it reports the results of the specs you’ve asked it to run. A simple suite containing our sample spec could look like:
+
+describe('Stats', function(){
+    it('can increment a number', function(){
+        ...
+    });
+
+    it('can subtract a number', function(){
+        ...
+    });
+});
+Suites also share a functional scope, so it’s possible to declare vars and fns inside a describe block which are accessible within specs:
+
+describe('Stats', function(){
+    counter = 1;
+
+    it('can increment a number', function(){
+        // the counter was = 1
+        counter = counter + 1;
+        expect(counter).toEqual(2);
+    });
+
+    it('can subtract a number', function(){
+        // the counter was = 2
+        counter = counter - 1;
+        expect(counter).toEqual(1);
+    });
+});
+Note: Suites are executed in the order in which they are described, which can be useful to know if you would prefer to see test results for specific parts of your application reported first.
+
+Jasmine also supports spies - a way to mock, spy, and fake behavior in our unit tests. Spies replace the function they’re spying on, allowing us to simulate behavior we would like to mock (i.e., test without using the actual implementation).
+
+In the example below, we’re spying on the setComplete method of a dummy Toddo function to test that arguments can be passed to it as expected.
+
+Toddo = function(){
+};
+
+Toddo.prototype.setComplete = function (arg){
+    return arg;
+}
+
+describe('a simple spy', function(){
+    it('should spy on an instance method of a Toddo', function(){
+        myToddo = new Toddo();
+        spyOn(myToddo, 'setComplete');
+        myToddo.setComplete('foo bar');
+
+        expect(myToddo.setComplete).toHaveBeenCalledWith('foo bar');
+
+        myToddo2 = new Toddo();
+        spyOn(myToddo2, 'setComplete');
+
+        expect(myToddo2.setComplete).not.toHaveBeenCalled();
+
+    });
+});
+You are more likely to use spies for testing asynchronous behavior in your application such as AJAX requests. Jasmine supports:
+
+Writing tests which can mock AJAX requests using spies. This allows us to test both the code that initiates the AJAX request and the code executed upon its completion. It’s also possible to mock/fake the server responses. The benefit of this type of testing is that it’s faster as no real calls are being made to a server. The ability to simulate any response from the server is also of great benefit.
+Asynchronous tests which don’t rely on spies
+This example of the first kind of test shows how to fake an AJAX request and verify that the request was both calling the correct URL and executed a cb where one was provided.
+
+it('the cb should be executed on success', function () {
+
+    // `andCallFake()` calls a passed function when a spy
+    // has been called
+    spyOn($, 'ajax').andCallFake(function(options) {
+        options.success();
+    });
+
+    // Create a new spy
+    cb = jasmine.createSpy();
+
+    // Exexute the spy cb if the
+    // request for Toddo 15 is successful
+    getToddo(15, cb);
+
+    // Verify that the URL of the most recent call
+    // matches our expected Toddo item.
+    expect($.ajax.mostRecentCall.args[0]['url']).toEqual('/toddos/15');
+
+    // `expect(x).toHaveBeenCalled()` will pass if `x` is a
+    // spy and was called.
+    expect(cb).toHaveBeenCalled();
+});
+
+function getToddo(id, cb) {
+    $.ajax({
+        type: 'GET',
+        url: '/toddos/' + id,
+        dataType: 'json',
+        success: cb
+    });
+}
+All of these are Spy-specific matchers and are documented on the Jasmine wiki.
+
+For the second type of test (asynchronous tests), we can take the above further by taking advantage of three other methods Jasmine supports:
+
+waits(timeout) - a native timeout before the next block is run
+waitsFor(function, optional message, optional timeout) - a way to pause specs until some other work has completed. Jasmine waits until the supplied function returns true here before it moves on to the next block.
+runs(function) - a block which runs as if it was directly called. They exist so that we can test asynchronous processes.
+it('should make an actual AJAX request to a server', function () {
+
+    // Create a new spy
+    cb = jasmine.createSpy();
+
+    // Exexute the spy cb if the
+    // request for Toddo 16 is successful
+    getToddo(16, cb);
+
+    // Pause the spec until the cb count is
+    // greater than 0
+    waitsFor(function() {
+        return cb.callCount > 0;
+    });
+
+    // Once the wait is complete, our runs() block
+    // will check to ensure our spy cb has been
+    // called
+    runs(function() {
+        expect(cb).toHaveBeenCalled();
+    });
+});
+
+function getToddo(id, cb) {
+    $.ajax({
+        type: 'GET',
+        url: 'toddos.json',
+        dataType: 'json',
+        success: cb
+    });
+}
+Note: It’s useful to remember that when making real requests to a web server in your unit tests, this has the potential to massively slow down the speed at which tests run (due to many factors including server latency). As this also introduces an external dependency that can (and should) be minimized in your unit testing, it is strongly recommended that you opt for spies to remove the dependency on a web server.
+
+beforeEach() and afterEach()
+Jasmine also supports specifying code that can be run before each (beforeEach()) and after each (afterEach()) test. This is useful for enforcing consistent conditions (such as resetting vars that may be required by specs). In the following example, beforeEach() is used to create a new sample Toddo model which specs can use for testing atts.
+
+beforeEach(function(){
+   this.toddo = new bb.Model({
+      text: 'Buy some more groceries',
+      done: false
+   });
+});
+
+it('should contain a text value if not the default value', function(){
+   expect(this.toddo.get('text')).toEqual('Buy some more groceries');
+});
+Each nested describe() in your tests can have their own beforeEach() and afterEach() methods which support including setup and teardown methods relevant to a particular suite.
+
+beforeEach() and afterEach() can be used together to write tests verifying that our bb routes are being correctly triggered when we navigate to the URL. We can start with the index action:
+
+describe('Toddo routes', function(){
+
+   beforeEach(function(){
+
+        // Create a new router
+        this.router = new App.ToddoRouter();
+
+        // Create a new spy
+        this.routerSpy = jasmine.spy();
+
+        // Begin monitoring hashchange evs
+        try{
+            bb.history.start({
+                silent:true,
+                pushState: true
+            });
+        }catch(e){
+           // ...
+        }
+
+        // Navigate to a URL
+        this.router.navigate('/js/spec/SpecRunner.html');
+   });
+
+   afterEach(function(){
+
+        // Navigate back to the URL
+        this.router.navigate('/js/spec/SpecRunner.html');
+
+        // Disable bb.history temporarily.
+        // Note that this is not really useful in real apps but is
+        // good for testing routers
+        bb.history.stop();
+   });
+
+   it('should call the index route correctly', function(){
+        this.router.bind('route:index', this.routerSpy, this);
+        this.router.navigate('', {trigger: true});
+
+        // If everything in our beforeEach() and afterEach()
+        // calls have been correctly executed, the following
+        // should now pass.
+        expect(this.routerSpy).toHaveBeenCalledOnce();
+        expect(this.routerSpy).toHaveBeenCalledWith();
+   });
+
+});
+The actual ToddoRouter for that would make the above test pass looks like:
+
+App = App || {};
+App.ToddoRouter = bb.Router.extend({
+    routes:{
+        '': 'index'
+    },
+    index: function(){
+        //...
+    }
+});
+Shared scope
+Let’s imagine we have a Suite where we wish to check for the existence of a new Toddo item instance. This could be done by duplicating the spec as follows:
+
+describe("Toddo tests", function(){
+
+   // Spec
+   it("Should be defined when we create it", function(){
+        // A Toddo item we are testing
+        toddo = new Toddo("Get the milk", "Tuesday");
+        expect(toddo).toBeDefined();
+   });
+
+   it("Should have the correct title", function(){
+        // Where we introduce code duplication
+        toddo = new Toddo("Get the milk", "Tuesday");
+        expect(toddo.title).toBe("Get the milk");
+   });
+
+});
+As you can see, we’ve introduced duplication that should ideally be refactored into something cleaner. We can do this using Jasmine’s Suite (Shared) Functional Scope.
+
+All of the specs within the same Suite share the same functional scope, meaning that vars declared within the Suite itself are available to all of the Specs in that suite. This gives us a way to work around our duplication problem by moving the creation of our Toddo objects into the common functional scope:
+
+describe("Toddo tests", function(){
+
+    // The instance of Toddo, the object we wish to test
+    // is now in the shared functional scope
+    toddo = new Toddo("Get the milk", "Tuesday");
+
+    // Spec
+    it("should be correctly defined", function(){
+        expect(toddo).toBeDefined();
+    });
+
+    it("should have the correct title", function(){
+        expect(toddo.title).toBe("Get the milk");
+    });
+
+});
+In the previous section you may have noticed that we initially declared this.toddo within the scope of our beforeEach() call and were then able to continue using this reference in afterEach().
+
+This is again down to shared function scope, which allows such declaractions to be common to all blocks (including runs()).
+
+Variables declared outside of the shared scope (i.e within the local scope toddo=...) will however not be shared.
+
+Getting set up
+Now that we’ve reviewed some fundamentals, let’s go through downloading Jasmine and getting everything set up to write tests.
+
+A standalone release of Jasmine can be downloaded from the official release page.
+
+You’ll need a file called SpecRunner.html in addition to the release. It can be downloaded from https://github.com/pivotal/jasmine/tree/master/lib/jasmine-core/example or as part of a download of the complete Jasmine repo. Alternatively, you can git clone the main Jasmine repository from https://github.com/pivotal/jasmine.git.
+
+Let’s review SpecRunner.html.jst:
+
+It first includes both Jasmine and the necessary CSS required for reporting:
+
+<link rel="stylesheet" type="text/css" href="lib/jasmine-<%= jasmineVersion %>/jasmine.css">
+<script src="lib/jasmine-<%= jasmineVersion %>/jasmine.js"></script>
+<script src="lib/jasmine-<%= jasmineVersion %>/jasmine-html.js"></script>
+<script src="lib/jasmine-<%= jasmineVersion %>/boot.js"></script>
+Next come the sources being tested:
+
+<!-- include source files here... -->
+<script src="src/Player.js"></script>
+<script src="src/Song.js"></script>
+Finally, some sample tests are included:
+
+<!-- include spec files here... -->
+<script src="spec/SpecHelper.js"></script>
+<script src="spec/PlayerSpec.js"></script>
+Note: Below this section of SpecRunner is code responsible for running the actual tests. Given that we won’t be covering modifying this code, I’m going to skip reviewing it. I do however encourage you to take a look through PlayerSpec.js and SpecHelper.js. They’re a useful basic example to go through how a minimal set of tests might work.
+
+Also note that for the purposes of introduction, some of the examples in this section will be testing aspects of bb.js itself, just to give you a feel for how Jasmine works. You generally will not need to write testing ensuring a framework is working as expected.
+
+TDD With bb
+When developing applications with bb, it can be necessary to test both individual modules of code as well as models, views, collections, and routers. Taking a TDD approach to testing, let’s review some specs for testing these bb components using the popular bb Toddo application.
+
+Models
+The complexity of bb models can vary greatly depending on what your application is trying to achieve. In the following example, we’re going to test default values, atts, state changes, and validation rules.
+
+First, we begin our suite for model testing using describe():
+
+describe('Tests for Toddo', function() {
+Models should ideally have default values for atts. This helps ensure that when creating instances without a value set for any specific attr, a default one (e.g., an empty string) is used instead. The idea here is to allow your application to interact with models without any unexpected behavior.
+
+In the following spec, we create a new Toddo without any atts passed then check to find out what the value of the text attr is. As no value has been set, we expect a default value of '' to be returned.
+
+it('Can be created with default values for its atts.', function() {
+    toddo = new Toddo();
+    expect(toddo.get('text')).toBe('');
+});
+If testing this spec before your models have been written, you’ll incur a failing test, as expected. What’s required for the spec to pass is a default value for the attr text. We can set this and some other useful defaults (which we’ll be using shortly) in our Toddo model as follows:
+
+window.Toddo = bb.Model.extend({
+
+    defaults: {
+      text: '',
+      done:  false,
+      order: 0
+    }
+Next, it is common to include validation logic in your models to ensure that input passed from users or other modules in the application are valid.
+
+A Toddo app may wish to validate the text input supplied in case it contains rude words. Similarly if we’re storing the done state of a Toddo item using booleans, we need to validate that truthy/falsy values are passed and not just any arbitrary string.
+
+In the following spec, we take advantage of the fact that validations which fail model.validate() trigger an “invalid” event. This allows us to test if validations are correctly failing when invalid input is supplied.
+
+We create an errorCallback spy using Jasmine’s built in createSpy() method which allows us to spy on the invalid event as follows:
+
+it('Can contain cust validation rules, and will trigger an invalid event on failed validation.', function() {
+
+    errorCallback = jasmine.createSpy('-invalid event cb-');
+
+    toddo = new Toddo();
+
+    toddo.on('invalid', errorCallback);
+
+    // What would you need to set on the toddo properties to
+    // cause validation to fail?
+
+    toddo.set({done:'a non-boolean value'});
+
+    errorArgs = errorCallback.mostRecentCall.args;
+
+    expect(errorArgs).toBeDefined();
+    expect(errorArgs[0]).toBe(toddo);
+    expect(errorArgs[1]).toBe('Toddo.done must be a boolean value.');
+});
+The code to make the above failing test support validation is relatively simple. In our model, we override the validate() method (as recommended in the bb docs), checking to make sure a model both has a ‘done’ property and that its value is a valid boolean before allowing it to pass.
+
+validate: function(attrs) {
+    if (attrs.hasOwnProperty('done') && !_.isBoolean(attrs.done)) {
+        return 'Toddo.done must be a boolean value.';
+    }
+}
+If you would like to review the final code for our Toddo model, you can find it below:
+
+
+window.Toddo = bb.Model.extend({
+
+    defaults: {
+      text: '',
+      done:  false,
+      order: 0
+    },
+
+    initialize: function() {
+        this.set({text: this.get('text')}, {silent: true});
+    },
+
+    validate: function(attrs) {
+        if (attrs.hasOwnProperty('done') && !_.isBoolean(attrs.done)) {
+            return 'Toddo.done must be a boolean value.';
+        }
+    },
+
+    toggle: function() {
+        this.save({done: !this.get('done')});
+    }
+
+});
+Collections
+We now need to define specs to test a bb collection of Toddo models (a ToddoList). Collections are responsible for a number of list tasks including managing order and filtering.
+
+A few specific specs that come to mind when working with collections are:
+
+Making sure we can add new Toddo models as both objects and arrays
+Attribute testing to make sure atts such as the base URL of the collection are values we expect
+Purposefully adding items with a status of done:true and checking against how many items the collection thinks have been completed vs. those that are remaining
+In this section we’re going to cover the first two of these with the third left as an extended exercise you can try on your own.
+
+Testing that Toddo models can be added to a collection as objects or arrays is relatively trivial. First, we initialize a new ToddoList collection and check to make sure its length (i.e., the number of Toddo models it contains) is 0. Next, we add new Toddos, both as objects and arrays, checking the length property of the collection at each stage to ensure the overall count is what we expect:
+
+describe('Tests for ToddoList', function() {
+
+    it('Can add Model instances as objects and arrays.', function() {
+        toddos = new ToddoList();
+
+        expect(toddos.length).toBe(0);
+
+        toddos.add({ text: 'Clean the kitchen' });
+
+        // how many toddos have been added so far?
+        expect(toddos.length).toBe(1);
+
+        toddos.add([
+            { text: 'Do the laundry', done: true },
+            { text: 'Go to the gym'}
+        ]);
+
+        // how many are there in total now?
+        expect(toddos.length).toBe(3);
+    });
+...
+Similar to model atts, it’s also quite straight-forward to test atts in collections. Here we have a spec that ensures the collection url (i.e., the url reference to the collection’s location on the server) is what we expect it to be:
+
+it('Can have a url property to define the basic url structure for all contained models.', function() {
+        toddos = new ToddoList();
+
+        // what has been specified as the url base in our model?
+        expect(toddos.url).toBe('/toddos/');
+});
+For the third spec (which you will write as an exercise), note that the implementation for our collection will have methods for filtering how many Toddo items are done and how many are remaining - we’ll call these done() and remaining(). Consider writing a spec which creates a new collection and adds one new model that has a preset done state of true and two others that have the default done state of false. Testing the length of what’s returned using done() and remaining() will tell us whether the state management in our application is working or needs a little tweaking.
+
+The final implementation for our ToddoList collection can be found below:
+
+ window.ToddoList = bb.Collection.extend({
+
+        model: Toddo,
+
+        url: '/toddos/',
+
+        done: function() {
+            return this.filter(function(toddo) { return toddo.get('done'); });
+        },
+
+        remaining: function() {
+            return this.without.apply(this, this.done());
+        },
+
+        nextOrder: function() {
+            if (!this.length) {
+                return 1;
+            }
+
+            return this.last().get('order') + 1;
+        },
+
+        comparator: function(toddo) {
+            return toddo.get('order');
+        }
+
+    });
+Views
+Before we take a look at testing bb views, let’s briefly review a jQuery plugin that can assist with writing Jasmine specs for them.
+
+The Jasmine jQuery Plugin
+
+As we know our Toddo application will be using jQuery for DOM manipulation, there’s a useful jQuery plugin called jasmine-jquery we can use to help simplify BDD testing of the rendering performed by our views.
+
+The plugin provides a number of additional Jasmine matchers to help test jQuery-wrapped sets such as:
+
+toBe(jQuerySelector) e.g., expect($('<div id="some-id"></div>')).toBe('div#some-id')
+toBeChecked() e.g., expect($('<input type="checkbox" checked="checked"/>')).toBeChecked()
+toBeSelected() e.g., expect($('<option selected="selected"></option>')).toBeSelected()
+and many others. The complete list of matchers supported can be found on the project homepage. It’s useful to know that similar to the standard Jasmine matchers, the cust matchers above can be inverted using the .not prefix (i.e expect(x).not.toBe(y)):
+
+expect($('<div>I am an example</div>')).not.toHaveText(/other/)
+jasmine-jquery also includes a fixtures module that can be used to load arbitrary HTML content we wish to use in our tests. Fixtures can be used as follows:
+
+Include some HTML in an external fixtures file:
+
+some.fixture.html: <div id="sample-fixture">some HTML content</div>
+
+Then inside our actual test we would load it as follows:
+
+loadFixtures('some.fixture.html')
+$('some-fixture').myTestedPlugin();
+expect($('#some-fixture')).to<the rest of your matcher would go here>
+The jasmine-jquery plugin loads fixtures from a directory named spec/javascripts/fixtures by default. If you wish to configure this path you can do so by initially setting jasmine.getFixtures().fixturesPath = 'your cust path'.
+
+Finally, jasmine-jquery includes support for spying on jQuery evs without the need for any extra plumbing work. This can be done using the spyOnEvent() and expect(eventName).toHaveBeenTriggeredOn(selector) fns. For example:
+
+spyOnEvent($('#el'), 'click');
+$('#el').click();
+expect('click').toHaveBeenTriggeredOn($('#el'));
+View testing
+In this section we will review the three dimensions of specs writing for bb Views: initial setup, view rendering, and templating. The latter two of these are the most commonly tested, however we’ll see shortly why writing specs for the initialization of your views can also be of benefit.
+
+Initial setup
+At their most basic, specs for bb views should validate that they are being correctly tied to specific DOM els and are backed by valid data models. The reason to consider doing this is that these specs can identify issues which will trip up more complex tests later on. Also, they’re fairly simple to write given the overall value offered.
+
+To help ensure a consistent testing setup for our specs, we use beforeEach() to append both an empty <ul> (#toddoList) to the DOM and initialize a new instance of a ToddoView using an empty Toddo model. afterEach() is used to remove the previous #toddoList <ul> as well as the previous instance of the view.
+
+describe('Tests for ToddoView', function() {
+
+    beforeEach(function() {
+        $('body').append('<ul id="toddoList"></ul>');
+        this.toddoView = new ToddoView({ model: new Toddo() });
+    });
+
+
+    afterEach(function() {
+        this.toddoView.remove();
+        $('#toddoList').remove();
+    });
+
+...
+The first spec useful to write is a check that the ToddoView we’ve created is using the correct tagName (el or className). The purpose of this test is to make sure it’s been correctly tied to a DOM el when it was created.
+
+bb views typically create empty DOM els once initialized, however these els are not attached to the visible DOM in order to allow them to be constructed without an impact on the performance of rendering.
+
+it('Should be tied to a DOM el when created, based off the property provided.', function() {
+    //what html el tag name represents this view?
+    expect(this.toddoView.el.tagName.toLowerCase()).toBe('li');
+});
+Once again, if the ToddoView has not already been written, we will experience failing specs. Thankfully, solving this is as simple as creating a new bb.View with a specific tagName.
+
+toddoView = bb.View.extend({
+    tagName:  'li'
+});
+If instead of testing against the tagName you would prefer to use a className instead, we can take advantage of jasmine-jquery’s toHaveClass() matcher:
+
+it('Should have a class of "toddos"', function(){
+   expect(this.toddoView.$el).toHaveClass('toddos');
+});
+The toHaveClass() matcher operates on jQuery objects and if the plugin hadn’t been used, an exception would have been thrown. It is of course also possible to test for the className by accessing el.className if you don’t use jasmine-jquery.
+
+You may have noticed that in beforeEach(), we passed our view an initial (albeit unfilled) Toddo model. Views should be backed by a model instance which provides data. As this is quite important to our view’s ability to function, we can write a spec to ensure a model is defined (using the toBeDefined() matcher) and then test atts of the model to ensure defaults both exist and are the values we expect them to be.
+
+it('Is backed by a model instance, which provides the data.', function() {
+
+    expect(this.toddoView.model).toBeDefined();
+
+    // what's the value for Toddo.get('done') here?
+    expect(this.toddoView.model.get('done')).toBe(false); //or toBeFalsy()
+});
+
+
+View rendering
+Next we’re going to take a look at writing specs for view rendering.
+Specifically, we want to test that our ToddoView els are actually rendering as expected.
+
+In smaller applications, those new to BDD might argue that visual confirmation of view rendering could replace unit testing of views. The reality is that when dealing with applications that might grow to a large number of views, it makes sense to automate this process as much as possible from the get-go. There are also aspects of rendering that require verification beyond what is visually presented on-screen (which we’ll see very shortly).
+
+We’re going to begin testing views by writing two specs. The first spec will check that the view’s render() method is correctly returning the view instance, which is necessary for chaining. Our second spec will check that the HTML produced is exactly what we expect based on the properties of the model instance that’s been associated with our ToddoView.
+
+Unlike some of the previous specs we’ve covered, this section will make greater use of beforeEach() to both demonstrate how to use nested suites and also ensure a consistent set of conditions for our specs. In our first example we’re simply going to create a sample model (based on Toddo) and instantiate a ToddoView with it.
+
+describe('ToddoView', function() {
+
+  beforeEach(function() {
+    this.model = new bb.Model({
+      text: 'My Toddo',
+      order: 1,
+      done: false
+    });
+    this.view = new ToddoView({model:this.model});
+  });
+
+  describe('Rendering', function() {
+
+    it('returns the view object', function() {
+      expect(this.view.render()).toEqual(this.view);
+    });
+
+    it('produces the correct HTML', function() {
+      this.view.render();
+
+      // let's use jasmine-jquery's toContain() to avoid
+      // testing for the complete content of a toddo's markup
+      expect(this.view.el.innerHTML)
+        .toContain('<label class="toddo-content">My Toddo</label>');
+    });
+
+  });
+
+});
+When these specs are run, only the second one (‘produces the correct HTML’) fails. Our first spec (‘returns the view object’), which is testing that the ToddoView instance is returned from render(), passes since this is bb’s default behavior and we haven’t overwritten the render() method with our own version yet.
+
+Note: For the purposes of maintaining readability, all template examples in this section will use a minimal version of the following Toddo view template. As it’s relatively trivial to expand this, please feel free to refer to this sample if needed:
+
+<div class="toddo <%= done ? 'done' : '' %>">
+        <div class="display">
+          <input class="check" type="checkbox" <%= done ? 'checked="checked"' : '' %> />
+          <label class="toddo-content"><%= text %></label>
+          <span class="toddo-destroy"></span>
+        </div>
+        <div class="edit">
+          <input class="toddo-input" type="text" value="<%= content %>" />
+        </div>
+</div>
+The second spec fails with the following message:
+
+Expected '' to contain '<label class="toddo-content">My Toddo</label>'.
+
+The reason for this is the default behavior for render() doesn’t create any markup. Let’s write a replacement for render() which fixes this:
+
+render: function() {
+  template = '<label class="toddo-content">+++PLACEHOLDER+++</label>';
+  output = template
+    .replace('+++PLACEHOLDER+++', this.model.get('text'));
+  this.$el.html(output);
+  return this;
+}
+The above specifies an inline string template and replaces fields found in the template within the “+++PLACEHOLDER+++” blocks with their corresponding values from the associated model. As we’re also returning the ToddoView instance from the method, the first spec will still pass.
+
+It would be impossible to discuss unit testing without mentioning fixtures. Fixtures typically contain test data (e.g., HTML) that is loaded in when needed (either locally or from an external file) for unit testing. So far we’ve been establishing jQuery expectations based on the view’s el property. This works for a number of cases, however, there are instances where it may be necessary to render markup into the document. The most optimal way to handle this within specs is through using fixtures (another feature brought to us by the jasmine-jquery plugin).
+
+Re-writing the last spec to use fixtures would look as follows:
+
+describe('ToddoView', function() {
+
+  beforeEach(function() {
+    ...
+    setFixtures('<ul class="toddos"></ul>');
+  });
+
+  ...
+
+  describe('Template', function() {
+
+    beforeEach(function() {
+      $('.toddos').append(this.view.render().el);
+    });
+
+    it('has the correct text content', function() {
+      expect($('.toddos').find('.toddo-content'))
+        .toHaveText('My Toddo');
+    });
+
+  });
+
+});
+What we’re now doing in the above spec is appending the rendered toddo item into the fixture. We then set expectations against the fixture, which may be something desirable when a view is setup against an el which already exists in the DOM. It would be necessary to provide both the fixture and test the el property correctly picking up the el expected when the view is instantiated.
+
+Rendering with a templating system
+When a user marks a Toddo item as complete (done), we may wish to provide them with visual feedback (such as a striked line through the text) to differentiate the item from those that are remaining. This can be done by attaching a new class to the item. Let’s begin by writing a test:
+
+describe('When a toddo is done', function() {
+
+  beforeEach(function() {
+    this.model.set({done: true}, {silent: true});
+    $('.toddos').append(this.view.render().el);
+  });
+
+  it('has a done class', function() {
+    expect($('.toddos .toddo-content:first-child'))
+      .toHaveClass('done');
+  });
+
+});
+This will fail with the following message:
+
+Expected '<label class="toddo-content">My Toddo</label>' to have class 'done'.
+
+which can be fixed in the existing render() method as follows:
+
+render: function() {
+  template = '<label class="toddo-content">' +
+    '<%= text %></label>';
+  output = template
+    .replace('<%= text %>', this.model.get('text'));
+  this.$el.html(output);
+  if (this.model.get('done')) {
+    this.$('.toddo-content').addClass('done');
+  }
+  return this;
+}
+However, this can get unwieldy fairly quickly. As the level of complexity and logic in our templates increase, so do the challenges associated with testing them. We can ease this process by taking advantage of modern templating libraries, many of which have already been demonstrated to work well with testing solutions such as Jasmine.
+
+JavaScript templating systems (such as Handlebars, Mustache, and Underscore’s own micro-templating) support conditional logic in template strings. What this effectively means is that we can add if/else/ternery expressions inline which can then be evaluated as needed, allowing us to build even more powerful templates.
+
+In our case, we are going to use the micro-templating found in Underscore.js as no additional files are required to use it and we can easily modify our existing specs to use it without a great deal of effort.
+
+Assuming our template is defined using a script tag of ID myTemplate:
+
+<script type="text/template" id="myTemplate">
+    <div class="toddo <%= done ? 'done' : '' %>">
+            <div class="display">
+              <input class="check" type="checkbox" <%= done ? 'checked="checked"' : '' %> />
+              <label class="toddo-content"><%= text %></label>
+              <span class="toddo-destroy"></span>
+            </div>
+            <div class="edit">
+              <input class="toddo-input" type="text" value="<%= content %>" />
+            </div>
+    </div>
+</script>
+Our ToddoView can be modified to use Underscore templating as follows:
+
+ToddoView = bb.View.extend({
+
+  tagName: 'li',
+  template: _.template($('#myTemplate').html()),
+
+  initialize: function(options) {
+    // ...
+  },
+
+  render: function() {
+    this.$el.html(this.template(this.model.atts));
+    return this;
+  },
+
+  ...
+
+});
+So, what’s going on here? We’re first defining our template in a script tag with a cust script type (e.g., type=“text/template”). As this isn’t a script type any browser understands, it’s simply ignored, however referencing the script by an id attr allows the template to be kept separate to other parts of the page.
+
+In our view, we’re the using the Underscore _.template() method to compile our template into a function that we can easily pass model data to later on. In the line this.model.toJSON() we are simply returning a copy of the model’s atts for JSON stringification to the template method, creating a block of HTML that can now be appended to the DOM.
+
+Note: Ideally all of your template logic should exist outside of your specs, either in individual template files or embedded using script tags within your SpecRunner. This is generally more maintainable.
+
+If you are working with much smaller templates and are not doing this, there is however a useful trick that can be applied to automatically create or extend templates in the Jasmine shared functional scope for each test.
+
+By creating a new directory (say, ‘templates’) in the ‘spec’ folder and including a new script file with the following contents into SpecRunner.html, we can manually add cust atts representing smaller templates we wish to use:
+
+beforeEach(function() {
+  this.templates = _.extend(this.templates || {}, {
+    toddo: '<label class="toddo-content">' +
+            '<%= text %>' +
+          '</label>'
+  });
+});
+To finish this off, we simply update our existing spec to reference the template when instantiating the ToddoView:
+
+describe('ToddoView', function() {
+
+  beforeEach(function() {
+    ...
+    this.view = new ToddoView({
+      model: this.model,
+      template: this.templates.toddo
+    });
+  });
+
+  ...
+
+});
+The existing specs we’ve looked at would continue to pass using this approach, leaving us free to adjust the template with some additional conditional logic for Toddos with a status of ‘done’:
+
+beforeEach(function() {
+  this.templates = _.extend(this.templates || {}, {
+    toddo: '<label class="toddo-content <%= done ? 'done' : '' %>"' +
+            '<%= text %>' +
+          '</label>'
+  });
+});
+This will now also pass without any issues, however as mentioned, this last approach probably only makes sense if you’re working with smaller, highly dynamic templates.
+
+Conclusions
+We have now covered how to write Jasmine tests for bb.js models, collections, and views. While testing routing can at times be desirable, some developers feel it can be more optimal to leave this to third-party tools such as Selenium, so do keep this in mind.
+
+Exercise
+As an exercise, I recommend now trying the Jasmine Koans in practicals\jasmine-koans and trying to fix some of the purposefully failing tests it has to offer. This is an excellent way of not just learning how Jasmine specs and suites work, but working through the examples (without peeking back) will also put your bb skills to the test too.
+
+Further reading
+Testing bb Apps With SinonJS by James Newbry
+Jasmine + bb Revisited
+bb, PhantomJS and Jasmine
+QUnit
+
+Introduction
+QUnit is a powerful JavaScript test suite written by jQuery team member Jörn Zaefferer and used by many large open-source projects (such as jQuery and bb.js) to test their code. It’s both capable of testing standard JavaScript code in the browser as well as code on the server-side (where environments supported include Rhino, V8 and SpiderMonkey). This makes it a robust solution for a large number of use-cases.
+
+Quite a few bb.js contributors feel that QUnit is a better introductory framework for testing if you don’t wish to start off with Jasmine and BDD right away. As we’ll see later on in this chapter, QUnit can also be combined with third-party solutions such as SinonJS to produce an even more powerful testing solution supporting spies and mocks, which some say is preferable over Jasmine.
+
+My personal recommendation is that it’s worth comparing both frameworks and opting for the solution that you feel the most comfortable with.
+
+Getting Setup
+Luckily, getting QUnit setup is a fairly straight-forward process that will take less than 5 minutes.
+
+We first setup a testing environment composed of three files:
+
+An HTML structure for displaying test results
+The qunit.js file composing the testing framework
+The qunit.css file for styling test results
+The latter two of these can be downloaded from the QUnit website.
+
+If you would prefer, you can use a hosted version of the QUnit source files for testing purposes. The hosted URLs can be found at http://github.com/jquery/qunit/raw/master/qunit/.
+
+Sample HTML with QUnit-compatible markup:
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QUnit Test Suite</title>
+
+     <link rel="stylesheet" href="qunit.css">
+     <script src="qunit.js"></script>
+
+     <!-- Your application -->
+     <script src="app.js"></script>
+
+     <!-- Your tests -->
+     <script src="tests.js"></script>
+</head>
+<body>
+    <h1 id="qunit-header">QUnit Test Suite</h1>
+    <h2 id="qunit-banner"></h2>
+    <div id="qunit-testrunner-toolbar"></div>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests">test markup, hidden.</ol>
+</body>
+</html>
+Let’s go through the els above with qunit mentioned in their ID. When QUnit is running:
+
+qunit-header shows the name of the test suite
+qunit-banner shows up as red if a test fails and green if all tests pass
+qunit-testrunner-toolbar contains additional options for configuring the display of tests
+qunit-userAgent displays the navigator.userAgent property
+qunit-tests is a container for our test results
+When running correctly, the above test runner looks as follows:
+
+screenshot 1
+screenshot 1
+The numbers of the form (a, b, c) after each test name correspond to a) failed asserts, b) passed asserts and c) total asserts. Clicking on a test name expands it to display all of the assertions for that test case. Assertions in green have successfully passed.
+
+screenshot 2
+screenshot 2
+If however any tests fail, the test gets highlighted (and the qunit-banner at the top switches to red):
+
+screenshot 3
+screenshot 3
+Assertions
+QUnit supports a number of basic assertions, which are used in tests to verify that the result being returned by our code is what we expect. If an assertion fails, we know that a bug exists. Similar to Jasmine, QUnit can be used to easily test for regressions. Specifically, when a bug is found one can write an assertion to test the existence of the bug, write a patch, and then commit both. If subsequent changes to the code break the test you’ll know what was responsible and be able to address it more easily.
+
+Some of the supported QUnit assertions we’re going to look at first are:
+
+ok ( state, message ) - passes if the first argument is truthy
+equal ( actual, expected, message ) - a simple comparison assertion with type coercion
+notEqual ( actual, expected, message ) - the opposite of the above
+expect( amount ) - the number of assertions expected to run within each test
+strictEqual( actual, expected, message) - offers a much stricter comparison than equal() and is considered the preferred method of checking equality as it avoids stumbling on subtle coercion bugs
+deepEqual( actual, expected, message ) - similar to strictEqual, comparing the contents (with ===) of the given objects, arrays and primitives.
+Basic test case using test( name, cb )
+Creating new test cases with QUnit is relatively straight-forward and can be done using test(), which constructs a test where the first argument is the name of the test to be displayed in our results and the second is a cb function containing all of our assertions. This is called as soon as QUnit is running.
+
+myString = 'Hello bb.js';
+
+test( 'Our first QUnit test - asserting results', function(){
+
+    // ok( boolean, message )
+    ok( true, 'the test succeeds');
+    ok( false, 'the test fails');
+
+    // equal( actualValue, expectedValue, message )
+    equal( myString, 'Hello bb.js', 'The value expected is Hello bb.js!');
+});
+What we’re doing in the above is defining a var with a specific value and then testing to ensure the value was what we expected it to be. This was done using the comparison assertion, equal(), which expects its first argument to be a value being tested and the second argument to be the expected value. We also used ok(), which allows us to easily test against fns or vars that evaluate to booleans.
+
+Note: Optionally in our test case, we could have passed an ‘expected’ value to test() defining the number of assertions we expect to run. This takes the form: test( name, [expected], test ); or by manually settings the expectation at the top of the test function, like so: expect( 1 ). I recommend you make a habit of always defining how many assertions you expect. More on this later.
+
+Comparing the actual output of a function against the expected output
+As testing a simple static var is fairly trivial, we can take this further to test actual fns. In the following example we test the output of a function that reverses a string to ensure that the output is correct using equal() and notEqual():
+
+function reverseString( str ){
+    return str.split('').reverse().join('');
+}
+
+test( 'reverseString()', function() {
+    expect( 5 );
+    equal( reverseString('hello'), 'olleh', 'The value expected was olleh' );
+    equal( reverseString('foobar'), 'raboof', 'The value expected was raboof' );
+    equal( reverseString('world'), 'dlrow', 'The value expected was dlrow' );
+    notEqual( reverseString('world'), 'dlroo', 'The value was expected to not be dlroo' );
+    equal( reverseString('bubble'), 'double', 'The value expected was elbbub' );
+})
+Running these tests in the QUnit test runner (which you would see when your HTML test page was loaded) we would find that four of the assertions pass while the last one does not. The reason the test against 'double' fails is because it was purposefully written incorrectly. In your own projects if a test fails to pass and your assertions are correct, you’ve probably just found a bug!
+
+Adding structure to assertions
+Housing all of our assertions in one test case can quickly become difficult to maintain, but luckily QUnit supports structuring blocks of assertions more cleanly. This can be done using module() - a method that allows us to easily group tests together. A typical approach to grouping might be keeping multiple tests for a specific method as part of the same group (module).
+
+Basic QUnit Modules
+module( 'Module One' );
+test( 'first test', function() {} );
+test( 'another test', function() {} );
+
+module( 'Module Two' );
+test( 'second test', function() {} );
+test( 'another test', function() {} );
+
+module( 'Module Three' );
+test( 'third test', function() {} );
+test( 'another test', function() {} );
+We can take this further by introducing setup() and teardown() cbs to our modules, where setup() is run before each test and teardown() is run after each test.
+
+Using setup() and teardown()
+module( 'Module One', {
+    setup: function() {
+        // run before
+    },
+    teardown: function() {
+        // run after
+    }
+});
+
+test('first test', function() {
+    // run the first test
+});
+These cbs can be used to define (or clear) any components we wish to instantiate for use in one or more of our tests. As we’ll see shortly, this is ideal for defining new instances of views, collections, models, or routers from a project that we can then reference across multiple tests.
+
+Using setup() and teardown() for instantiation and clean-up
+// Define a simple model and collection modeling a store and
+// list of stores
+
+Store = bb.Model.extend({});
+
+StoreList = bb.Collection.extend({
+    model: Store,
+    comparator: function( Store ) { return Store.get('name') }
+});
+
+// Define a group for our tests
+module( 'StoreList sanity check', {
+    setup: function() {
+        this.list = new StoreList;
+        this.list.add(new Store({ name: 'Costcutter' }));
+        this.list.add(new Store({ name: 'Target' }));
+        this.list.add(new Store({ name: 'Walmart' }));
+        this.list.add(new Store({ name: 'Barnes & Noble' }));
+    },
+    teardown: function() {
+        window.errors = null;
+    }
+});
+
+// Test the order of items added
+test( 'test ordering', function() {
+    expect( 1 );
+    expected = ['Barnes & Noble', 'Costcutter', 'Target', 'Walmart'];
+    actual = this.list.pluck('name');
+    deepEqual( actual, expected, 'is maintained by comparator' );
+})
+
+
+Here, a list of stores is created and stored on setup(). A teardown() cb is used to simply clear a list of errors we might be storing within the window scope, but is otherwise not needed.
+
+Assertion examples
+Before we continue any further, let’s review some more examples of how QUnit’s various assertions can be correctly used when writing tests:
+
+equal - a comparison assertion. It passes if actual == expected
+test( 'equal', 2, function() {
+  actual = 6 - 5;
+  equal( actual, true,  'passes as 1 == true' );
+  equal( actual, 1,     'passes as 1 == 1' );
+});
+notEqual - a comparison assertion. It passes if actual != expected
+test( 'notEqual', 2, function() {
+  actual = 6 - 5;
+  notEqual( actual, false, 'passes as 1 != false' );
+  notEqual( actual, 0,     'passes as 1 != 0' );
+});
+strictEqual - a comparison assertion. It passes if actual === expected
+test( 'strictEqual', 2, function() {
+  actual = 6 - 5;
+  strictEqual( actual, true,  'fails as 1 !== true' );
+  strictEqual( actual, 1,     'passes as 1 === 1' );
+});
+notStrictEqual - a comparison assertion. It passes if actual !== expected
+test('notStrictEqual', 2, function() {
+  actual = 6 - 5;
+  notStrictEqual( actual, true,  'passes as 1 !== true' );
+  notStrictEqual( actual, 1,     'fails as 1 === 1' );
+});
+deepEqual - a recursive comparison assertion. Unlike strictEqual(), it works on objects, arrays and primitives.
+test('deepEqual', 4, function() {
+  actual = {q: 'foo', t: 'bar'};
+  el =  $('div');
+  children = $('div').children();
+
+  equal( actual, {q: 'foo', t: 'bar'},   'fails - objects are not equal using equal()' );
+  deepEqual( actual, {q: 'foo', t: 'bar'},   'passes - objects are equal' );
+  equal( el, children, 'fails - jQuery objects are not the same' );
+  deepEqual(el, children, 'fails - objects not equivalent' );
+
+});
+notDeepEqual - a comparison assertion. This returns the opposite of deepEqual
+test('notDeepEqual', 2, function() {
+  actual = {q: 'foo', t: 'bar'};
+  notEqual( actual, {q: 'foo', t: 'bar'},   'passes - objects are not equal' );
+  notDeepEqual( actual, {q: 'foo', t: 'bar'},   'fails - objects are equivalent' );
+});
+raises - an assertion which tests if a cb throws any exceptions
+test('raises', 1, function() {
+  raises(function() {
+    throw new Error( 'Oh no! It`s an error!' );
+  }, 'passes - an error was thrown inside our cb');
+});
+Fixtures
+From time to time we may need to write tests that modify the DOM. Managing the clean-up of such operations between tests can be a genuine pain, but thankfully QUnit has a solution to this problem in the form of the #qunit-fixture el, seen below.
+
+Fixture markup:
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QUnit Test</title>
+    <link rel="stylesheet" href="qunit.css">
+    <script src="qunit.js"></script>
+    <script src="app.js"></script>
+    <script src="tests.js"></script>
+</head>
+<body>
+    <h1 id="qunit-header">QUnit Test</h1>
+    <h2 id="qunit-banner"></h2>
+    <div id="qunit-testrunner-toolbar"></div>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture"></div>
+</body>
+</html>
+We can either opt to place static markup in the fixture or just insert/append any DOM els we may need to it. QUnit will automatically reset the innerHTML of the fixture after each test to its original value. In case you’re using jQuery, it’s useful to know that QUnit checks for its availability and will opt to use $(el).html() instead, which will cleanup any jQuery event handlers too.
+
+Fixtures example:
+Let us now go through a more complete example of using fixtures. One thing that most of us are used to doing in jQuery is working with lists - they’re often used to define the markup for menus, grids, and a number of other components. You may have used jQuery plugins before that manipulated a given list in a particular way and it can be useful to test that the final (manipulated) output of the plugin is what was expected.
+
+For the purposes of our next example, we’re going to use Ben Alman’s $.enumerate() plugin, which can prepend each item in a list by its index, optionally allowing us to set what the first number in the list is. The code snippet for the plugin can be found below, followed by an example of the output it generates:
+
+$.fn.enumerate = function( start ) {
+      if ( typeof start !== 'undefined' ) {
+        // Since `start` value was provided, enumerate and return
+        // the initial jQuery object to allow chaining.
+
+        return this.each(function(i){
+          $(this).prepend( '<b>' + ( i + start ) + '</b> ' );
+        });
+
+      } else {
+        // Since no `start` value was provided, function as a
+        // getter, returning the appropriate value from the first
+        // selected el.
+
+        val = this.eq( 0 ).children( 'b' ).eq( 0 ).text();
+        return Number( val );
+      }
+    };
+
+/*
+    <ul>
+      <li>1. hello</li>
+      <li>2. world</li>
+      <li>3. i</li>
+      <li>4. am</li>
+      <li>5. foo</li>
+    </ul>
+*/
+Let’s now write some tests for the plugin. First, we define the markup for a list containing some sample items inside our qunit-fixture el:
+
+<div id="qunit-fixture">
+    <ul>
+      <li>hello</li>
+      <li>world</li>
+      <li>i</li>
+      <li>am</li>
+      <li>foo</li>
+    </ul>
+ </div>
+Next, we need to think about what should be tested. $.enumerate() supports a few different use cases, including:
+
+No arguments passed - i.e., $(el).enumerate()
+0 passed as an argument - i.e., $(el).enumerate(0)
+1 passed as an argument - i.e., $(el).enumerate(1)
+As the text value for each list item is of the form “n. item-text” and we only require this to test against the expected output, we can simply access the content using $(el).eq(index).text() (for more information on .eq() see here).
+
+and finally, here are our test cases:
+
+module('jQuery#enumerate');
+
+test( 'No arguments passed', 5, function() {
+  items = $('#qunit-fixture li').enumerate(); // 0
+  equal( items.eq(0).text(), '0. hello', 'first item should have index 0' );
+  equal( items.eq(1).text(), '1. world', 'second item should have index 1' );
+  equal( items.eq(2).text(), '2. i', 'third item should have index 2' );
+  equal( items.eq(3).text(), '3. am', 'fourth item should have index 3' );
+  equal( items.eq(4).text(), '4. foo', 'fifth item should have index 4' );
+});
+
+test( '0 passed as an argument', 5, function() {
+  items = $('#qunit-fixture li').enumerate( 0 );
+  equal( items.eq(0).text(), '0. hello', 'first item should have index 0' );
+  equal( items.eq(1).text(), '1. world', 'second item should have index 1' );
+  equal( items.eq(2).text(), '2. i', 'third item should have index 2' );
+  equal( items.eq(3).text(), '3. am', 'fourth item should have index 3' );
+  equal( items.eq(4).text(), '4. foo', 'fifth item should have index 4' );
+});
+
+test( '1 passed as an argument', 3, function() {
+  items = $('#qunit-fixture li').enumerate( 1 );
+  equal( items.eq(0).text(), '1. hello', 'first item should have index 1' );
+  equal( items.eq(1).text(), '2. world', 'second item should have index 2' );
+  equal( items.eq(2).text(), '3. i', 'third item should have index 3' );
+  equal( items.eq(3).text(), '4. am', 'fourth item should have index 4' );
+  equal( items.eq(4).text(), '5. foo', 'fifth item should have index 5' );
+});
+
+Asynchronous code
+As with Jasmine, the effort required to run synchronous tests with QUnit is fairly minimal. That said, what about tests that require asynchronous cbs (such as expensive processes, Ajax requests, and so on)? When we’re dealing with asynchronous code, rather than letting QUnit control when the next test runs,
+ we can tell it that we need it to stop running and wait until it’s okay to continue once again.
+Remember: running asynchronous code without any special considerations can cause incorrect assertions to appear in other tests, so we want to make sure we get it right.
+
+Writing QUnit tests for asynchronous code is made possible using the start() and stop() methods, which programmatically set the start and stop points during such tests. Here’s a simple example:
+
+test('An async test', function(){
+   stop();
+   expect( 1 );
+   $.ajax({
+        url: '/test',
+        dataType: 'json',
+        success: function( data ){
+            deepEqual(data, {
+               topic: 'hello',
+               message: 'hi there!''
+            });
+            ok(true, 'Asynchronous test passed!');
+            start();
+        }
+    });
+});
+A jQuery $.ajax() request is used to connect to a test resource and assert that the data returned is correct. deepEqual() is used here as it allows us to compare different data types (e.g., objects, arrays) and ensures that what is returned is exactly what we’re expecting. We know that our Ajax request is asynchronous and so we first call stop(), then run the code making the request, and finally, at the very end of our cb, inform QUnit that it is okay to continue running other tests.
+
+Note: rather than including stop(), we can simply exclude it and substitute test() with asyncTest() if we prefer. This improves readability when dealing with a mixture of asynchronous and synchronous tests in your suite. While this setup should work fine for many use-cases, there is no guarantee that the cb in our $.ajax() request will actually get called. To factor this into our tests, we can use expect() once again to define how many assertions we expect to see within our test. This is a healthy safety blanket as it ensures that if a test completes with an insufficient number of assertions, we know something went wrong and can fix it.
+
+SinonJS
+
+Similar to the section on testing bb.js apps using the Jasmine BDD framework, we’re nearly ready to take what we’ve learned and write a number of QUnit tests for our Toddo application.
+
+Before we start though, you may have noticed that QUnit doesn’t support test spies. Test spies are fns which record arguments, exceptions, and return values for any of their calls. They’re typically used to test cbs and how fns may be used in the application being tested. In testing frameworks, spies usually are anonymous fns or wrappers around fns which already exist.
+
+What is SinonJS?
+In order for us to substitute support for spies in QUnit, we will be taking advantage of a mocking framework called SinonJS by Christian Johansen. We will also be using the SinonJS-QUnit adapter which provides seamless integration with QUnit (meaning setup is minimal). Sinon.JS is completely test-framework agnostic and should be easy to use with any testing framework, so it’s ideal for our needs.
+
+The framework supports three features we’ll be taking advantage of for unit testing our application:
+
+Anonymous spies
+Spying on existing methods
+A rich inspection interface
+Basic Spies
+Using this.spy() without any arguments creates an anonymous spy. This is comparable to jasmine.createSpy(). We can observe basic usage of a SinonJS spy in the following example:
+
+test('should call all subscribers for a message exactly once', function () {
+    message = getUniqueString();
+    spy = this.spy();
+
+    PubSub.subscribe( message, spy );
+    PubSub.publishSync( message, 'Hello World' );
+
+    ok( spy.calledOnce, 'the subscriber was called once' );
+});
+Spying On Existing Functions
+We can also use this.spy() to spy on existing fns
+(like jQuery’s $.ajax) in the example below.
+When spying on a function which already exists,
+the function behaves normally but we get access to data
+about its calls which can be very useful for testing purposes.
+
+test( 'should inspect the jQuery.getJSON usage of jQuery.ajax', function () {
+    this.spy( jQuery, 'ajax' );
+
+    jQuery.getJSON( '/toddos/completed' );
+
+    ok( jQuery.ajax.calledOnce );
+    equals( jQuery.ajax.getCall(0).args[0].url, '/toddos/completed' );
+    equals( jQuery.ajax.getCall(0).args[0].dataType, 'json' );
+});
+
+
+Inspection Interface
+SinonJS comes with a rich spy interface which allows us to test whether a spy was called with a specific argument, if it was called a specific number of times, and test against the values of arguments. A complete list of features supported in the interface can be found on SinonJS.org, but let’s take a look at some examples demonstrating some of the most commonly used ones:
+
+Matching arguments: test a spy was called with a specific set of arguments:
+
+test( 'Should call a subscriber with standard matching': function () {
+    spy = sinon.spy();
+
+    PubSub.subscribe( 'message', spy );
+    PubSub.publishSync( 'message', { id: 45 } );
+
+    assertTrue( spy.calledWith( { id: 45 } ) );
+});
+Stricter argument matching: test a spy was called at least once with specific arguments and no others:
+
+test( 'Should call a subscriber with strict matching': function () {
+    spy = sinon.spy();
+
+    PubSub.subscribe( 'message', spy );
+    PubSub.publishSync( 'message', 'many', 'arguments' );
+    PubSub.publishSync( 'message', 12, 34 );
+
+    // This passes
+    assertTrue( spy.calledWith('many') );
+
+    // This however, fails
+    assertTrue( spy.calledWithExactly( 'many' ) );
+});
+Testing call order: testing if a spy was called before or after another spy:
+
+test( 'Should call a subscriber and maintain call order': function () {
+    a = sinon.spy();
+    b = sinon.spy();
+
+    PubSub.subscribe( 'message', a );
+    PubSub.subscribe( 'event', b );
+
+    PubSub.publishSync( 'message', { id: 45 } );
+    PubSub.publishSync( 'event', [1, 2, 3] );
+
+    assertTrue( a.calledBefore(b) );
+    assertTrue( b.calledAfter(a) );
+});
+Match execution counts: test a spy was called a specific number of times:
+
+test( 'Should call a subscriber and check call counts', function () {
+    message = getUniqueString();
+    spy = this.spy();
+
+    PubSub.subscribe( message, spy );
+    PubSub.publishSync( message, 'some payload' );
+
+
+    // Passes if spy was called once and only once.
+    ok( spy.calledOnce ); // calledTwice and calledThrice are also supported
+
+    // The number of recorded calls.
+    equal( spy.callCount, 1 );
+
+    // Directly checking the arguments of the call
+    equals( spy.getCall(0).args[0], message );
+});
+Stubs and mocks
+SinonJS also supports two other powerful features: stubs and mocks. Both stubs and mocks implement all of the features of the spy API, but have some added functionality.
+
+Stubs
+A stub allows us to replace any existing behaviour for a specific method with something else. They can be very useful for simulating exceptions and are most often used to write test cases when certain dependencies of your code-base may not yet be written.
+
+Let us briefly re-explore our bb Toddo application, which contained a Toddo model and a ToddoList collection. For the purpose of this walkthrough, we want to isolate our ToddoList collection and fake the Toddo model to test how adding new models might behave.
+
+We can pretend that the models have yet to be written just to demonstrate how stubbing might be carried out. A shell collection just containing a reference to the model to be used might look like this:
+
+ToddoList = bb.Collection.extend({
+    model: Toddo
+});
+
+// Let's assume our instance of this collection is
+this.toddoList;
+Assuming our collection is instantiating new models itself, it’s necessary for us to stub the model’s constructor function for the the test. This can be done by creating a simple stub as follows:
+
+this.toddoStub = sinon.stub( window, 'Toddo' );
+The above creates a stub of the Toddo method on the window object. When stubbing a persistent object, it’s necessary to restore it to its original state. This can be done in a teardown() as follows:
+
+this.toddoStub.restore();
+After this, we need to alter what the constructor returns, which can be efficiently done using a plain bb.Model constructor. While this isn’t a Toddo model, it does still provide us an actual bb model.
+
+setup: function() {
+    this.model = new bb.Model({
+      id: 2,
+      title: 'Hello world'
+    });
+    this.toddoStub.returns( this.model );
+});
+The expectation here might be that this snippet would ensure our ToddoList collection always instantiates a stubbed Toddo model, but because a reference to the model in the collection is already present, we need to reset the model property of our collection as follows:
+
+this.toddoList.model = Toddo;
+The result of this is that when our ToddoList collection instantiates new Toddo models, it will return our plain bb model instance as desired. This allows us to write a test for the addition of new model literals as follows:
+
+module( 'Should function when instantiated with model literals', {
+
+  setup:function() {
+
+    this.toddoStub = sinon.stub(window, 'Toddo');
+    this.model = new bb.Model({
+      id: 2,
+      title: 'Hello world'
+    });
+
+    this.toddoStub.returns(this.model);
+    this.toddos = new ToddoList();
+
+    // Let's reset the relationship to use a stub
+    this.toddos.model = Toddo;
+
+    // add a model
+    this.toddos.add({
+      id: 2,
+      title: 'Hello world'
+    });
+  },
+
+  teardown: function() {
+    this.toddoStub.restore();
+  }
+
+});
+
+test('should add a model', function() {
+    equal( this.toddos.length, 1 );
+});
+
+test('should find a model by id', function() {
+    equal( this.toddos.get(5).get('id'), 5 );
+  });
+});
+Mocks
+Mocks are effectively the same as stubs, however they mock a complete API and have some built-in expectations for how they should be used. The difference between a mock and a spy is that as the expectations for their use are pre-defined and the test will fail if any of these are not met.
+
+Here’s a snippet with sample usage of a mock based on PubSubJS. Here, we have a clearToddo() method as a cb and use mocks to verify its behavior.
+
+test('should call all subscribers when exceptions', function () {
+    myAPI = { clearToddo: function () {} };
+
+    spy = this.spy();
+    mock = this.mock( myAPI );
+    mock.expects( 'clearToddo' ).once().throws();
+
+    PubSub.subscribe( 'message', myAPI.clearToddo );
+    PubSub.subscribe( 'message', spy );
+    PubSub.publishSync( 'message', undefined );
+
+    mock.verify();
+    ok( spy.calledOnce );
+});
+Exercise
+We can now begin writing tests for our Toddo application, which are listed and separated by component (e.g., Models, Collections, etc.). It’s useful to pay attention to the name of the test, the logic being tested, and most importantly the assertions being made as this will give you some insight into how what we’ve learned can be applied to a complete application.
+
+To get the most out of this section, I recommend looking at the QUnit Koans included in the practicals/qunit-koans folder - this is a port of the bb.js Jasmine Koans over to QUnit.
+
+In case you haven’t had a chance to try out one of the Koans kits as yet, they are a set of unit tests using a specific testing framework that both demonstrate how a set of tests for an application may be written, but also leave some tests unfilled so that you can complete them as an exercise.
+
+Models
+For our models we want to at minimum test that:
+
+New instances can be created with the expected default values
+Attributes can be set and retrieved correctly
+Changes to state correctly fire off cust evs where needed
+Validation rules are correctly enforced
+module( 'About bb.Model');
+
+test('Can be created with default values for its atts.', function() {
+    expect( 3 );
+
+    toddo = new Toddo();
+    equal( toddo.get('text'), '' );
+    equal( toddo.get('done'), false );
+    equal( toddo.get('order'), 0 );
+});
+
+test('Will set atts on the model instance when created.', function() {
+    expect( 1 );
+
+    toddo = new Toddo( { text: 'Get oil change for car.' } );
+    equal( toddo.get('text'), 'Get oil change for car.' );
+
+});
+
+test('Will call a cust initialize function on the model instance when created.', function() {
+    expect( 1 );
+
+    toot = new Toddo({ text: 'Stop monkeys from throwing their own crap!' });
+    equal( toot.get('text'), 'Stop monkeys from throwing their own rainbows!' );
+});
+
+test('Fires a cust event when the state changes.', function() {
+    expect( 1 );
+
+    spy = this.spy();
+    toddo = new Toddo();
+
+    toddo.on( 'change', spy );
+    // Change the model state
+    toddo.set( { text: 'new text' } );
+
+    ok( spy.calledOnce, 'A change event cb was correctly triggered' );
+});
+
+
+test('Can contain cust validation rules, and will trigger an invalid event on failed validation.', function() {
+    expect( 3 );
+
+    errorCallback = this.spy();
+    toddo = new Toddo();
+
+    toddo.on('invalid', errorCallback);
+    // Change the model state in such a way that validation will fail
+    toddo.set( { done: 'not a boolean' } );
+
+    ok( errorCallback.called, 'A failed validation correctly triggered an error' );
+    notEqual( errorCallback.getCall(0), undefined );
+    equal( errorCallback.getCall(0).args[1], 'Toddo.done must be a boolean value.' );
+
+});
+Collections
+For our collection we’ll want to test that:
+
+The Collection has a Toddo Model
+Uses localStorage for syncing
+That done(), remaining() and clear() work as expected
+The order for Toddos is numerically correct
+  module('Test Collection', {
+
+    setup: function() {
+
+      // Define new toddos
+      this.toddoOne = new Toddo;
+      this.toddoTwo = new Toddo({
+        title: "Buy some milk"
+      });
+
+      // Create a new collection of toddos for testing
+      this.toddos = new ToddoList([this.toddoOne, this.toddoTwo]);
+    }
+  });
+
+    test('Has the Toddo model', function() {
+      expect( 1 );
+      equal(this.toddos.model, Toddo);
+    });
+
+    test('Uses local storage', function() {
+      expect( 1 );
+      equal(this.toddos.localStorage, new Store('toddos-backbone'));
+    });
+
+    // done
+      test('returns an array of the toddos that are done', function() {
+        expect( 1 );
+        this.toddoTwo.done = true;
+        deepEqual(this.toddos.done(), [this.toddoTwo]);
+      });
+
+    // remaining
+      test('returns an array of the toddos that are not done', function() {
+        expect( 1 );
+        this.toddoTwo.done = true;
+        deepEqual(this.toddos.remaining(), [this.toddoOne]);
+      });
+
+    // clear
+      test('destroys the current toddo from local storage', function() {
+        expect( 2 );
+        deepEqual(this.toddos.models, [this.toddoOne, this.toddoTwo]);
+        this.toddos.clear(this.toddoOne);
+        deepEqual(this.toddos.models, [this.toddoTwo]);
+      });
+
+    // Order sets the order on toddos ascending numerically
+      test('defaults to one when there arent any items in the collection', function() {
+        expect( 1 );
+        this.emptyToddos = new ToddoApp.Collections.ToddoList;
+        equal(this.emptyToddos.order(), 0);
+      });
+
+      test('Increments the order by one each time', function() {
+        expect( 2 );
+        equal(this.toddos.order(this.toddoOne), 1);
+        equal(this.toddos.order(this.toddoTwo), 2);
+      });
+Views
+For our views we want to ensure:
+
+They are being correctly tied to a DOM el when created
+They can render, after which the DOM representation of the view should be visible
+They support wiring up view methods to DOM els
+One could also take this further and test that user interactions with the view correctly result in any models that need to be changed being updated correctly.
+
+module( 'About bb.View', {
+    setup: function() {
+        $('body').append('<ul id="toddoList"></ul>');
+        this.toddoView = new ToddoView({ model: new Toddo() });
+    },
+    teardown: function() {
+        this.toddoView.remove();
+        $('#toddoList').remove();
+    }
+});
+
+test('Should be tied to a DOM el when created, based off the property provided.', function() {
+    expect( 1 );
+    equal( this.toddoView.el.tagName.toLowerCase(), 'li' );
+});
+
+test('Is backed by a model instance, which provides the data.', function() {
+    expect( 2 );
+    notEqual( this.toddoView.model, undefined );
+    equal( this.toddoView.model.get('done'), false );
+});
+
+test('Can render, after which the DOM representation of the view will be visible.', function() {
+   this.toddoView.render();
+
+    // Append the DOM representation of the view to ul#toddoList
+    $('ul#toddoList').append(this.toddoView.el);
+
+    // Check the number of li items rendered to the list
+    equal($('#toddoList').find('li').length, 1);
+});
+
+asyncTest('Can wire up view methods to DOM els.', function() {
+    expect( 2 );
+    viewElt;
+
+    $('#toddoList').append( this.toddoView.render().el );
+
+    setTimeout(function() {
+        viewElt = $('#toddoList li input.check').filter(':first');
+
+        equal(viewElt.length > 0, true);
+
+        // Ensure QUnit knows we can continue
+        start();
+    }, 1000, 'Expected DOM Elt to exist');
+
+    // Trigger the view to toggle the 'done' status on an item or items
+    $('#toddoList li input.check').click();
+
+    // Check the done status for the model is true
+    equal( this.toddoView.model.get('done'), true );
+});
+App
+It can also be useful to write tests for any application bootstrap you may have in place. For the following module, our setup instantiates and appends to a ToddoApp view and we can test anything from local instances of views being correctly defined to application interactions correctly resulting in changes to instances of local collections.
+
+module( 'About bb Applications' , {
+    setup: function() {
+        bb.localStorageDB = new Store('testToddos');
+        $('#qunit-fixture').append('<div id="app"></div>');
+        this.App = new ToddoApp({ appendTo: $('#app') });
+    },
+
+    teardown: function() {
+        this.App.toddos.reset();
+        $('#app').remove();
+    }
+});
+
+test('Should bootstrap the application by initializing the Collection.', function() {
+    expect( 2 );
+
+    // The toddos collection should not be undefined
+    notEqual( this.App.toddos, undefined );
+
+    // The initial length of our toddos should however be zero
+    equal( this.App.toddos.length, 0 );
+});
+
+test( 'Should bind Collection evs to View creation.' , function() {
+
+      // Set the value of a brand new toddo within the input box
+      $('#new-toddo').val( 'Buy some milk' );
+
+      // Trigger the enter (return) key to be pressed inside #new-toddo
+      // causing the new item to be added to the toddos collection
+      $('#new-toddo').trigger(new $.Event( 'keypress', { keyCode: 13 } ));
+
+      // The length of our collection should now be 1
+      equal( this.App.toddos.length, 1 );
+ });
+Further Reading & Resources
+That’s it for this section on testing applications with QUnit and SinonJS. I encourage you to try out the QUnit bb.js Koans and see if you can extend some of the examples. For further reading consider looking at some of the additional resources below:
+
+Test-driven JavaScript Development (book)
+SinonJS/QUnit Adapter
+SinonJS and QUnit
+Automating JavaScript Testing With QUnit
+Ben Alman’s Unit Testing With QUnit
+Another QUnit/bb.js demo project
+SinonJS helpers for bb
+Resources
+
+Books & Courses
+PeepCode: bb.js Basics
+CodeSchool: Anatomy Of bb
+Recipes With bb
+bb Patterns
+bb On Rails
+MVC In JavaScript With bb
+bb Tutorials
+Derick Bailey’s Resources For Learning bb
+Extensions/Libraries
+MarionetteJS
+AuraJS
+Thorax
+Lumbar
+bb Layout Manager
+bb Boilerplate
+bb.ModelBinder
+bb Relational - for model relationships
+bb CouchDB
+bb Validations - HTML5 inspired validations
+Conclusions
+
+I hope that you’ve found this introduction to bb.js of value. What you’ve hopefully learned is that while building a JavaScript-heavy application using nothing more than a DOM manipulation library (such as jQuery) is certainly a possible feat, it is difficult to build anything non-trivial without any formal structure in place. Your nested pile of jQuery cbs and DOM els are unlikely to scale, and they can be very difficult to maintain as your application grows.
+
+The beauty of bb.js is its simplicity. It’s very small given the functionality and flexibility it provides, which is evident if you begin to study the bb.js source. In the words of Jeremy Ashkenas, “The essential premise at the heart of bb has always been to try and discover the minimal set of data-structuring (Models and Collections) and user interface (Views and URLs) primitives that are useful when building web applications with JavaScript.” It just helps you improve the structure of your applications, thereby helping you better separate concerns. There isn’t anything more to it than that.
+
+bb offers Models with key-value bindings and evs, Collections with an API of rich enumerable methods, declarative Views with event handling and a simple way to connect an existing API to your client-side application over a RESTful JSON interface. Use it and you can abstract away data into sane models and your DOM manipulation into views, binding them together using nothing more than evs.
+
+Almost any developer working on JavaScript applications for a while will ultimately create a similar solution on their own if they value architecture and maintainability. The alternative to using bb or something similar is rolling your own - often a process that involves glueing together a diverse set of libraries that weren’t built to work together. You might use jQuery BBQ for history management and Handlebars for templating, while writing abstracts for organizing and testing code by yourself.
+
+Contrast this with bb, which has literate documentation of the source code, a thriving community of both users and hackers, and a large number of questions about it asked and answered daily on sites like Stack Overflow. Rather than re-inventing the wheel, there are many advantages to structuring your application using a solution based on the collective knowledge and experience of an entire community.
+
+In addition to helping provide sane structure to your applications, bb is highly extensible. bb supports more cust architecture should you require more than what is prescribed out of the box. This is evident by the number of bb extensions and plugins which have been released over the past year, including those which we have touched upon such as MarionetteJS and Thorax.
+
+These days bb.js powers many complex web applications, ranging from the LinkedIn mobile app to popular RSS readers such as NewsBlur through to social commentary widgets such as Disqus. This small library of simple, but sane abstractions has helped to create a new generation of rich web applications, and I and my collaborators hope that in time it can help you too.
+
+If you’re wondering whether it is worth using bb on a project, ask yourself whether what you are building is complex enough to merit using it. Are you hitting the limits of your ability to organize your code? Will your application have regular changes to what is displayed in the UI without a trip back to the server for new pages? Would you benefit from a separation of concerns? If so, a solution like bb may be able to help.
+
+Google’s GMail is often cited as an example of a well-built single-page app. If you’ve used it, you might have noticed that it requests a large initial chunk of data, representing most of the JavaScript, CSS and HTML most users will need. Everything extra needed after that occurs in the background. GMail can easily switch between your inbox to your spam folder without needing the whole page to be re-rendered. Libraries like bb make it easier for web developers to create experiences like this.
+
+That said, bb won’t be able to help if you’re planning on building something which isn’t worth the learning curve associated with a library. If your application or site will still be using the server to do the heavy lifting of constructing and serving complete pages to the browser, you may find just using plain JavaScript or jQuery for simple effects or interactions to be more appropriate. Spend time assessing how suitable bb might be for your application and make the right choice on a per-project basis.
+
+bb is neither difficult to learn nor to use. However, the time and effort you spend learning how to structure applications using it will be well worth it. While reading this book will equip you with the fundamentals needed to understand the library, the best way to learn is to try building your own real-world applications. You will hopefully find that the end product contains cleaner, better organized and more maintainable code.
+
+With that, I wish you the very best with your onward journey into the world of bb and will leave you with a quote from American writer Henry Miller - “One’s destination is never a place, but a new way of seeing things.”
+
+Appendix
+
+A Simple JavaScript MVC Implementation
+A comprehensive discussion of bb’s implementation is beyond the scope of this book. We can, however, present a simple MVC library - which we will call Cranium.js - that illustrates how libraries such as bb implement the MVC pattern.
+
+Like bb, we will rely on Underscore for inheritance and templating.
+
+Event System
+At the heart of our JavaScript MVC implementation is an Event system (object) based on the Publisher-Subscriber Pattern which makes it possible for MVC components to communicate in an elegant, decoupled manner. Subscribers ‘listen’ for specific evs of interest and react when Publishers broadcast these evs.
+
+Event is mixed into both the View and Model components so that instances of either of these components can publish evs of interest.
+
+// cranium.js - Cranium.Events
+
+Cranium = Cranium || {};
+
+// Set DOM selection utility
+$ = this.jQuery || this.Zepto || document.querySelectorAll.bind(document);
+
+// Mix in to any object in order to provide it with cust evs.
+Events = Cranium.Events = {
+  // Keeps list of evs and associated listeners
+  channels: {},
+
+  // Counter
+  eventNumber: 0,
+
+  // Announce evs and passes data to the listeners;
+  trigger: function (evs, data) {
+    for (topic in Cranium.Events.channels){
+      if (Cranium.Events.channels.hasOwnProperty(topic)) {
+        if (topic.split("-")[0] == evs){
+          Cranium.Events.channels[topic](data) !== false || delete Cranium.Events.channels[topic];
+        }
+      }
+    }
+  },
+  // Registers an event type and its listener
+  on: function (evs, cb) {
+    Cranium.Events.channels[evs + --Cranium.Events.eventNumber] = cb;
+  },
+  // Unregisters an event type and its listener
+  off: function(topic) {
+    topic;
+    for (topic in Cranium.Events.channels) {
+      if (Cranium.Events.channels.hasOwnProperty(topic)) {
+        if (topic.split("-")[0] == evs) {
+          delete Cranium.Events.channels[topic];
+        }
+      }
+    }
+  }
+};
+The Event system makes it possible for:
+
+a View to notify its subscribers of user interaction (e.g., clicks or input in a form), to update/re-render its presentation, etc.
+a Model whose data has changed to notify its Subscribers to update themselves (e.g., view to re-render to show accurate/updated data), etc.
+Models
+Models manage the (domain-specific) data for an application. They are concerned with neither the user-interface nor presentation layers, but instead represent structured data that an application may require. When a model changes (e.g when it is updated), it will typically notify its observers (Subscribers) that a change has occurred so that they may react accordingly.
+
+Let’s see a simple implementation of the Model:
+
+// cranium.js - Cranium.Model
+
+// Attributes represents data, model's properties.
+// These are to be passed at Model instantiation.
+// Also we are creating id for each Model instance
+// so that it can identify itself (e.g. on chage
+// announcements)
+Model = Cranium.Model = function (atts) {
+    this.id = _.uniqueId('model');
+    this.atts = atts || {};
+};
+
+// Getter (accessor) method;
+// returns named data item
+Cranium.Model.prototype.get = function(attrName) {
+    return this.atts[attrName];
+};
+
+// Setter (mutator) method;
+// Set/mix in into model mapped data (e.g.{name: "John"})
+// and publishes the change event
+Cranium.Model.prototype.set = function(attrs){
+    if (_.isObject(attrs)) {
+      _.extend(this.atts, attrs);
+      this.change(this.atts);
+    }
+    return this;
+};
+
+// Returns clone of the Models data object
+// (used for view template rendering)
+Cranium.Model.prototype.toJSON = function(options) {
+    return _.clone(this.atts);
+};
+
+// Helper function that announces changes to the Model
+// and passes the new data
+Cranium.Model.prototype.change = function(attrs){
+    this.trigger(this.id + 'update', attrs);
+};
+
+// Mix in Event system
+_.extend(Cranium.Model.prototype, Cranium.Events);
+Views
+Views are a visual representation of models that present a filtered view of their current state. A view typically observes a model and is notified when the model changes, allowing the view to update itself accordingly. Design pattern literature commonly refers to views as ‘dumb’, given that their knowledge of models and controllers in an application is limited.
+
+Let’s explore Views a little further using a simple JavaScript example:
+
+// DOM View
+View = Cranium.View = function (options) {
+  // Mix in options object (e.g extending functionality)
+  _.extend(this, options);
+  this.id = _.uniqueId('view');
+};
+
+// Mix in Event system
+_.extend(Cranium.View.prototype, Cranium.Events);
+Controllers
+Controllers are an intermediary between models and views which are classically responsible for two tasks:
+
+they update the view when the model changes
+they update the model when the user manipulates the view
+// cranium.js - Cranium.Controller
+
+// Controller tying together a model and view
+Controller = Cranium.Controller = function(options){
+  // Mix in options object (e.g extending functionality)
+  _.extend(this, options);
+  this.id = _.uniqueId('controller');
+  parts, selector, eventType;
+
+  // Parses Events object passed during the definition of the
+  // controller and maps it to the defined method to handle it;
+  if(this.evs){
+    _.e(this.evs, function(method, eventName){
+      parts = eventName.split('.');
+      selector = parts[0];
+      eventType = parts[1];
+      $(selector)['on' + eventType] = this[method];
+    }.bind(this));
+  }
+};
+Practical Usage
+HTML template for the primer that follows:
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="description" content="">
+</head>
+<body>
+<div id="toddo">
+</div>
+  <script type="text/template" class="toddo-template">
+    <div>
+      <input id="toddo_complete" type="checkbox" <%= completed %>>
+      <%= title %>
+    </div>
+  </script>
+  <script src="underscore-min.js"></script>
+  <script src="cranium.js"></script>
+  <script src="example.js"></script>
+</body>
+</html>
+Cranium.js usage:
+
+
+// example.js - usage of Cranium MVC
+
+// And toddo instance
+toddo1 = new Cranium.Model({
+    title: "",
+    completed: ""
+});
+
+console.log("First toddo title - nothing set: " + toddo1.get('title'));
+toddo1.set({title: "Do something"});
+console.log("Its changed now: " + toddo1.get('title'));
+''
+// View instance
+toddoView = new Cranium.View({
+  // DOM el selector
+  el: '#toddo',
+
+  // Toddo template; Underscore temlating used
+  template: _.template($('.toddo-template').innerHTML),
+
+  init: function (model) {
+    this.render( model.atts );
+
+    this.on(model.id + 'update', this.render.bind(this));
+  },
+  render: function (data) {
+    console.log("View about to render.");
+    $(this.el).innerHTML = this.template( data );
+  }
+});
+
+toddoController = new Cranium.Controller({
+  // Specify the model to update
+  model: toddo1,
+
+  // and the view to observe this model
+  view:  toddoView,
+
+  evs: {
+    "#toddo.click" : "toggleComplete"
+  },
+
+  // Initialize everything
+  initialize: function () {
+    this.view.init(this.model);
+    return this;
+  },
+  // Toggles the value of the toddo in the Model
+  toggleComplete: function () {
+    completed = toddoController.model.get('completed');
+    console.log("Toddo old 'completed' value?", completed);
+    toddoController.model.set({ completed: (!completed) ? 'checked': '' });
+    console.log("Toddo new 'completed' value?", toddoController.model.get('completed'));
+    return this;
+  }
+});
+
+
+// Let's kick start things off
+toddoController.initialize();
+
+toddo1.set({ title: "Due to this change Model will notify View and it will re-render"});
+Samuel Clay, one of the authors of the first version of bb.js says of cranium.js: “Unsurprisingly, it looks a whole lot like the beginnings of bb. Views are dumb, so they get very little boilerplate and setup. Models are responsible for their atts and announcing changes to those models.”
+
+I hope you’ve found this implementation helpful in understanding how one would go about writing their own library like bb from scratch, but moreso that it encourages you to take advantage of mature existing solutions where possible but never be afraid to explore deeper down into what makes them tick.
+
+MVP
+Model-View-Presenter (MVP) is a derivative of the MVC design pattern which focuses on improving presentation logic. It originated at a company named Taligent in the early 1990s while they were working on a model for a C++ CommonPoint environment. Whilst both MVC and MVP target the separation of concerns across multiple components, there are some fundamental differences between them.
+
+For the purposes of this summary we will focus on the version of MVP most suitable for web-based architectures.
+
+Models, Views & Presenters
+The P in MVP stands for presenter. It’s a component which contains the user-interface business logic for the view. Unlike MVC, invocations from the view are delegated to the presenter, which are decoupled from the view and instead talk to it through an interface. This allows for all kinds of useful things such as being able to mock views in unit tests.
+
+The most common implementation of MVP is one which uses a Passive View (a view which is for all intents and purposes “dumb”), containing little to no logic. MVP models are almost identical to MVC models and handle application data. The presenter acts as a mediator which talks to both the view and model, however both of these are isolated from each other. They effectively bind models to views, a responsibility held by Controllers in MVC. Presenters are at the heart of the MVP pattern and as you can guess, incorporate the presentation logic behind views.
+
+Solicited by a view, presenters perform any work to do with user requests and pass data back to them. In this respect, they retrieve data, manipulate it and determine how the data should be displayed in the view. In some implementations, the presenter also interacts with a service layer to persist data (models). Models may trigger evs but it’s the presenter’s role to subscribe to them so that it can update the view. In this passive architecture, we have no concept of direct data binding. Views expose setters which presenters can use to set data.
+
+The benefit of this change from MVC is that it increases the testability of your application and provides a more clean separation between the view and the model. This isn’t however without its costs as the lack of data binding support in the pattern can often mean having to take care of this task separately.
+
+Although a common implementation of a Passive View is for the view to implement an interface, there are variations on it, including the use of evs which can decouple the View from the Presenter a little more. As we don’t have the interface construct in JavaScript, we’re using it more and more as a protocol than an explicit interface here. It’s technically still an API and it’s probably fair for us to refer to it as an interface from that perspective.
+
+There is also a Supervising Controller variation of MVP, which is closer to the MVC and MVVM - Model-View-ViewModel patterns as it provides data-binding from the Model directly from the View. Key-value observing (KVO) plugins (such as Derick Bailey’s bb.ModelBinding plugin) introduce this idea of a Supervising Controller to bb.
+
+MVP or MVC?
+MVP is generally used most often in enterprise-level applications where it’s necessary to reuse as much presentation logic as possible. Applications with very complex views and a great deal of user interaction may find that MVC doesn’t quite fit the bill here as solving this problem may mean heavily relying on multiple controllers. In MVP, all of this complex logic can be encapsulated in a presenter, which can simplify maintenance greatly.
+
+As MVP views are defined through an interface and the interface is technically the only point of contact between the system and the view (other than a presenter), this pattern also allows developers to write presentation logic without needing to wait for designers to produce layouts and graphics for the application.
+
+Depending on the implementation, MVP may be more easy to automatically unit test than MVC. The reason often cited for this is that the presenter can be used as a complete mock of the user-interface and so it can be unit tested independent of other components. In my experience this really depends on the languages you are implementing MVP in (there’s quite a difference between opting for MVP for a JavaScript project over one for say, ASP.NET).
+
+At the end of the day, the underlying concerns you may have with MVC will likely hold true for MVP given that the differences between them are mainly semantic. As long as you are cleanly separating concerns into models, views and controllers (or presenters) you should be achieving most of the same benefits regardless of the pattern you opt for.
+
+MVC, MVP and bb.js
+There are very few, if any architectural JavaScript frameworks that claim to implement the MVC or MVP patterns in their classical form as many JavaScript developers don’t view MVC and MVP as being mutually exclusive (we are actually more likely to see MVP strictly implemented when looking at web frameworks such as ASP.NET or GWT). This is because it’s possible to have additional presenter/view logic in your application and yet still consider it a flavor of MVC.
+
+bb contributor Irene Ros subscribes to this way of thinking as when she separates bb views out into their own distinct components, she needs something to actually assemble them for her. This could either be a controller route (such as a bb.Router) or a cb in response to data being fetched.
+
+That said, some developers do however feel that bb.js better fits the description of MVP than it does MVC . Their view is that:
+
+The presenter in MVP better describes the bb.View (the layer between View templates and the data bound to it) than a controller does
+The model fits bb.Model (it isn’t that different from the classical MVC “Model”)
+The views best represent templates (e.g Handlebars/Mustache markup templates)
+A response to this could be that the view can also just be a View (as per MVC) because bb is flexible enough to let it be used for multiple purposes. The V in MVC and the P in MVP can both be accomplished by bb.View because they’re able to achieve two purposes: both rendering atomic components and assembling those components rendered by other views.
+
+We’ve also seen that in bb the responsibility of a controller is shared with both the bb.View and bb.Router and in the following example we can actually see that aspects of that are certainly true.
+
+Here, our bb ToddoView uses the Observer pattern to ‘subscribe’ to changes to a View’s model in the line this.listenTo(this.model, 'change',...). It also handles templating in the render() method, but unlike some other implementations, user interaction is also handled in the View (see evs).
+
+// The DOM el for a toddo item...
+app.ToddoView = bb.View.extend({
+
+  //... is a list tag.
+  tagName:  'li',
+
+  // Pass the contents of the toddo template through a templating
+  // function, cache it for a single toddo
+  template: _.template( $('#item-template').html() ),
+
+  // The DOM evs specific to an item.
+  evs: {
+    'click .toggle':  'togglecompleted'
+  },
+
+  // The ToddoView listens for changes to its model, re-rendering. Since there's
+  // a one-to-one correspondence between a **Toddo** and a **ToddoView** in this
+  // app, we set a direct reference on the model for convenience.
+  initialize: function() {
+    this.listenTo( this.model, 'change', this.render );
+    this.listenTo( this.model, 'destroy', this.remove );
+  },
+
+  // Re-render the titles of the toddo item.
+  render: function() {
+    this.$el.html( this.template( this.model.atts ) );
+    return this;
+  },
+
+  // Toggle the `"completed"` state of the model.
+  togglecompleted: function() {
+    this.model.toggle();
+  },
+});
+Another (quite different) opinion is that bb more closely resembles Smalltalk-80 MVC, which we went through earlier.
+
+As MarionetteJS author Derick Bailey has written, it’s ultimately best not to force bb to fit any specific design patterns. Design patterns should be considered flexible guides to how applications may be structured and in this respect, bb doesn’t fit either MVC nor MVP perfectly. Instead, it borrows some of the best concepts from multiple architectural patterns and creates a flexible library that just works well. Call it the bb way, MV* or whatever helps reference its flavor of application architecture.
+
+It is however worth understanding where and why these concepts originated, so I hope that my explanations of MVC and MVP have been of help. Most structural JavaScript frameworks will adopt their own take on classical patterns, either intentionally or by accident, but the important thing is that they help us develop applications which are organized, clean and can be easily maintained.
+
+Namespacing
+When learning how to use bb, an important and commonly overlooked area by tutorials is namespacing. If you already have experience with namespacing in JavaScript, the following section will provide some advice on how to specifically apply concepts you know to bb, however I will also be covering explanations for beginners to ensure everyone is on the same page.
+
+What is namespacing?
+Namespacing is a way to avoid collisions with other objects or vars in the global namespace. Using namespacing reduces the potential of your code breaking because another script on the page is using the same var names that you are. As a good ‘citizen’ of the global namespace, it’s also imperative that you do your best to minimize the possibility of your code breaking other developer’s scripts.
+
+JavaScript doesn’t really have built-in support for namespaces like other languages, however it does have closures which can be used to achieve a similar effect.
+
+In this section we’ll be taking a look shortly at some examples of how you can namespace your models, views, routers and other components. The patterns we’ll be examining are:
+
+Single global vars
+Object Literals
+Nested namespacing
+Single global vars
+
+One popular pattern for namespacing in JavaScript is opting for a single global var
+as your primary object of reference.
+A skeleton implementation of this where we return an object with fns and properties can be found below:
+
+myApplication = (function(){
+    function(){
+      // ...
+    },
+    return {
+      // ...
+    }
+})();
+You’ve probably seen this technique before. A bb-specific example might look like this:
+
+myViews = (function(){
+    return {
+        ToddoView: bb.View.extend({ .. }),
+        ToddosView: bb.View.extend({ .. }),
+        AboutView: bb.View.extend({ .. })
+        //etc.
+    };
+})();
+Here we can return a set of views, but the same technique could return an entire collection of models, views and routers depending on how you decide to structure your application. Although this works for certain situations, the biggest challenge with the single global var pattern is ensuring that no one else has used the same global var name as you have in the page.
+
+One solution to this problem, as mentioned by Peter Michaux, is to use prefix namespacing. It’s a simple concept at heart, but the idea is you select a common prefix name (in this example, myApplication_) and then define any methods, vars or other objects after the prefix.
+
+myApplication_toddoView = bb.View.extend({}),
+    myApplication_toddosView = bb.View.extend({});
+This is effective from the perspective of trying to lower the chances of a particular var existing in the global scope, but remember that a uniquely named object can have the same effect. This aside, the biggest issue with the pattern is that it can result in a large number of global objects once your application starts to grow.
+
+For more on Peter’s views about the single global var pattern, read his excellent post on them.
+
+Note: There are several other variations on the single global var pattern out in the wild, however having reviewed quite a few, I felt the prefixing approach applied best to bb.
+
+Object Literals
+
+Object Literals have the advantage of not polluting the global namespace but assist in organizing code and parameters logically. They’re beneficial if you wish to create easily readable structures that can be expanded to support deep nesting. Unlike simple global vars, Object Literals often also take into account tests for the existence of a var by the same name, which helps reduce the chances of collision.
+
+This example demonstrates two ways you can check to see if a namespace already exists before defining it. I commonly use Option 2.
+
+/* Doesn't check for existence of myApplication */
+myApplication = {};
+
+/*
+Does check for existence. If already defined, we use that instance.
+Option 1:   if(!myApplication) myApplication = {};
+Option 2:   myApplication = myApplication || {};
+We can then populate our object literal to support models, views and collections (or any data, really):
+*/
+
+myApplication = {
+    models : {},
+    views : {
+        pages : {}
+    },
+    collections : {}
+};
+One can also opt for adding properties directly to the namespace (such as your views, in the following example):
+
+myToddosViews = myToddosViews || {};
+myToddosViews.toddoView = bb.View.extend({});
+myToddosViews.toddosView = bb.View.extend({});
+The benefit of this pattern is that you’re able to easily encapsulate all of your models, views, routers etc. in a way that clearly separates them and provides a solid foundation for extending your code.
+
+This pattern has a number of benefits. It’s often a good idea to decouple the default configuration for your application into a single area that can be easily modified without the need to search through your entire codebase just to alter it. Here’s an example of a hypothetical object literal that stores application configuration settings:
+
+myConfig = {
+  language: 'english',
+  defaults: {
+    enableDelegation: true,
+    maxToddos: 40
+  },
+  theme: {
+    skin: 'a',
+    toolbars: {
+      index: 'ui-navigation-toolbar',
+      pages: 'ui-cust-toolbar'
+    }
+  }
+}
+
+Note that there are really only minor syntactical differences between the
+ Object Literal pattern
+  and
+   standard JSON data set.
+   If for any reason you wish to use JSON for storing your configurations instead
+    (e.g. for simpler storage when sending to the back-end), feel free to.
+
+
+
+
+An extension of the Object Literal pattern is nested namespacing.
+ It’s another common pattern used that
+  offers a lower risk of collision
+  due to the fact that even if a top-level namespace already exists,
+  it’s unlikely the same nested children do.
+  For example, Yahoo’s YUI uses the nested object namespacing pattern extensively:
+
+
+YAHOO.util.Dom.getElementsByClassName('test');
+Yahoo’s YUI uses the nested object namespacing pattern regularly and even DocumentCloud (the creators of bb) use the nested namespacing pattern in their main applications. A sample implementation of nested namespacing with bb may look like this:
+
+toddoApp =  toddoApp || {};
+
+// perform similar check for nested children
+toddoApp.routers = toddoApp.routers || {};
+toddoApp.model = toddoApp.model || {};
+toddoApp.model.special = toddoApp.model.special || {};
+
+// routers
+toddoApp.routers.Workspace   = bb.Router.extend({});
+toddoApp.routers.ToddoSearch = bb.Router.extend({});
+
+// models
+toddoApp.model.Toddo   = bb.Model.extend({});
+toddoApp.model.Notes = bb.Model.extend({});
+
+// special models
+toddoApp.model.special.Admin = bb.Model.extend({});
+This is readable, clearly organized, and is a relatively safe way of namespacing your bb application. The only real caveat however is that it requires your browser’s JavaScript engine to first locate the toddoApp object, then dig down until it gets to the function you’re calling. However, developers such as Juriy Zaytsev (kangax) have tested and found the performance differences between single object namespacing vs the ‘nested’ approach to be quite negligible.
+
+What does DocumentCloud use?
+
+In case you were wondering, here is the original DocumentCloud
+(remember those guys that created bb?)
+workspace that uses namespacing in a necessary way.
+
+This approach makes sense as their documents (and annotations and document lists)
+ are embedded on third-party news sites.
+
+
+// Provide top-level namespaces for our javascript.
+(function() {
+  window.dc = {};
+  dc.controllers = {};
+  dc.model = {};
+  dc.app = {};
+  dc.ui = {};
+})();
+As you can see, they opt for declaring a top-level namespace on the window called dc, a short-form name of their app, followed by nested namespaces for the controllers, models, UI and other pieces of their application.
+
+Recommendation
+
+Reviewing the namespace patterns above,
+ the option that I prefer when writing bb applications is
+ nested object namespacing
+ with
+ the object literal pattern.
+
+Single global vars may work fine for applications that are relatively trivial.
+
+ However,
+ larger codebases requiring both namespaces and deep sub-namespaces
+ require a succinct solution that’s both readable and scalable.
+  I feel this pattern achieves both of these objectives and is a good choice for most bb development.
+
+
+methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl',
+'inject', 'reduceRight', 'foldr', 'find', 'detect', 'filter', 'select', 'reject',
+'every', 'all', 'some', 'any', 'include', 'contains', 'invoke', 'max', 'min',
+'toArray', 'size', 'first', 'head', 'take', 'initial', 'rest', 'tail', 'drop',
+ 'last', 'without', 'indexOf', 'shuffle', 'lastIndexOf', 'isEmpty', 'chain']
+
+// Mix in each Underscore method as a proxy to `Collection#models`.
+_.e(methods, function(method) {
+    Collection.prototype[method] = function() {
+        args = slice.call(arguments);
+        args.unshift(this.models);
+        return _[method].apply(_, args);
+    };
+})
+
+
+However, for a complete linked list of methods supported,
+see the official documentation.
+
+RESTful persistence
+Models and collections in bb can be “sync”ed with the server using the fetch, save and destroy methods. All of these methods delegate back to the bb.sync function, which actually wraps jQuery/Zepto’s $.ajax function, calling GET, POST and DELETE for the respective persistence methods on bb models.
+
+From the the source for bb.sync:
+
+methodMap = {
+  'create': 'POST',
+  'update': 'PUT',
+  'patch':  'PATCH',
+  'delete': 'DELETE',
+  'read':   'GET'
+};
+
+bb.sync = function(method, model, options) {
+    type = methodMap[method];
+
+    // ... Followed by lots of bb.js configuration, then..
+
+    // Make the request, allowing the user to override any Ajax options.
+    xhr = options.xhr = bb.ajax(_.extend(params, options));
+    model.trigger('request', model, xhr, options);
+    return xhr;
+
+
+
+Routing
+Calls to bb.History.start rely on jQuery/Zepto binding popState or hashchange event listeners back to the window object.
+
+
+From the source for bb.history.start:
+
+      // Depending on whether we're using pushState or hashes, and whether
+      // 'onhashchange' is supported, determine how we check the URL state.
+      if (this._hasPushState) {
+          bb.$(window)
+              .on('popstate', this.checkUrl);
+      } else if (this._wantsHashChange && ('onhashchange' in window) && !oldIE) {
+          bb.$(window)
+              .on('hashchange', this.checkUrl);
+      } else if (this._wantsHashChange) {
+          this._checkUrlInterval = setInterval(this.checkUrl, this.interval);
+      }
+      ...
+bb.History.stop similarly uses your DOM manipulation library to unbind these event listeners.

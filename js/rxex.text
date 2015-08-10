@@ -1,0 +1,205 @@
+     When you want to know whether a pt is found in a str,
+          use the test or search method
+
+          TEST   tests  mat in str, -> bool
+
+         SEARCH
+             	A String method that tests for a match in a str.
+             	It returns the index of the match, or -1 if the search fails.
+
+
+ for more information (but slower execution)
+       use the exec or match methods
+
+EXEC	 seeks mat in a str, -> arr
+
+
+   MATCH
+    A String method that executes a search for a match in a str.
+     It returns an array of information or null on a mismatch.
+
+      If you use exec or match and if the match succeeds,
+       these methods return an array
+        and update properties of the associated rx ob 
+        and also of the predefined rx ob, RX.
+         If the match fails,
+          the exec method returns null 
+          (which coerces to false).
+
+
+
+     myRe = /d(b+)d/g  ~ new RegExp("d(b+)d", "g")
+  myArray = myRe.exec("cdbbdbsbz")
+   ~ /d(b+)d/g.exec("cdbbdbsbz")
+
+   If you  use a rx created with an ob initializer
+            w/o assigning it to a var,
+           every occurrence is a new rx.
+    SO if you use this form without assigning it to a var,
+      you cannot late access pops of that rx.
+
+myArray, matched str and all remembered substrs, ["dbbd", "bb"]
+
+index, 0-based index of the mat  in  input str,
+
+input,	orig str,	"cdbbdbsbz"
+
+    [0]	The last matched chars,	"dbbd"
+myRe
+
+Gfg
+    lastIndex: ix at which 2beg  next mat
+    source: pt t, upd when rx crtd (!execd)   "d(b+)d"
+
+  re = /d(b+)d/g
+ ar  = re.exec("cdbbdbsbz");  re.lastIndex  //  5
+  ar= /d(b+)d/g.exec("cdbbdbsbz");    ar2= /d(b+)d/g.lastIndex   //0
+ two occs of /d(b+)d/g  are dif re-obs, so have dif lIx vals.
+  var helpful for getting pops of a reOb-initialized re
+
+
+
+
+
+////////////////// ()
+
+    Using ()'-ed substr mats
+
+Including '()' in a rx pt:
+-causes the corresponding submatch to be remembered
+
+ /a(b)c/
+ -mats the chars 'abc'
+ -remembers 'b'
+
+ To recall these ()'-ed substr mats,
+ use the Arr [1],...,[n].
+ The returned array holds all that were found.
+ unlimited!
+
+    using the replace() method to switch the words in the str.
+    For the replacement text, the script uses the $1 and $2
+     in the replacement to denote the
+     1st and 2nd ()'-ed substr mats.
+
+
+    ("John Smith").replace( /(\w+)\s(\w+)/, "$2, $1")
+    -> "Smith, John"
+
+
+
+
+ FLAGS can be used sep/tog,  any order, cannot be added or changed later
+  /pt/flags ~ new RegExp("pt", "flags")
+  Global caseInsen  Multln
+
+     stickYsearch mat begat tgstr curpos
+
+
+     /\w+\s/g  seeks cmbo (1+ch,sp) in str.
+
+    ("fee fi fo fum").match(   /\w+\s/g   ~  new RegExp("\\w+\\s", "g") )
+
+    ["fee ", "fi ", "fo "]
+
+      M    -> multiline input str  should be treated as mult lines.
+ If  is used,   ^   $ mat at beg/end * ln  wthn ip str   (! beg/end of   entire str).
+ 
+ 
+
+
+REPLACE
+ seeks mat in str , replaces substr-mat w new substr
+
+
+
+  	SPLIT: brk str -> [substr] w rx|str
+
+     change order in ip str, cleans a roughly formatted ip str containing ns (1st name 1st) sepby blanks,  tabs and 1 ';
+        revs n  order (lN 1st),   sorts  list , n  str contains mult sp|tabs, may have mult sp  btwn 1st/last ns
+
+
+  NS = "Harry Trump ;Fred Barney; Helen Rigby ; Bill Abel ; Chris Hand ";
+ oup = ["- Orig S \n", ns + "\n"]  // Prepare 2 rx pts & ar  storage.  str -> arr  els   // poss wSp, then ';',  then poss  wSp
+   nLs  = NS.split(   pt= /\s*;\s*/     )    //Break  str -> pt-seped pieces, stored in arr
+ pt = /(\w+)\s+(\w+)/  //  1+ chs, sps, chs // Use '()' to me portions of the pt,
+   bylNLs = []   // dsply n-arr 4 holdg ns being prcssd, popu new arr w ','-sep ns  // REPLACE  rm * mat   pt, repl it with   mem str—2nd mem  portion // fb comma space, fb 1st memo  portion, $1 $2 ref2 parts memd  while matg   pt
+
+  o.push("- Aft re Split ");  var i, l;
+    for (i = 0, l = nL.length; i < l; i++){
+        o.push(nL[i]);        bylNLs[i] = nLs[i].replace(pt, "$2, $1") }
+
+
+    o.push("- Ns Rev")
+    for (i = 0, len = bylNLs.length; i < len; i++){   oup.push(bylNLs[i]); }
+    bylNLs.sort(); o.push("---  Sorted")//Sort by lN, display  sorted arr
+    for (i = 0, len = bylNLs.length; i < len; i++){  o.push(bylNLs[i])   }
+    o.push("---  End");  $l(o.join("\n"))
+
+
+
+
+
+
+ //////////////// ex:   Using special chars to verify input
+
+
+
+        user  enters  phone num, presses the "Check" button
+        -> scr  checks the validity of the num.
+
+    valid:
+        (mats the char sequence specified by the rx),
+       scr shows  message thanking/confirming  num.
+
+         invalid:
+         the scr  informs the user num is not valid
+
+
+        Within non-capturing '()' (?: ,
+
+        the rx looks for three numeric chars
+
+
+         \d{3}   OR | a left parenthesis
+
+          \( followed by three digits \d{3},
+
+         followed by a close parenthesis \),
+
+          (end non-capturing parenthesis )
+        ),
+
+           followed by one dash,
+
+            forward slash,
+
+             or decimal point and when found,
+
+             remember the char ([-\/\.]),
+
+              followed by three digits \d{3},
+
+               followed by the remembered match of a dash,
+
+                forward slash, or decimal point \1,
+
+                 followed by four digits \d{4}.
+
+
+    The Change event activated when the user presses Enter 
+    sets the value of RX.input.
+
+
+
+    $.p('Enter your phone num (with area code)
+           and then click Check',
+            $.br(),'expected format is like ###-###-####)')
+  $.f().act('#').A(
+  $.ip().id('phone'),$.bt('Check', function(){
+  testInfo(document.getElementById('phone'))  })})
+re = /(?:\d{3}|\(\d{3}\))([-\/\.])\d{3}\1\d{4}/
+function testInfo(phoneInput){
+   OK = re.exec(phoneInput.value)
+    if (!OK) {$l(OK.input +" isn't a phone num with area code!") }
+    else {$l("Thanks, your phone num is " + OK[0])}}
