@@ -3,25 +3,27 @@ dirs= [
     '/public/deps', '/public/deps/css',     '/public/deps/js',
     '/public/pics', '/public/graphics', '/public/uploads',
     '/public/deps/ui-images', // assets: where i can publically, statically fetch items from // css, fonts, js (bs, cjs, jq, string, us)
-    '/../js',
 
-    '/../js/create',
-    '/../js/app',
+    '/../',
+
+
+    '/../create',
+    '/../app',
     '/../apps',
 
 
-    '/../js/front',
-    '/../js/front/css',
-    '/../js/front/both',
-    '/../js/games',
-    '/../js/lib',
-    '/../js/knock',
-    '/../js/back',
-    '/../js/jqui',
+    '/../front',
+    '/../front/css',
+    '/../front/both',
+    '/../games',
+    '/../lib',
+    '/../knock',
+    '/../back',
+    '/../jqui',
 
-    '/../js/css',
-    '/../js/three', '/../js/mvc',
-    '/../js/tests',   '/../js/deps', '/../js/beta', '/../js/g'
+    '/../css',
+    '/../three', '/../mvc',
+    '/../tests',   '/../deps', '/../beta', '/../g'
 ]
 
 
@@ -88,8 +90,6 @@ function midWare(){
 
     $a.use(middleware)
 }
-
-
 function routing(){
 
     $a.get(
@@ -101,13 +101,7 @@ function routing(){
 
 
 
-    require( '../routes/routes' )()
-
-    require( '../routes/socialRoutes' )()
-
-    require('../routes/bookRoutes')()
-
-
+    require( '../routes' )()
 
 
     $a.use( $a.router )
