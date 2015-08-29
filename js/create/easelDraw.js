@@ -1,19 +1,14 @@
-
-
-
 testWarp=function(){z()
     st = $St('z',500,500)
     st.mug(function(bm){ m
         bm.sXY(.1).vXY(8,4).startMoving()
         bm.warpY(0,300,100).warpX(0,400,100)})}//easel
-
 testWarp2=function(){z()
     st = $st('z',500,500)
     st.mug(function(bm){  b=bm
         bm.sXY(.1).vXY(8,4).startMoving()
         bm.warp()
     })}
-
 testKillHitting=function(){
 
     St()
@@ -23,7 +18,6 @@ testKillHitting=function(){
     st.bm('chicks',0.3, function(b){b.dg().XY(100)})
     st.bm('guy',0.8, function(b){b.dg().makeMeAKiller()})
 }
-
 startStopButtons =function(){z(); var func
     b1= $.bt('start!', function(){
 
@@ -180,9 +174,8 @@ CanvasGuy=function(x){
             t.y=wrp(0,600, 20)(t.y+t.dy)}}
     g.draw()
     return g}
-
 //shooters
-createjs.Guy=Guy=function(x,y,vx,vy, radius ){
+cjs.Guy=Guy=function(x,y,vx,vy, radius ){
 
     radius=radius||10
     x=x||300
@@ -218,7 +211,6 @@ createjs.Guy=Guy=function(x,y,vx,vy, radius ){
     guy.stop =  function(){ clearInterval(guy.funcRef )}
 
     return guy}
-
 GreenGuy =  function(x,y,vx,vy){
 
     var b= createjs.circle(40,'green').XY(x,y)

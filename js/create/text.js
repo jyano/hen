@@ -201,7 +201,6 @@ TextAdder=function(stage){
 
 function textProto(){
     var t = cjs.Text.prototype
-
     t.lineH = t.lH = function (lH) {
 
 
