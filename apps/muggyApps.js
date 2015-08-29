@@ -990,7 +990,24 @@ SORTY=function(){$.fm()
 
 tests()
 function tests(){
+    MANIFEST = function () {
+        s = cjs.S()
 
+
+        Q(['me', 'guy'], function (q) {
+
+
+            s.A(me = q.bm('me'))
+
+            s.A(guy = q.bm('guy'))
+
+
+            guy.drag()
+
+        })
+
+
+    }
 
     MUGTX=function(){z()
         $.h1('testing myMug ...').A()
@@ -1026,3 +1043,4 @@ function tests(){
         s2.A($.i('me'), $.i('guy'))
     }
 }
+

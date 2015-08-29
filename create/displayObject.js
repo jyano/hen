@@ -1,7 +1,5 @@
-obOb()
-obPhysics()
-caFl()
-cur()
+
+
 
 cjs.bm=function(img){
     alert('J.bm')
@@ -9,15 +7,80 @@ cjs.bm=function(img){
         bm = new J.Bitmap(img)
     if(g.N){bm.rC()}
     return bm
+} //warning: can't yet change to $Bm!!
+cjs.iDO=cjs.isDisplayOb=function(ob){ return O(ob)  &&  F(ob.getStage) }
+
+ob =  cjs.DisplayObject.prototype
+ob.CURSOR= ob.cu= ob.bM=function(cu){var ob=this, st=ob.st()
+    CUob= {
+        d:'default', n:'none', h:'help',
+        p:'pointer',  ch:'crosshair',
+        P:'progress', w:'wait',
+        t:'text',
+        m:'move', g:'grab',  c:'copy',
+        cm:'context-menu',
+        C:'cell',
+        N:'not-allowed', v:'not-allowed',
+        z:'zoom-in'
+    }
+
+    if(U(cu)){st.MM(function(){ob.x = st.m().x; ob.y = st.m().y})}
+    else if(S(cu)){ ob.cursor= CUob[cu]? CUob[cu] : cu  }
+    return ob
 }
-cjs.isDisplayOb=function(ob){ return O(ob)  &&  F(ob.getStage) }
+ob.bM=function(){var ob=this, st=ob.st()
+    st.MM(function(){ob.x = st.m().x; ob.y = st.m().y})
+    return ob
+}
 
+ob.ca= function(){var ob=this, st=ob.st(), g=G(arguments), o, op, i
 
+    if(O(ob.image && !g.n && !g.p)){ob.cache($(ob.image)[0])}
+
+    if(ob.cacheCanvas && !g.p && (U(g[0]) || S(g[0]) || g.n)){
+        op=g[0];ob.updateCache(op);return ob
+    }
+    o = O(g[0])? {i: g[0], x:g[1], y:[2]}: N(g[2])? {x:g[0], y:g[1], w:g[2],h:g[3] }: N(g[1])? {w:g[0], h:g[1]}: {}
+    if(O(o.i)){ o.i = o.i.image? o.i.image:$(o.i)[0];
+        if (!g.n) {
+            if(ob.image){ob= ob.image}
+            ob=$(ob)[0]
+            ob.cache(0, 0, ob.width, ob.height)}
+    }
+    o.x = N(o.x)? o.x:0; o.y = N(o.y)? o.y:0
+    o.w = N(o.w)? o.w : O(o.i)? o.i.width: N(o.h)? o.h : st? st.W():0
+    o.h = N(o.h)? o.h : O(o.i)? o.i.height: st? st.H(): 0
+    ob.cache(o.x, o.y, o.w, o.h )
+    return ob
+}
+ob.fl=function(){var ob=this,g=G(arguments),i
+    if(A(g[0])){return ob.fl.apply(ob,g[0])}
+    ob.filters=ob.filters||[]
+    _.e(g, function(fl){ob.filters.push(fl)})
+    if(!g.n){i= ob.image; this.ca(0, 0, i.width, i.height)}
+    return ob
+}
+ob.fl2=function(){var ob=this,g=G(arguments)
+    ob.filters=[]
+    ob.filters=ob.filters||[]
+    _.e(g, function(fl){
+        ob.filters.push(fl)
+    })
+    if(!g.n){i= ob.image; this.ca(0, 0, i.width, i.height)}
+    return ob
+}
+ob.aF=function(h){var ob=this
+    ob.fl( $AF( h ) )
+    return ob
+}
+ob.aF2=function(h){var ob=this
+    this.fl2( $AF( h ) )
+    return ob
+}
+obOb()
 function obOb(){
 
 
-
-    ob =  J.DisplayObject.prototype
     ob.hel=function(a,b){return ob.hasEventListener(oO('e',a))}
     ob.o=function(a,b,c,d,e){
         if(!Oo('e',a)){return o.o('$',a,b,c,d)}
@@ -341,117 +404,11 @@ function obOb(){
     ob.u=function(){this.update();return this}
 
 }
-function caFl(){
-    ob.ca= function(){var ob=this, st=ob.st(), g=G(arguments), o, op, i
-
-        if(O(ob.image && !g.n && !g.p)){ob.cache($(ob.image)[0])}
-
-        if(ob.cacheCanvas && !g.p && (U(g[0]) || S(g[0]) || g.n)){
-            op=g[0];ob.updateCache(op);return ob
-        }
-        o = O(g[0])? {i: g[0], x:g[1], y:[2]}: N(g[2])? {x:g[0], y:g[1], w:g[2],h:g[3] }: N(g[1])? {w:g[0], h:g[1]}: {}
-        if(O(o.i)){ o.i = o.i.image? o.i.image:$(o.i)[0];
-            if (!g.n) {
-                if(ob.image){ob= ob.image}
-                ob=$(ob)[0]
-                ob.cache(0, 0, ob.width, ob.height)}
-        }
-        o.x = N(o.x)? o.x:0; o.y = N(o.y)? o.y:0
-        o.w = N(o.w)? o.w : O(o.i)? o.i.width: N(o.h)? o.h : st? st.W():0
-        o.h = N(o.h)? o.h : O(o.i)? o.i.height: st? st.H(): 0
-        ob.cache(o.x, o.y, o.w, o.h )
-        return ob
-    }
-    ob.fl=function(){var ob=this,g=G(arguments),i
-        if(A(g[0])){return ob.fl.apply(ob,g[0])}
-        ob.filters=ob.filters||[]
-        _.e(g, function(fl){ob.filters.push(fl)})
-        if(!g.n){i= ob.image; this.ca(0, 0, i.width, i.height)}
-        return ob
-    }
-    ob.fl2=function(){var ob=this,g=G(arguments)
-        ob.filters=[]
-        ob.filters=ob.filters||[]
-        _.e(g, function(fl){
-            ob.filters.push(fl)
-        })
-        if(!g.n){i= ob.image; this.ca(0, 0, i.width, i.height)}
-        return ob
-    }
-    ob.aF=function(h){var ob=this
-        ob.fl( $AF( h ) )
-        return ob
-    }
-    ob.aF2=function(h){var ob=this
-        this.fl2( $AF( h ) )
-        return ob
-    }
-    old=function(){
-        ob.caxxx=function(i,y,w,h){var ob=this,st=ob.st(),g=G(arguments),o
-
-            o = O(g[0])? {i: g[0], x:g[1], y:[2]}:
-                N(g[2])? {x:g[0], y:g[1], w:g[2],h:g[3] }:
-                    N(g[1])? {w:g[0], h:g[1]}: {}
-            if(O(o.i)){
-                o.i = o.i.image?o.i.image:$(o.i)[0]
-                o.w = o.w || o.i.width
-                o.h = o.h || o.i.height}
-            o.x = N(o.x)? o.x:0
-            o.y = N(o.y)? o.y:0
-            // o.h = N(o.h)? o.h : st.H()
-            // o.w = N(o.w)? o.w : st.W()
-
-            if(U(g[0])){
-                if (O(ob.image)){
-                    $l('uG0 - ob.image')
-                    if (!g.n) {ob._ca(ob.image, '+')}
-                }
-                else {$l('uG0')
-                    if (ob.cacheCanvas) {ob.updateCache()}}
-            }
-            else if(O(i)){ob._ca(i)}
-            else if(!N(w)){ ob.cache(0,0,o.x,o.y)}
-            else {ob.cache(o.x, o.y, o.w, o.h ) }
-            return ob
-        }
 
 
 
-        ob.uCaxxx=function(){var ob=this,g=G(arguments)
-            if( U(g[0]) && O(ob.image) ){ob.updateCache(0,0, ob.image.width, ob.image.height)}
-            else if(O(g[0])){
-                g[0] = $(g[0])[0]
-                ob.updateCache(0,0,  g[0].width, g[0].height)}
-            else if(!N(g[2])) {ob.updateCache(0,0,g[0], g[1] )}
-            else {ob.updateCache(g[0], g[1], g[2], g[3])}
-            return ob
-        }
 
-    }
-}
-function cur(){
-    ob.bM=function(){var ob=this, st=ob.st()
-        st.MM(function(){ob.x = st.m().x; ob.y = st.m().y})
-        return ob
-    }
-    ob.cu= ob.bM=function(cu){var ob=this, st=ob.st()
-        CUob= {
-            d:'default', n:'none', h:'help',
-            p:'pointer',  ch:'crosshair',
-            P:'progress', w:'wait',
-            t:'text',
-            m:'move', g:'grab',  c:'copy',
-            cm:'context-menu',
-            C:'cell',
-            N:'not-allowed', v:'not-allowed',
-            z:'zoom-in'
-        }
-
-        if(U(cu)){st.MM(function(){ob.x = st.m().x; ob.y = st.m().y})}
-        else if(S(cu)){ ob.cursor= CUob[cu]? CUob[cu] : cu  }
-        return ob
-    }
-}
+//obPhysics()
 function obPhysics(){
 //easel physics.. ugh
     ob.move = function () {

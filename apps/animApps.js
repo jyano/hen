@@ -651,3 +651,361 @@ RECTS=function(){z()
 
 
 
+TWEEN=function(a){St()//combo/complex/anim/tween
+    st.mug(function(bm){
+
+        b=bm
+        TR(bm)
+        cjs.tween(   [bm,'l'],   {x:0,sxy:.7,r:0}, [ {x:300,sxy:2.3,r:0}, 1000 ],    [ {x:0,sxy:.7,r:-30,a:.5},3000])
+    })
+    st.mug(function(bm){bm.TR()
+        J.tween([bm,'l'],
+            {x:0,sxy:.7,r:-2},
+            [{x:300,sxy:2.3,r:0,a:.2,kx:60},3000],
+            [{x:320,a:1,sxy:2,r:-1},1000],
+            [{rx:100},1000],
+            [{ry:100},1000],
+            [{r:50,x:1400,y:300},3000],
+            [{r:200,x:1000,y:200,sxy:1},3000],
+            [{r:100,x:300, ky:-100},1000],
+            [{rx:30,ry:30, r:150,x:500 },2000],
+            [{rx:20,ry:50,r:100,x:500,kx:300 },2000],
+            [{kxy:0,x:320,y:0,rxy:0,sxy:2,r:-1},3000])})
+}
+
+
+TWEENART=function(a){
+    //wMb makes bitmap mug and passes it to a callback
+    //optionally? can pass a stage to append it to before the callback runs
+    wMb(
+        function(b,s){
+            b.xy(300);
+            b.rgc(); //centers it's reg point?
+            SK(b)
+            cjs.tween([b,'l'], {sxy:.5}, [{sxy:.7},500], [{sxy:.5},500])
+            wMb(function(b){s.a(b)//manual add necessary?
+
+                b.xy(200);b.rgc();
+                b.wh(200);
+                SL(b);
+
+                cjs.tween([b,'l'],{r:0},[{r:360},1000])
+
+                wMb(function(b){s.a(b);
+                    b.rgc();b.xy(600);SC(b)
+
+                    cjs.tween([b,'l'],{kxy:0},
+                        [{kxy:20},500],
+                        [{kxy:0},500])
+                })})},  EDIT()
+    )
+}
+
+EASING=function(){
+
+    stage= $St(1000,10000)
+
+    stage.mug(
+
+        function(b){
+            bb= b
+            b.sXY(.2).XY(50,100)
+            cjs.tween([b,'l'],   [{x:800},2000],  [{x:50},2000]
+            )})
+
+
+
+
+    eas=function(y,e){
+
+        stage.mug(
+
+            function(b){
+
+                b.sXY(.2).XY(50,y)
+
+                cjs.tween([b,'l'], [{x:800},2000,e],  [{x:50},2000,e])
+
+                b.$(function(){    pop(e + ' : ' + oO('E',e))   })
+            })}
+
+
+    eas(300,'bO'); eas(500,'bI'); eas(700,'bIO')
+    eas(900,'bnO');eas(1100,'bnI');eas(1300,'bnIO')
+    eas(1500,'cO'); eas(1700,'cI');eas(1900,'cIO')
+    eas(2100,'eO');eas(2300,'eI');eas(2500,'eIO')
+    eas(2700,'qO');eas(2900,'qI');eas(3100,'qIO')
+    eas(3900,'qnO');eas(4100,'qnI'); eas(4300,'qnIO')
+    eas(4500,'sO');eas(4700,'sI');eas(4900,'sIO')
+    eas(5100,'qdO');eas(5300,'qdI'); eas(5500,'qdIO')}
+TWEENPOS1=function(){z()
+
+    s = cjs.stage(500).tick().A()
+
+    s.bm('me',function(bm){
+        b=bm
+
+        s.bm('guy',function(guy){g=guy
+
+            guy.XY(200)
+
+            w0 = cjs.tween(guy,   [{r:3000}, 100000]  )
+
+            w = cjs.tween(bm,  [{sx:3}, 1000]) .wait(1000).pause(w0).then({sy:3}, 4000).play(w0).then({sy:.3}, 4000)
+
+
+        })
+    })
+
+
+}
+TWEENPOS=function(){z()
+
+    s = cjs.stage(500).A()
+
+
+
+    s.bm('me',  function(bm){b=bm;
+
+
+        s.bm('guy',     function(guy){
+
+            g = guy
+
+            guy.XY(200)
+
+            w0 = cjs.tween(guy, [ {r:90}, 100 ] ).pause().then({r: 3000}, 100000)
+
+            w = cjs.tween(bm, [{sx:3}, 10000] ).play( w0 )   })
+
+        setInterval(function(){ tweens.rpunch(g) },2000)
+
+    })
+
+
+
+
+
+}
+
+
+TWEENBOX=function(){z()
+
+    stage = dragStage().tick()
+
+    stage.bm('me', function(bm){
+
+        SL(bm)
+
+        cjs.tween(
+
+            [bm,'l'],
+
+            {x:0, sxy:.7,r:0},
+
+            [ {x:300,sxy:2.3,r:0}, 1000 ],
+
+            [ {x:0,sxy:.7,r:-30,a:.5},3000])
+
+
+
+        cjs.tween(
+
+            [bm,'l'  ],
+
+            {  x:0,   sxy:.7,  r:0  },
+
+            [ { x:300, sxy:2.3,  r:0 }, 100 ],  [ {  x:0,  sxy:.7, r:-30,  a:.5 }, 100]
+
+
+        )
+
+
+        //  cjs.tween(  [bm,'l'],  {x:0, sxy:.7,r:0},  [ {x:300,sxy:2.3,r:0}, 1000 ],  [ {x:0,sxy:.7,r:-30,a:.5},3000])
+
+    })
+
+
+    dragStage().tick().bm('me', function(bm){
+
+        b=bm
+        SL(bm)
+
+        bm.rgc('+')
+
+        scaleShake(bm)
+        rotateShake(bm)
+
+    })
+
+}
+
+
+//really good
+TWEENER = function(){z()
+
+    s =  createjs.stage(500).tick().A()
+
+    s.bm('me', function(bm) {   s.bm('guy', function (guy) {
+
+
+        g = guy
+        b = bm
+
+        tween = cjs.tween(bm,
+
+            //pass in objects and they are 'to', 'to', etc..
+            [{sx: 2,sy: 2}, 3000 ], [{a:0}, 300],
+
+            //make it wait
+            1000,
+
+            //pass in a function and it will run when it's its turn
+            function(){  s.bm('chicks', function(b){ cjs.tween(b, [{sxy:.2}, 2000]) })  }
+
+
+        ).then({x: 200}, 1000).to({ alpha:1, visible:true }, 30000)
+
+        tween3 = cjs.tween(g, [{r: 20},10000], [{r: 0},3000]   )
+
+        stop = function(){  tween.stop(); tween2.stop()  }
+
+
+
+    })   })
+
+
+
+}
+ZOENOANIM=function(){z()
+    spr = cjs.sprite({
+        "framerate":24,
+        "images":["/zoetest.png"],
+        "frames":[
+            [0, 0, 512, 256, 0, -133, -143],
+            [512, 0, 512, 256, 0, -133, -143],
+            [1024, 0, 512, 256, 0, -133, -143]
+        ],
+        "animations": {}})
+    s = $St(1000).A()
+    s.A(spr)}
+ZOEFRAMES=function(){z()
+
+
+    spr = cjs.sprite({
+        "framerate":24,
+        "images":["/sprite2.png"],
+        "frames":[
+            [0, 0, 128, 128, 0, -176, -161],
+            [128, 0, 128, 128, 0, -176, -161],
+            [256, 0, 128, 128, 0, -176, -161]
+        ],
+        "animations":{
+            "weird": {"speed": 1, "frames": [2]},
+            "bald": {"speed": 1, "frames": [1, 1, 1, 1]}
+        }
+    })
+
+    anis = spr.spriteSheet._animations
+
+    // aniNames = _.keys(anis  )  // _.e(anims, function(name){  spr[name]=function(){ this.gotoAndPlay(name) }  })
+
+    s = $St(1000).A()
+    s.A( spr.drag() )
+}
+CHAR0=function(){
+    showSprite(Sprites.char)
+
+    function showSprite(sprite){z()
+        s = $St(1000).A()
+        spr = cjs.sprite(sprite).drag().a2(s)
+
+    }
+
+}
+SSBUILDER=function(){z(); J.testCanvas()
+    //canvas=document.getElementById("testCanvas")
+    s=stage=J.stage(["testCanvas"]).tick()
+    J.Ticker.setFPS(30)
+
+    scale=0.4
+
+    mc=J.gunner().drag()
+
+    w=mc.nominalBounds.width * scale
+    mc.transform(100 + w / 2, 100, scale, scale).a2(s)
+
+    label1=new J.Text("MovieClip-vector", "14px Arial", "#111").a2(s).textA("center").transform(mc.x, 30)
+    label2=label1.clone().a2(stage).T("Sprite-raster").X(w+50,'+')
+    b=builder=J.builder(mc)
+    b.Z(scale).maxW(1024)
+    b.async(function(ev){
+        sprite=J.sprite(ev.target.spriteSheet)
+        sprite.transform(mc.x+w+50||0,mc.y).a2(s).drag()
+        mc.gotoAndPlay(0)
+        sprite.gotoAndPlay(0)})
+
+    img=builder._data.images[0]
+
+    $('body').A(img)
+
+}
+
+SPRITE=function(sprite){
+
+    sprite = $sprite( sprite || SS ).XY(10).dg()
+
+    stage = $St('o', 400 )
+        .dg()//.op(.7),
+    stage.A( sprite )
+
+
+    controls={
+        jump:function(){ sprite.gotoAndPlay('jump') },
+        explode:function(){ sprite.gotoAndPlay('explode') },
+        spin:function(){ sprite.gotoAndPlay('spin') },
+        stop:function(){ sprite.stop() },
+        play:function(){ sprite.play() } }
+
+    $.d('y',460, 89).css({
+        position:'absolute',
+        top: 200, left: 300,
+        padding:20, opacity:.9
+    }).dg().A(
+        $.sp(' '),
+        $.bt('spin',function(){    controls.spin() }), $.span(' '),
+        $.bt('jump',function(){    controls.jump() }), $.span(' '),
+        $.bt('explode',function(){   controls.explode()  }), $.span(' '),
+        $.bt('play',function(){   controls.play()  }), $.span(' '),
+        $.bt('stop',function(){   controls.stop()  }), $.span(' '),
+        $.bt('meta', function(){ SPRITE() })
+
+    )
+
+    s = sprite
+    return  controls}
+SPRITE2=function( ){
+
+    stage = createjs.stage('orange', 400 ).tick().A().drag()//.op(.7),
+
+    stage.A(   sprite = $sprite(   SS ).XY(10).drag() )
+
+}
+PACK = function(){
+
+    stage = $St(800)
+
+    //stage.op(.7)
+
+    sprite = $sprite(Pack).XY( 200, 260 ).sXY(1.2).drag()
+
+
+    stage.A(sprite)
+
+    //.rgc()
+    sprite.framerate=6
+
+    sprite.play()
+
+
+}

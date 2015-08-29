@@ -16,3 +16,6 @@ ELEMENTS=function(){z();
 
 }
 
+cjs.DOMElement = function () {
+    return cjs.DOMElement
+}
