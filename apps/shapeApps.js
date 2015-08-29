@@ -1,4 +1,3 @@
-
 STG=function(){z()  //three ways to make a new stage
     s = $St('z',400 ).bm('me'); s.can.dg()
     $St($.c('o',400,100).dg()).bm('me')
@@ -128,7 +127,6 @@ HPOLY=function(){St()
         h.dc([150],[200,0,150])
     })
 }
-
 CIRCSTROKE=function(){St()
     gx= h.graphics
     h.c('b', 'r',10).XY(-100,-100)
@@ -362,7 +360,6 @@ SHAPES=function(){St()
         .circle(30,'brown','gray')
 
 }
-
 RADIALGRADRECT=function(){s=cjs.S()
 
 
@@ -439,8 +436,6 @@ RADIALGRADCIRC=function(){s=cjs.S()
     n = nip()
     //h2 =cjs.shape(500,100).a2(s);h2.graphics.beginRadialGradientFill(["red","yellow"],  [0, 1],100, 100, 0, 100, 100, 50).dc(50,50, 100)
 }
-
-
 USINGLAYERSINEASEL=function(){Q(['me','guy'],function(q){
     s=cjs.S()
     me  = q.bm('me').a2(s).sXY(3)
@@ -451,7 +446,6 @@ USINGLAYERSINEASEL=function(){Q(['me','guy'],function(q){
         me.Y( guy.y * .2 )})
 })
 }
-
 GROW = function () {
     z()
 
@@ -461,7 +455,6 @@ GROW = function () {
     })
 
 }
-
 FANCYEDIT = function (x, y) {
 
 
@@ -575,9 +568,6 @@ FANCYEDIT = function (x, y) {
 
 
 }
-
-
-
 ENTERST =function(){St()
     st.bm('me')
     st.on('mouseenter', function(){$('body').pp('once<br>')}, null, true)
@@ -908,10 +898,6 @@ HITCIRCLES=function(){z()
     function randomHSL(){return J.Graphics.getHSL(M.random()*360,100,50)}
 
 }
-
-
-
-
 TANGLE=function(){z()
 
     a = $.dA('r',50,50).XY(50).A().pad(10)
@@ -932,7 +918,6 @@ TANGLE=function(){z()
 
 
 }
-
 HANOI=function(){
 
 
@@ -944,148 +929,279 @@ HANOI=function(){
 
 
 }
-isoo=function(){
+ISO=function(levNum){
 
 
-    Tile = function(){
+        Tile = function(){
 
-        var that =this
-        var shape = this
+            var that =this
+            var shape = this
 
-        this.container = new createjs.Container().drag()
-        this.tile = cjs.diamond(80, 40, 'blue')
+            this.container = new createjs.Container().drag()
+            this.tile = cjs.diamond(80, 40, 'blue')
 
-        //this.tile.graphics.s('red').f('blue').s('green').mt(0,0).lt(40,-20).lt(80,0).lt(40,20).lt(0,0)
-        this.container.A(this.tile)
-        this.coin = false
-        this.addCoin = function(){
-
-
-            this.coin = tileCoin()
-            this.container.A(this.coin)
-
-        }
-        this.addBad=function(){
-
-            this.bad= tileBad()
-            this.container.A(this.bad )
-
-        }
-
-        this.playerTo = function(){
-
-            if(shape.wasOn==true){location=location}//ISO()
-
-            player.X(that.container.x )
-            player.Y(that.container.y -14 )
+            //this.tile.graphics.s('red').f('blue').s('green').mt(0,0).lt(40,-20).lt(80,0).lt(40,20).lt(0,0)
+            this.container.A(this.tile)
+            this.coin = false
+            this.addCoin = function(){
 
 
-            player.tile= shape
-            player.col= shape.col
-            player.row= shape.row
+                this.coin = tileCoin()
+                this.container.A(this.coin)
 
-            if(shape.coin){shape.coin.remove()}
-            if(shape.bad){location=location}
-            shape.wasOn=true
-            //if(isolated()){alert('!')}
-        }
+            }
+            this.addBad=function(){
 
-        this.container.on('dblclick', function(){
+                this.bad= tileBad()
+                this.container.A(this.bad )
 
-            h  = that
-            that.tile.graphics.f('red').dc(0,0,2)
-            $l('dblclicked!')
-            that.playerTo()
-        })
+            }
 
-    }
-    isoRow=function(r,howMany,x,y){
-        x = x||0;
-        y = y||0
+            this.playerTo = function(){
 
-        var row=[]
+                if(shape.wasOn==true){location=location}//ISO()
 
-        _.times(howMany, function(i){
-
-            x = x+ 40
-            y = y- 20
-            var t= new Tile()
-
-            t.container.XY(x,y)
-
-            stage.A(t.container)
-
-            createjs.bindSlide(t.container)
-
-            t.col= i
-
-            t.row= r
-
-            row.push(t)
-
-        })
-
-        return row}
-    isoGrid=function(n1,n2,x,y){ x=x||0; y=y||0
-
-        var grid=[]
-
-        _.times(n2,function(i){
-            x=x+40
-            y=y+20
-
-            var row = isoRow(i,n1,x,y)
-
-            grid.push(row)
-
-        })
+                player.X(that.container.x )
+                player.Y(that.container.y -14 )
 
 
+                player.tile= shape
+                player.col= shape.col
+                player.row= shape.row
 
+                if(shape.coin){shape.coin.remove()}
+                if(shape.bad){location=location}
+                shape.wasOn=true
+                //if(isolated()){alert('!')}
+            }
 
-        return grid}
+            this.container.on('dblclick', function(){
 
-    tileCoin=function(){
-
-        return cjs.circle(15,'yellow', 'black')
-
-    }
-
-    tileBad=function(){ return cjs.circle(15,'green', 'orange')}
-
-    tilePlayer=function(bm){
-        player = bm
-        player.right=function(){
-            player.tile.container.remove()
-            grid[player.row][player.col]=null
-            grid[player.row][player.col+1]. playerTo()}
-        player.left=function(){
-
-            player.tile.container.remove()
-            player.tile.exists=false
-            //player.tile=null
-            grid[player.row][player.col]=null
-            grid[player.row][player.col-1]. playerTo()}
-        player.down=function(){
-            player.tile.container.remove()
-            grid[player.row+1][player.col]. playerTo()}
-        player.up=function(){
-
-            player.tile.container.remove()
-            grid[player.row-1][player.col]. playerTo()
-
+                h  = that
+                that.tile.graphics.f('red').dc(0,0,2)
+                $l('dblclicked!')
+                that.playerTo()
+            })
 
         }
-        player.to=function(x,y){
-            grid[x][y].playerTo()
+        isoRow=function(r,howMany,x,y){
+            x = x||0;
+            y = y||0
+
+            var row=[]
+
+            _.times(howMany, function(i){
+
+                x = x+ 40
+                y = y- 20
+                var t= new Tile()
+
+                t.container.XY(x,y)
+
+                stage.A(t.container)
+
+                createjs.bindSlide(t.container)
+
+                t.col= i
+
+                t.row= r
+
+                row.push(t)
+
+            })
+
+            return row}
+        isoGrid=function(n1,n2,x,y){ x=x||0; y=y||0
+
+            var grid=[]
+
+            _.times(n2,function(i){
+                x=x+40
+                y=y+20
+
+                var row = isoRow(i,n1,x,y)
+
+                grid.push(row)
+
+            })
+
+
+
+
+            return grid}
+
+        tileCoin=function(){
+
+            return cjs.circle(15,'yellow', 'black')
+
+        }
+
+        tileBad=function(){ return cjs.circle(15,'green', 'orange')}
+
+        tilePlayer=function(bm){
+            player = bm
+            player.right=function(){
+                player.tile.container.remove()
+                grid[player.row][player.col]=null
+                grid[player.row][player.col+1]. playerTo()}
+            player.left=function(){
+
+                player.tile.container.remove()
+                player.tile.exists=false
+                //player.tile=null
+                grid[player.row][player.col]=null
+                grid[player.row][player.col-1]. playerTo()}
+            player.down=function(){
+                player.tile.container.remove()
+                grid[player.row+1][player.col]. playerTo()}
+            player.up=function(){
+
+                player.tile.container.remove()
+                grid[player.row-1][player.col]. playerTo()
+
+
+            }
+            player.to=function(x,y){
+                grid[x][y].playerTo()
+                return player}
+
+            kD('u',function(){player.up()})
+            kD('d',function(){player.down()})
+            kD('l',function(){player.left()})
+            kD('r',function(){player.right()})
             return player}
 
-        kD('u',function(){player.up()})
-        kD('d',function(){player.down()})
-        kD('l',function(){player.left()})
-        kD('r',function(){player.right()})
-        return player}
-    ISO=function(levNum){z()
+
+        killTile=function(a,b){
+            grid[a][b].container.remove()
+            grid[a][b].wasOn=true
+
+        }
+        lev1=function(){
+            grid[3][5].container.remove()
+            grid[4][4].container.remove()
+            grid[6][6].container.remove()
+            grid[7][1].container.remove()
+            grid[0][3].addCoin()
+            grid[1][3].addCoin()
+            grid[3][4].addCoin()
+            grid[5][2].addCoin()
+            grid[8][8].addCoin()
+        }
+        lev2=function(){
+            grid[0][0].addCoin()
+            grid[0][9].addCoin()
+            grid[0][3].addCoin()
+            grid[1][3].addCoin()
+            grid[1][6].addCoin()
+            grid[2][1].addCoin()
+            grid[3][4].addCoin()
+            grid[3][8].addCoin()
+            grid[4][7].addCoin()
+            grid[5][2].addCoin()
+            grid[6][5].addCoin()
+            grid[6][9].addCoin()
+            grid[8][8].addCoin()
+            grid[8][2].addCoin()
+
+
+            grid[8][4].addCoin()
+            grid[9][0].addCoin()
+
+
+            killTile(1,2)
+            killTile(2,2)
+            killTile(2,6)
+            killTile(2,7)
+            killTile(2,8)
+            killTile(4,0)
+            killTile(4,3)
+
+            killTile(4,4)
+            killTile(4,6)
+            killTile(4,9)
+            killTile(6,1)
+            killTile(6,2)
+            killTile(7,1)
+            killTile(7,3)
+
+            killTile(7,4)
+            killTile(7,9)
+
+            killTile(8,6)
+            killTile(8,7)
+            killTile(8,9)
+
+
+
+
+
+
+
+        }
+        lev3=function(){
+
+            grid[0][0].addBad()
+            grid[0][9].addBad()
+            grid[0][3].addBad()
+
+            grid[1][6].addBad()
+            grid[2][1].addBad()
+            grid[3][4].addBad()
+            grid[3][8].addBad()
+
+            grid[5][2].addBad()
+            grid[6][5].addBad()
+            grid[6][9].addBad()
+            grid[8][8].addBad()
+            grid[8][2].addBad()
+
+        }
+        lev4=function(){
+
+
+            grid[2][9].addCoin()
+            grid[5][0].addCoin()
+
+            grid[2][3].addCoin()
+            grid[5][6].addCoin()
+            grid[9][3].addCoin()
+            grid[3][1].addCoin()
+            grid[4][4].addCoin()
+            grid[0][8].addCoin()
+            grid[6][7].addCoin()
+            grid[5][8].addCoin()
+            grid[9][6].addCoin()
+            grid[2][2].addBad()
+            grid[0][0].addBad()
+            grid[0][9].addBad()
+            grid[5][3].addBad()
+            grid[2][6].addBad()
+            grid[4][5].addBad()
+            grid[9][0].addBad()
+            grid[9][7].addBad()
+            grid[3][8].addBad()
+
+
+            grid[6][5].addBad()
+            grid[6][9].addBad()
+
+            grid[8][2].addBad()
+
+        }
+
+
+        isolatedBeta=function(){
+            r= player.row;
+            c= player.col
+            if(
+                //grid[r+1] &&grid[r+1][c] && grid[r+1][c].wasOn
+            //&&  grid[r-1] &&grid[r-1][c] && grid[r-1][c].wasOn
+
+            grid[r+1] &&grid[r+1][c] && grid[r+1][c].wasOn
+            ){return true}
+        }
+        z()
         stage = $St(900,500).tick().A()
         grid = isoGrid(10,10,0,240)
         kD('s',function(){location=location})
@@ -1099,139 +1215,6 @@ isoo=function(){
 
 
     }
-
-    killTile=function(a,b){
-        grid[a][b].container.remove()
-        grid[a][b].wasOn=true
-
-    }
-    lev1=function(){
-        grid[3][5].container.remove()
-        grid[4][4].container.remove()
-        grid[6][6].container.remove()
-        grid[7][1].container.remove()
-        grid[0][3].addCoin()
-        grid[1][3].addCoin()
-        grid[3][4].addCoin()
-        grid[5][2].addCoin()
-        grid[8][8].addCoin()
-    }
-    lev2=function(){
-        grid[0][0].addCoin()
-        grid[0][9].addCoin()
-        grid[0][3].addCoin()
-        grid[1][3].addCoin()
-        grid[1][6].addCoin()
-        grid[2][1].addCoin()
-        grid[3][4].addCoin()
-        grid[3][8].addCoin()
-        grid[4][7].addCoin()
-        grid[5][2].addCoin()
-        grid[6][5].addCoin()
-        grid[6][9].addCoin()
-        grid[8][8].addCoin()
-        grid[8][2].addCoin()
-
-
-        grid[8][4].addCoin()
-        grid[9][0].addCoin()
-
-
-        killTile(1,2)
-        killTile(2,2)
-        killTile(2,6)
-        killTile(2,7)
-        killTile(2,8)
-        killTile(4,0)
-        killTile(4,3)
-
-        killTile(4,4)
-        killTile(4,6)
-        killTile(4,9)
-        killTile(6,1)
-        killTile(6,2)
-        killTile(7,1)
-        killTile(7,3)
-
-        killTile(7,4)
-        killTile(7,9)
-
-        killTile(8,6)
-        killTile(8,7)
-        killTile(8,9)
-
-
-
-
-
-
-
-    }
-    lev3=function(){
-
-        grid[0][0].addBad()
-        grid[0][9].addBad()
-        grid[0][3].addBad()
-
-        grid[1][6].addBad()
-        grid[2][1].addBad()
-        grid[3][4].addBad()
-        grid[3][8].addBad()
-
-        grid[5][2].addBad()
-        grid[6][5].addBad()
-        grid[6][9].addBad()
-        grid[8][8].addBad()
-        grid[8][2].addBad()
-
-    }
-    lev4=function(){
-
-
-        grid[2][9].addCoin()
-        grid[5][0].addCoin()
-
-        grid[2][3].addCoin()
-        grid[5][6].addCoin()
-        grid[9][3].addCoin()
-        grid[3][1].addCoin()
-        grid[4][4].addCoin()
-        grid[0][8].addCoin()
-        grid[6][7].addCoin()
-        grid[5][8].addCoin()
-        grid[9][6].addCoin()
-        grid[2][2].addBad()
-        grid[0][0].addBad()
-        grid[0][9].addBad()
-        grid[5][3].addBad()
-        grid[2][6].addBad()
-        grid[4][5].addBad()
-        grid[9][0].addBad()
-        grid[9][7].addBad()
-        grid[3][8].addBad()
-
-
-        grid[6][5].addBad()
-        grid[6][9].addBad()
-
-        grid[8][2].addBad()
-
-    }
-
-
-    isolatedBeta=function(){
-        r= player.row;
-        c= player.col
-        if(
-            //grid[r+1] &&grid[r+1][c] && grid[r+1][c].wasOn
-        //&&  grid[r-1] &&grid[r-1][c] && grid[r-1][c].wasOn
-
-        grid[r+1] &&grid[r+1][c] && grid[r+1][c].wasOn
-        ){return true}
-    }
-
-
-};isoo
 CONNECT=function(){  St() //m$$('location=location')
 
     // st= $St('p', 1000)
@@ -1253,6 +1236,9 @@ CONNECT=function(){  St() //m$$('location=location')
     SL(orange, red)
 
 }
+
+text()
+works()
 function works(){
     TXST = function(){
         $St().bm('me', function(b){
@@ -1316,4 +1302,92 @@ function works(){
         p()
     }
 }
+function text(){
+    BASELINE=function(){z()
 
+        s=cjs.stage(1000).A()
+
+
+
+        s.bm('me', function(bm){b=bm
+            bm.XY(300).sXY(.2)
+            s.dot(300,300)})
+
+
+
+        s.A(t = cjs.text('baseline: top').XY(300).sXY(4).drag())
+        s.A(t2 = cjs.text('baseline: bottom').XY(300).sXY(4).drag().baseline('bottom'))
+        s.A(t3 = cjs.text('baseline: middle').XY(300).sXY(4).drag().baseline('middle'))
+
+
+    }
+    LINEH=function(){z()
+
+        s=cjs.stage(1000).A()
+
+
+
+        s.bm('me', function(bm){b=bm
+            bm.XY(300).sXY(.2)
+            s.dot(300,300)})
+
+
+
+        s.A(
+            t = cjs.text('lineheight -100').XY(300).sXY(4).drag().lineH(-100)
+        )
+
+
+        s.A(
+            t2 = cjs.text('lineheight 0').XY(300).sXY(4).drag().baseline('bottom').lH(0)
+        )
+
+        s.A(
+            t3 = cjs.text('lineheight 100').XY(300).sXY(4).drag().baseline('middle').lH(100)
+        )
+
+
+    }
+    LINEW=function(){z()
+
+        s=cjs.stage(1000).A()
+
+
+
+        s.bm('me', function(bm){b=bm
+            bm.XY(300).sXY(.2)
+            s.dot(300,300)})
+
+
+
+        s.A(t = cjs.text('linewidth 0').XY(300).sXY(4).drag().lineW(0))
+        s.A(t2 = cjs.text('linewidth null').XY(300).sXY(4).drag().baseline('bottom'))
+        s.A(t3 = cjs.text('linewidth 100').XY(300).sXY(4).drag().baseline('middle').lW(800))
+
+
+    }
+    ALIGN=function(){z()
+
+        s=cjs.stage(1000).A()
+
+
+
+        s.bm('me', function(bm){b=bm
+            bm.XY(300).sXY(.2)
+            s.dot(300,300)})
+
+        s.bm('me', function(bm){b=bm
+            bm.XY(500).sXY(.2)
+            s.dot(500,500)})
+
+        //textAlign
+        s.A(t = cjs.text('linealign left').XY(300).sXY(4).drag()) //default
+        s.A(t2 = cjs.text('linealign right').XY(300).sXY(4).drag().baseline('bottom').align('right'))
+        s.A(t3 = cjs.text('linealign center').XY(300).sXY(4).drag().baseline('middle').align('center'))
+
+        //textBaseline
+        s.A(t = cjs.text('baseline: top').XY(500).sXY(4).drag())
+        s.A(t2 = cjs.text('baseline: bottom').XY(500).sXY(4).drag().baseline('bottom'))
+        s.A(t3 = cjs.text('baseline: middle').XY(500).sXY(4).drag().baseline('middle'))}
+
+}

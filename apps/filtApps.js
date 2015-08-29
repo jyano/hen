@@ -1,9 +1,4 @@
-J.rgb=function(r,g,b,a){var str
-    a = N(a)? a: 1
-    str = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')'
-    return str
-}
-//
+
 $BF= $Bf= $FB= $FlB= $Bfl= $bF= function(){var g=G(arguments),fl,o
     o = {x:g[0], y:g[1], q:g[2]}
     o.y = N(o.y)? o.y : o.x
@@ -13,15 +8,15 @@ $BF= $Bf= $FB= $FlB= $Bfl= $bF= function(){var g=G(arguments),fl,o
 }
 $AF= $Af= $aF=function(a,b,c,d,e){var fl
 
-        if(O(a) && a.cacheCanvas ){
-            a= a.cacheCanvas
-        }
+    if(O(a) && a.cacheCanvas ){
+        a= a.cacheCanvas
+    }
 
-        fl= new J.AlphaMaskFilter(a,b,c,d,e)
+    fl= new J.AlphaMaskFilter(a,b,c,d,e)
 
 
 
-        return fl
+    return fl
 
 
 
@@ -38,23 +33,23 @@ $AF= $Af= $aF=function(a,b,c,d,e){var fl
 }
 $CMF= $CmF= $cMF=function(a,b,c,d){
 
-        if(!O(a)){ a = $CM(a,b,c,d) }
-        return new J.ColorMatrixFilter(a)
+    if(!O(a)){ a = $CM(a,b,c,d) }
+    return new J.ColorMatrixFilter(a)
 
-    }
+}
 $CM= $Cm= $cM=function(a,b,c,d,e){var m
-      m=new J.ColorMatrix(a,b,c,d,e)
-        m.b=m.adjustBrightness
-        m.c=m.adjustColor
-        m.C=m.adjustContrast
-        m.h=m.adjustHue
-        m.s=m.adjustSaturation
-        m.cl=m.clone
-        m.cc=m.concat
-        m.m=m.copyMatrix
-        m.r=m.reset
-        m.A=m.toArray
-        m.S=m.toString
+    m=new J.ColorMatrix(a,b,c,d,e)
+    m.b=m.adjustBrightness
+    m.c=m.adjustColor
+    m.C=m.adjustContrast
+    m.h=m.adjustHue
+    m.s=m.adjustSaturation
+    m.cl=m.clone
+    m.cc=m.concat
+    m.m=m.copyMatrix
+    m.r=m.reset
+    m.A=m.toArray
+    m.S=m.toString
     return m
 }
 
@@ -62,14 +57,14 @@ $CM= $Cm= $cM=function(a,b,c,d,e){var m
 BLUR =  function(){
     wMb(function(b){
         /*
-        var ag=0,rg=100,sp=0.04
-        z()
-        s=St(500).drg().a().c('x').a(b.xy(100).cc())
+         var ag=0,rg=100,sp=0.04
+         z()
+         s=St(500).drg().a().c('x').a(b.xy(100).cc())
 
-        tt(function(e){v=sin(ag+=sp)*rg
-            b.cc('+').fl([blF(v,v,2)])
-            s.u(e)})
-    */
+         tt(function(e){v=sin(ag+=sp)*rg
+         b.cc('+').fl([blF(v,v,2)])
+         s.u(e)})
+         */
     })
 }
 
@@ -663,49 +658,49 @@ SCRATCHOFF=function(){z();
     $.i('chicks', function(i){_i= i = i[0]
 
 
-    h = $H().s(.3)
+        h = $H().s(.3)
 
-    h.ss(45, 'r'
-         ,'round'
+        h.ss(45, 'r'
+            ,'round'
 
-    ).ca(i)
-
-
-    bF=$bF(24,24,2)
-    cMF=$cMF($cM(60))
+        ).ca(i)
 
 
-    bm = st.Bm(i).fl( h.aF(), '-').ca(i)
+        bF=$bF(24,24,2)
+        cMF=$cMF($cM(60))
 
 
-    st.MD(function(){
-
-        _mPt = _pt = st.m()
-
-    })
-
-    st.MU(function(){h.ca(i); bm.fl($aF(h),'-').ca(i); _mPt=null})
+        bm = st.Bm(i).fl( h.aF(), '-').ca(i)
 
 
-    st.MM( function(){
-        if(!_mPt){return}
-        _pt = st.m()
+        st.MD(function(){
 
-        mx = _pt.x
-        my = _pt.y
+            _mPt = _pt = st.m()
 
+        })
 
-        mPt = $Pt(
-            M.av(_pt.x, mx),
-            M.av(_pt.y, my)
-        )
+        st.MU(function(){h.ca(i); bm.fl($aF(h),'-').ca(i); _mPt=null})
 
 
-        h.mt(mPt.x, mPt.y).qt(_pt, _mPt).ca(i)
-        bm.fl(h.aF(), '-').ca(i)
+        st.MM( function(){
+            if(!_mPt){return}
+            _pt = st.m()
 
-        _mPt = V(mPt)
-    })
+            mx = _pt.x
+            my = _pt.y
+
+
+            mPt = $Pt(
+                M.av(_pt.x, mx),
+                M.av(_pt.y, my)
+            )
+
+
+            h.mt(mPt.x, mPt.y).qt(_pt, _mPt).ca(i)
+            bm.fl(h.aF(), '-').ca(i)
+
+            _mPt = V(mPt)
+        })
 
 
 
@@ -879,16 +874,16 @@ ALF11=function(){z();
         st.u()}
 }
 ALF=function(){$.i('chicks',function(e,i){St()//J.Touch.enable(st)  //st.mO(1) !!!
-        var isDrawing
+    var isDrawing
 
 
 
     h =  $H().ss(40, "round", "round").C("rgba(0,0,0,0.2)")
 
     st.A(
-            bl= $Bm(i._),
-            t= $T('Drag to Reveal!!', "20px Arial", "#FFF").XY(st.W()/2, st.H()-40).tA("center"),
-            b= $Bm(i._)
+        bl= $Bm(i._),
+        t= $T('Drag to Reveal!!', "20px Arial", "#FFF").XY(st.W()/2, st.H()-40).tA("center"),
+        b= $Bm(i._)
 
     )
 
@@ -943,11 +938,11 @@ ERASEFL1=function(){$.i('chicks',function(e,i){St()//J.Touch.enable(st)  //st.mO
 })}
 ERASEFL11=function(){$.i('chicks',function(e,i){St().trDr().A(
 
-        $Bm(i).fl($FB(20,0), $CMF(-20,20,500,-80)), $T('Drag to Reveal!!', "20px Arial", "#FFF", st.W()/2, st.H()-40).tA("center"),
+    $Bm(i).fl($FB(20,0), $CMF(-20,20,500,-80)), $T('Drag to Reveal!!', "20px Arial", "#FFF", st.W()/2, st.H()-40).tA("center"),
 
-        b= $Bm(i).aF2(h=$H().ss(40,'r','r').C(.9).ca(i))
+    b= $Bm(i).aF2(h=$H().ss(40,'r','r').C(.9).ca(i))
 
-    ).m({
+).m({
 
         d:function () {  oldPt = st.m(); oldMidPt = oldPt;},
 
@@ -955,11 +950,11 @@ ERASEFL11=function(){$.i('chicks',function(e,i){St().trDr().A(
 
         m:function() {var midPoint
             if (!st._dr) {return st.u()}
-        midPoint = $Pt(oldPt.x + st.mouseX >> 1, oldPt.y + st.mouseY >> 1)
-        h.cur(midPoint.x, midPoint.y, oldPt.x, oldPt.y, oldMidPt.x, oldMidPt.y)
-        oldPt.x = st.mouseX;oldPt.y = st.mouseY;
-        oldMidPt.x = midPoint.x;oldMidPt.y = midPoint.y;
-        b.fl2($AF(h.ca(i))).ca()}
+            midPoint = $Pt(oldPt.x + st.mouseX >> 1, oldPt.y + st.mouseY >> 1)
+            h.cur(midPoint.x, midPoint.y, oldPt.x, oldPt.y, oldMidPt.x, oldMidPt.y)
+            oldPt.x = st.mouseX;oldPt.y = st.mouseY;
+            oldMidPt.x = midPoint.x;oldMidPt.y = midPoint.y;
+            b.fl2($AF(h.ca(i))).ca()}
 
     }).h().f("#FFFFFF").dc(25).cu('pointer').bM()
 
@@ -1135,6 +1130,3 @@ FILTERS=function(){
 
 }
 
-
-
-//J.Touch.enable(st);
