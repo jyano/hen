@@ -386,7 +386,16 @@ function bmp(){
 
 }
  function color(){
+     $.colorPicker = $.ColorPicker = function () {
+         z()
 
+         colorPicker = $(' <input id="color" name="color" type="color">').appendTo($('body'))
+
+         colorPicker.change(function () {
+             $l(colorPicker.val())
+         })
+
+     }
      cjs.toColor = toColor = tCl = function (n1, n2, n3, n4) {
 
          return n2 ? "rgba(" + n1 + "," + n2 + "," + "" + n3 + "," + (n4 || 1) + ")"

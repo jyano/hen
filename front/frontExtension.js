@@ -1,10 +1,10 @@
-$.l = function (link) {
-    if (link) {
-        window.location = link
-    }
-    return window
-}
 function alpha() {
+    $.l = function (link) {
+        if (link) {
+            window.location = link
+        }
+        return window
+    }
     /*
 
      loc=$w.location
@@ -188,9 +188,7 @@ function alpha() {
 
 
 }
-
-
-function location() {
+function locatin() {
     loc = $w.location
     loc.h = loc.href
     loc.hn = loc.hostname
@@ -265,4 +263,14 @@ function windows(){
     accessFrameByName=function(f){$w.frames[f]===$w.frames[0].location.reload}
     open=function(c){$w.open(_S(c), 'new_window','width=310,height=30')}
 
+}
+
+$.fU= $.fileUpload =  function(lb, t){
+    var fG =  $.d().K("form-group").A(
+        $.lb(  D(lb) ? lb  : 'upload file',  'upl'  ).K('control-label').fS(20),
+        $.ip().ty('file').id('upl').name('i')
+    )
+    if(t){
+        fG.A(   $.p(t).K('help-block')   )}
+    return fG
 }

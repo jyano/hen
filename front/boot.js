@@ -170,7 +170,18 @@ $.wrap=function(i){
 }
 
 
-
+$.iconBar = function () {
+    return $.sp().K("icon-bar")
+}
+$.caret = function () {
+    return $.sp().K("caret")
+}
+$.fn.gg = $.fn.toggle = function (a) {
+    return this.attr("data-toggle", a)
+}
+$.fn.tg = $.fn.target = function (a) {
+    return this.attr("data-target", a)
+}
 
 img=function(){
     $.iR= $.imgResponsive=function(s,f){return $.img(s,f).K('img-responsive')}
