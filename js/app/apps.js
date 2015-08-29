@@ -1,19 +1,3 @@
-
-$.l=function(link){
-    if(link){window.location=link}
-    return window
-}
-
-$.fU= $.fileUpload =  function(lb, t){
-    var fG =  $.d().K("form-group").A(
-        $.lb(  D(lb) ? lb  : 'upload file',  'upl'  ).K('control-label').fS(20),
-        $.ip().ty('file').id('upl').name('i')
-    )
-    if(t){
-        fG.A(   $.p(t).K('help-block')   )}
-    return fG
-}
-
 UPLOAD=function(){
     f =  $.f().attr({
         method:'post',
@@ -1003,14 +987,18 @@ SORTY=function(){$.fm()
     s2.A(  $.i('me'))
 }
 
-testMyMug=function(){z()
+tests()
+function tests(){
+
+
+MUGTX=function(){z()
     $.h1('testing myMug ...').A()
     $.get('/myMug', function(data){z()
         $.h1('in callback..').A()
         $.img(data).A().C('black').drag()
     })
 }
-testMugByUsername=function(username){z()
+MUGBYUNTX=function(username){z()
     username = username || 'ss'
     $.h1('testing mugByUsername ...').A()
     $.get('/mugByUsername/' + username, function(data){z()
@@ -1022,16 +1010,16 @@ testMugByUsername=function(username){z()
 
     })
 }
-testDefaultMug =function(){z()
+DFMGTX =function(){z()
     $.i(defaultMug).A()}
-testChangeMug=function(){
+CHANGEMUGTX=function(){
     //it automatically changes your userMug to the defaultMug
     $.post('/changeMug', {url: defaultMug},
         function(){z()
             TWEEN()
         })
 }
-
+    }
 $(function(){
     $.Gj('loggedIn', function(un){
         Y._un= Y._userName = _username = $l(un)
