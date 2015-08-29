@@ -98,11 +98,6 @@ socks=function(){
 
 
 }; socks()
-
-
-
-
-
 $.dCt= $.ctD=   function(){var g = G(arguments), //makes auto top-spacing (for navbar not to block)
     d = $.dK('container')
     if(!g.n){ d.A( $.br(4) )  }

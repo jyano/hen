@@ -1,8 +1,8 @@
 cjs = createjs
-J.rtSh = cjs.rotateShake = function (bm) {
+cjs.rtSh = cjs.rotateShake = function (bm) {
         $Tw([bm, 'l'], {r: 0}, [{r: 1}, 1], [{r: -1}, 1])
     }
-J.scSh = cjs.scaleShake = function (bm) {
+cjs.scSh = cjs.scaleShake = function (bm) {
         $Tw([bm, 'l'], {sxy: 1}, [{sxy: .95}, 1], [{sxy: 1.05}, 1])
     }
 cjs.toColor = toColor = tCl = function (n1, n2, n3, n4) {
@@ -12,7 +12,7 @@ cjs.toColor = toColor = tCl = function (n1, n2, n3, n4) {
             $r('c', n1)
     }
 sav=function(st,a){return function(){ st.sv(a) } }
-$Ct=function(){return new createjs.Container()}
+$Ct=function(){return new cjs.Container()}
 selected=function(bm){
         alert('selected')
         SL(bm)
@@ -22,13 +22,11 @@ selected=function(bm){
             createjs.scaleShake(bm.dO)
         })
     }
-
 cjsKey()
 que()
 bod()
 
 function que(){
-
     QUEUE=function(){z()
         s= $St(500)
         queue = new createjs.LoadQueue()
@@ -125,8 +123,8 @@ function que(){
     }
 }
 
-function bod(){
 
+function bod(){
     Cycle1=function(x,y,rt){
 
 
@@ -291,8 +289,8 @@ function bod(){
 
     }
 }
-function cjsKey(){
 
+function cjsKey(){
     cjs.Keys = function(o){
         if(O(o)){
             if(F(o.u)){
@@ -349,12 +347,6 @@ function cjsKey(){
         $.test=true
         cjs.watchKeys()
     }
-
-
-
-
-
-
     KEYWATCH = function(){
         J=cjs
         $.test=true
@@ -392,7 +384,6 @@ function cjsKey(){
             J.Keys.d = J.Keys.down = false
         })
     }
-
 }
 old=function(){
     $.sv= sv=function( x, fn ){
