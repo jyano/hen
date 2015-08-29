@@ -1,3 +1,31 @@
+dirs= [
+
+    '/public/deps', '/public/deps/css',     '/public/deps/js',
+    '/public/pics', '/public/graphics', '/public/uploads',
+    '/public/deps/ui-images', // assets: where i can publically, statically fetch items from // css, fonts, js (bs, cjs, jq, string, us)
+    '/../js',
+
+    '/../js/create',
+    '/../js/app',
+    '/../apps',
+
+
+    '/../js/front',
+    '/../js/front/css',
+    '/../js/front/both',
+    '/../js/games',
+    '/../js/lib',
+    '/../js/knock',
+    '/../js/back',
+    '/../js/jqui',
+
+    '/../js/css',
+    '/../js/three', '/../js/mvc',
+    '/../js/tests',   '/../js/deps', '/../js/beta', '/../js/g'
+]
+
+
+
 console.log('------- wappy --1------')
 require('./both');
 requires()
@@ -84,40 +112,7 @@ function routing(){
 
     $a.use( $a.router )
 
-    dirs= [
 
-        '/public/deps', '/public/deps/css',     '/public/deps/js',
-
-
-        '/public/pics', '/public/graphics', '/public/uploads',
-        '/public/deps/ui-images', // assets: where i can publically, statically fetch items from // css, fonts, js (bs, cjs, jq, string, us)
-        '/../js',
-
-        '/../js/create',
-
-        '/../js/app',
-        '/../js/wapp',
-        '/../js/both',
-        '/../js/front',
-
-        '/../js/games',
-        '/../js/lib',
-
-
-        '/../js/box2d',
-
-
-        '/../js/knock',
-        '/../js/back',
-        '/../js/jqui',
-
-        '/../js/css',
-
-        '/../js/phaserjs', '/../js/phaser2',
-        '/../js/melon',
-        '/../js/three', '/../js/mvc',
-        '/../js/tests',   '/../js/resources', '/../js/beta', '/../js/g'
-    ]
     _.e(dirs, function(dir){
         $a.use(
             express.static(

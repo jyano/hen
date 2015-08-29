@@ -1,3 +1,4 @@
+
 UPLOAD=function(){
     f =  $.f().attr({
         method:'post',
@@ -991,48 +992,32 @@ tests()
 function tests(){
 
 
-MUGTX=function(){z()
-    $.h1('testing myMug ...').A()
-    $.get('/myMug', function(data){z()
-        $.h1('in callback..').A()
-        $.img(data).A().C('black').drag()
-    })
-}
-MUGBYUNTX=function(username){z()
-    username = username || 'ss'
-    $.h1('testing mugByUsername ...').A()
-    $.get('/mugByUsername/' + username, function(data){z()
-
-
-        $.h1('in callback..').A()
-
-        $.img(data).A().C('black').drag()
-
-    })
-}
-DFMGTX =function(){z()
-    $.i(defaultMug).A()}
-CHANGEMUGTX=function(){
-    //it automatically changes your userMug to the defaultMug
-    $.post('/changeMug', {url: defaultMug},
-        function(){z()
-            TWEEN()
+    MUGTX=function(){z()
+        $.h1('testing myMug ...').A()
+        $.get('/myMug', function(data){z()
+            $.h1('in callback..').A()
+            $.img(data).A().C('black').drag()
         })
-}
     }
-$(function(){
-    $.Gj('loggedIn', function(un){
-        Y._un= Y._userName = _username = $l(un)
-        if(un == 'guest' || !un){ Y('GuestPage') }
-        else {
-            k.em('id', un);
-            k.em('jRm',  _username )
-            $.G('myMug', function(mug){
-                Y._userMug = _userMug  = mug
-                Y('HomePage')})
-        }
-    })
-})
+    MUGBYUNTX=function(username){z()
+        username = username || 'ss'
+        $.h1('testing mugByUsername ...').A()
+        $.get('/mugByUsername/' + username, function(data){z()
 
 
+            $.h1('in callback..').A()
 
+            $.img(data).A().C('black').drag()
+
+        })
+    }
+    DFMGTX =function(){z()
+        $.i(defaultMug).A()}
+    CHANGEMUGTX=function(){
+        //it automatically changes your userMug to the defaultMug
+        $.post('/changeMug', {url: defaultMug},
+            function(){z()
+                TWEEN()
+            })
+    }
+}

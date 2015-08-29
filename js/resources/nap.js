@@ -1,8 +1,0 @@
-
-appInit = function(){ PINBALL() }
-
-$( appInit )
-
-
-
-

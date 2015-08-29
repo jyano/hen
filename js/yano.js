@@ -1,11 +1,3 @@
-function toFront(){
-    $.l = function (link) {
-        if (link) {
-            window.location = link
-        }
-        return window
-    }
-}
 
 yano()
 muggy()
