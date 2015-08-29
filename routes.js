@@ -141,15 +141,12 @@ $l('routes.js'); module.exports=function(){// $a.get('/wap', function(req,res){ 
 
     }
 
-
     function pics(){
-        //upload pic
-        $a.po('/pic', $w.user,  function(q, p, n){
 
-            $l('upload new pic----------------------------------------------------------')
 
-            var imgFile,
-                ext
+        $a.po('/pic', $w.user,  function(q, p, n){$l('upload new pic------------------------')//upload pic
+
+            var imgFile,  ext
 
             if( q.files.png){  q.files.i = q.files.png   }
 
@@ -165,37 +162,35 @@ $l('routes.js'); module.exports=function(){// $a.get('/wap', function(req,res){ 
                 ext: ext
             }
 
+            models.pic.create(picOb, function(z, pic){if(z){ $l('ERR:'+z) }
 
-            models.pic.create(picOb, function(z, pic){
-                    if(z){ $l(z) }
-                    fs.readFile(imgFile.path,  function(z, file){
+                fs.readFile(imgFile.path,  function(z, file){
                         pic.path = path.resolve( imgFile.path, '../../pics/', pic._id.toString() )
                         pic.path+= pic.ext
                         $l('pic.path: ' + pic.path)
                         fs.writeFile( pic.path,  file,  function(z){
                             pic.save(  function(z){
-                                if (z){
-                                    $l('z')
-                                    n(z) }
-                                else {
-                                    $l('saved ------------------------------------------------------upload new pic')
-                                    p.redirect('back') }})
+                                if (z){$l('z'); n(z) }
+                                else {$l('saved ---------------upload new pic'); p.redirect('back') }
+                            })
                         })
-                    })}
-            )
+                    })
+
+            })
+
+
         })
+
+
+
+
 
 
 
         //remove a pic
         $a.del('/pic', function(req,res){ models.pic.remove(req.body, function(err,data){ res.json(data) }) })
-
-
-
         //get all pics(files) (everyone's)
         $a.g('/pics', function(req, res){ models.pic.find(  function(err, data){  res.json(data)  }) })
-
-
         $a.g('/myPics', $w.user, function(q, p){
 
             models.pic.find({
@@ -204,10 +199,6 @@ $l('routes.js'); module.exports=function(){// $a.get('/wap', function(req,res){ 
 
                 function(z, pics){ p.json(pics)  })
         })
-
-
-
-
         ///////////////////
         ////
         //
@@ -239,12 +230,7 @@ $l('routes.js'); module.exports=function(){// $a.get('/wap', function(req,res){ 
 
 
         })
-
-
-
-
         //************** this is where we save new cutout-images
-
         $a.po('/img', $w.user,  function(req, res, next){
 
             models.img.create(
@@ -271,10 +257,8 @@ $l('routes.js'); module.exports=function(){// $a.get('/wap', function(req,res){ 
 
 
             ) })  //new image
-
         //remove an image (by id) //cutouts?
         // $a.po('/rmI', function( req, res ){   models.img.remove(  req.body,  function(err, data){res.json(data)} )  })
-
         $a.del('/img', function( req, res ){
 
             models.img.remove(req.body, function(err, data){res.json(data)} )  })
@@ -302,8 +286,10 @@ $l('routes.js'); module.exports=function(){// $a.get('/wap', function(req,res){ 
                 function(err, data){res.json(data)}  )
 
         })
-
     }
+
+
+
     function status(){
 
         $a.g('/myStatus', $w.user, function(req,res){
