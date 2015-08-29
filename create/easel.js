@@ -1007,3 +1007,57 @@ cjs.RECT = function (c, W, H, x, y, a) {
 
 
 
+oDef = function(o){o=o||{}
+    o.x =  N(o.x,0)
+    o.y =  N(o.y,0)
+    o.a =  N(o.a,0)
+    o.c = o.c || 'z'
+    o.C = o.C || 'w'
+    o.w =  N(o.w, 50)
+    o.h =  N(o.h, 50)
+    return o
+}
+cjs.me = function (fn) { Q(['me'], function (q) {fn(q.getResult('me'))}) }
+
+$h = cjs.h = cjs.shape = cjs.shp = function (x, y, c, C, l) {
+    var g = G(arguments),
+        x = g[0],
+        y = g[1],
+        c = g[2],
+        C = g[3],
+        l = g[4],
+        h
+
+    if (cjs.isShape(x)) {
+        return new cjs.Shape(x.graphics)
+    }
+
+    h = new cjs.Shape()
+
+    if (S(x)) {
+        h.c(x, y, c)
+    }
+
+    else {
+
+        if (N(x)) {
+            h.X(x)
+        }
+        if (N(y)) {
+            h.Y(y)
+        }
+
+        if (S(c)) {
+            h.c(c, C, l)
+        }
+
+
+        else if (N(c)) {
+            h.l(c)
+        }
+    }
+    //if(g.N){h.drag()}
+    return h
+}
+
+

@@ -315,7 +315,8 @@ EDIT=function(){
         c.fit(i.d)
         c.$(function(){st.bm(i.d, function(bm){ bm.rC(200,200).TR() })})
         c.mar(20).C('r')
-        d.A($.btX('/img', i, '-'))
+
+       // d.A($.btX('/img', i, '-'))
 
     })
 
@@ -1030,62 +1031,21 @@ function tests(){
 }
 
 
-
-
 CUTOUTS=function(){
-
-
-    $.bX=$.btX=function(){var g=G(arguments),
-        o={url: g.f, data: g.s}
-
-
-        return   $.bt('X', function (){
-
-             var bt=this;
-
-             $.aj({
-
-             url: o.url,
-
-             data: o.data,
-
-             type: 'DELETE',
-
-             success: function (){
-             $(bt).pa().rm();
-             if(g.n){$.rl()}
-             }
-             })
-
-
-        })
-    }
-
-
-
-
-
+    $.bX=$.btX=function(){var g=G(arguments), o={url: g.f, data: g.s}
+        return $.bt('X', function (){var bt=this
+            $.aj({type: 'DELETE',
+                url: o.url,
+                data: o.data,
+                success: function(){rmParOf(bt)
+                    function rmParOf(bt){$(bt).pa().rm()}}})})}
     $.fm(); section1.A($.h4('click a pic to select it as your mug, or the x to delete it'))
     y = 80
-
-
     $.eJ('/img', function(img){var i
-
         i = $.i(img.d)
-
         i.WH(100,100)
-
-        i.$(function(){
-            $.po('/changeMug', {url: img.d}, function(){ i.selPic() })
-        })
-
-        $.dA('b',100, 100, '+').left(y).top(200).K('pic').A(
-            i,
-            $.btX('/img', img)
-        )
-
+        i.$(function(){ $.po('/changeMug', {url: img.d}, function(){ i.selPic() }) })
+        $.dA('b',100, 100, '+').left(y).top(200).K('pic').A(i,  $.btX('/img', img) )
         y += 220
-
     })
-
 }

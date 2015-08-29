@@ -346,19 +346,14 @@ CENTERSHAPE=function(){St()
     h.cir(500,200,40,'b','x',10)
 }
 SHAPES=function(){St()
-
     s.can.P('a').XY(300)
-
     s.bm('me', 0.2, function(bm){})
-
     s.A(cjs.circle(100, 'blue','green').XY(100, 100).drag())
-
     s.circle(100, 100, 10, 'red', 'yellow' )
         .circle(10,100,100,'black','purple')
         .circle(100, 10, 100, 'blue', 'red' )
         .circle(150,150,120,'red','blue')
         .circle(30,'brown','gray')
-
 }
 RADIALGRADRECT=function(){s=cjs.S()
 
@@ -1390,4 +1385,8 @@ function text(){
         s.A(t2 = cjs.text('baseline: bottom').XY(500).sXY(4).drag().baseline('bottom'))
         s.A(t3 = cjs.text('baseline: middle').XY(500).sXY(4).drag().baseline('middle'))}
 
+}
+
+V=function(x,y){
+    return {x:x, y:y}
 }
