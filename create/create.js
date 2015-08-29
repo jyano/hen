@@ -1,4 +1,4 @@
- cjs = createjs
+
  _.iDU = cjs.iDU=function(e){if(S(e)){return s$(e).contains('data:')}}
 
  $Ct=function(){return new cjs.Container()}
@@ -1012,6 +1012,9 @@ function bmp(){
          return this
      }
  }
+
+
+
  function later(){
      //obPhysics()
      function obPhysics() {
