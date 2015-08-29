@@ -1021,7 +1021,6 @@ function bmp(){
          return this
      }
  }
-
 forSolarApp()
  function forSolarApp() {
      ob.bounce = function (n) {
@@ -1102,7 +1101,6 @@ forSolarApp()
          return res
      }
  }
-
  function later(){
      //obPhysics()
      function obPhysics() {

@@ -305,21 +305,9 @@ inputs=function(){
         }
         $.$bt= $.btLf=function(t,fn){var b = $.bt(t,fn).float('left')//.display('block')
             return b}
-        $.bX=$.btX=function(t,fn){var g=G(arguments),bt,o;
-            o={
-                url: g.f,
-                data: g.s
-            }
 
-            t=  t || g.p? 'submit':'X'
-            fn = fn ||  function (){var bt=this;
-                $.aj({url: o.url, data: o.data, type: 'DELETE',
-                    success: function (){$(bt).pa().rm(); if(g.n){$.rl()}}})}
 
-            bt= $.bt(t, fn)
 
-            return bt
-        }
 
 
         $.btR=  function(text, func){

@@ -145,15 +145,10 @@ $l('routes.js'); module.exports=function(){// $a.get('/wap', function(req,res){ 
 
 
         $a.po('/pic', $w.user,  function(q, p, n){$l('upload new pic------------------------')//upload pic
-
             var imgFile,  ext
-
             if( q.files.png){  q.files.i = q.files.png   }
-
             imgFile = q.files.i;
-
             ext = path.extname( imgFile.path ) || '.png'
-
             picOb=  {
                 user: q.userId,
                 name: imgFile.name,
@@ -161,7 +156,6 @@ $l('routes.js'); module.exports=function(){// $a.get('/wap', function(req,res){ 
                 modified: imgFile.lastModifiedDate,
                 ext: ext
             }
-
             models.pic.create(picOb, function(z, pic){if(z){ $l('ERR:'+z) }
 
                 fs.readFile(imgFile.path,  function(z, file){
@@ -177,18 +171,19 @@ $l('routes.js'); module.exports=function(){// $a.get('/wap', function(req,res){ 
                     })
 
             })
+        })
 
+
+
+        $a.del('/pic', function(q,p){
+
+            $l('remove a pic')//remove a pic
+            models.pic.remove(q.body, function(z,d){ p.json(d) })
 
         })
 
 
 
-
-
-
-
-        //remove a pic
-        $a.del('/pic', function(req,res){ models.pic.remove(req.body, function(err,data){ res.json(data) }) })
         //get all pics(files) (everyone's)
         $a.g('/pics', function(req, res){ models.pic.find(  function(err, data){  res.json(data)  }) })
         $a.g('/myPics', $w.user, function(q, p){
@@ -261,6 +256,7 @@ $l('routes.js'); module.exports=function(){// $a.get('/wap', function(req,res){ 
         // $a.po('/rmI', function( req, res ){   models.img.remove(  req.body,  function(err, data){res.json(data)} )  })
         $a.del('/img', function( req, res ){
 
+            $l('del /img')
             models.img.remove(req.body, function(err, data){res.json(data)} )  })
         //find all User's images?
         $a.g('/img', $w.user, function(req, res){
