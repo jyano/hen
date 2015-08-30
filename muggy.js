@@ -1,6 +1,4 @@
 ui()
-btn()
-
 yano()
 muggy()
 
@@ -124,7 +122,7 @@ function ui(){
         //color of background of modal itself
         if(o.C){
             //flash like crazy
-            if( o.C == '*' ){$.ev(.1, function(){ mB.C( $r() ) }) }
+            if( o.C == '*' ){_.ev(.1, function(){ mB.C( $r() ) }) }
             else { mB.C( o.C ) }
         }
         //this color takes over the whole screen!
@@ -379,7 +377,7 @@ function muggy(){
 
 
         k.em('jRm', title)//why cant i change this emit name to joinRoom ???
-        $.ev(.5,function () {k.em('rm', title)}) //repeatedly emit 'room', which launches room user updates!
+        _.ev(.5,function () {k.em('rm', title)}) //repeatedly emit 'room', which launches room user updates!
     }
     $.user=function(u){
         $.wStatus  = function(user, fn){
@@ -397,8 +395,6 @@ function muggy(){
         )
         return userA
     }
-}
-function btn(){
     $.btCh =  function (name) {
         return $.bt(name, function () {
             $.chat(name)
@@ -416,7 +412,6 @@ function btn(){
     $.btPo=   function(){return $.bt('see posts', function(){})  }
 }
 function yano(){
-
     Y = function self(page){
 
         self.render(page)
