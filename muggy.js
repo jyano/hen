@@ -1,8 +1,8 @@
 ui()
 btn()
-muggy()
+
 yano()
-withDaMug()
+
 
 function ui(){
     $.dCt = $.ctD = function () {
@@ -414,122 +414,23 @@ function btn(){
         $.P('sRq', {to:user.u}) })}
     $.btPo=   function(){return $.bt('see posts', function(){})  }
 }
-function withDaMug(){
-    withYourMugId = gMg = function (func) {
-        $.get('/gMg', func)
-    }  //should it try websocket first?
-    wM = withYourMugData = getMug = function (func) {
-        $.get('/myMug', func)
-    }
-//dep by withYourMugData?
-//wM=function(f){  withYourMugId(      function(mugId){ $.get('/mug/'+  mugId, f )   }     ) }
-    withYourMug = wMD = function (fn) {
-        withYourMugId(function (mugId) {
-            $.post('/dats', {d: mugId}, fn)
-        })
 
-    }
-    wMb = function () {
-        var g = G(arguments),
-
-            f = g[0], st = g[1]
-
-        wM(function (a) {
-
-            SuperBitmapAsync(
-                a,
-                function (b) {
-                    if (st) {
-                        st.A(b)
-                    }   // if stage passed, add bm to stage
-                    f(b, st)         //run cb, and pass it bm and stage
-                })
-        })
-
-        return st
-
-    }
-    $wMb = function (f, stage) {
-
-        wM(function (a) {
-
-            J.Bm(a, function (b) {
-
-                if (stage) {
-                    stage.A(b)
-                }   // if stage passed, add bm to stage
-
-                if (f) {
-                    f(b, stage)
-                }       //run cb, and pass it bm and stage
-
-            })
-        })
-
-        return stage
-    }
-//with mug, after creating and putting it on a stage
-    wMs = function (func, w, h, bg) {
-        var g = G(arguments)
-
-        func = g[0]
-        w = g[1]
-        h = g[2]
-        bg = g[3]
-
-        var stage = St(w || 1000, h || 800, '+')
-
-        if (g.p) {
-            stage.drg()
-        }
-
-        if (g.n) {
-            s2.A(stage)
-        }
-
-        if (bg) {
-            stage.bgi(bg)
-        }
-
-        return wMb(func, stage)
-
-    }
-    $wMs = function (func, w, h, bg) {
-        var g = G(arguments)
-
-        func = g[0]
-        w = g[1]
-        h = g[2]
-        bg = g[3]
-
-        var stage = St(w || 1000, h || 800, '+')
-
-        if (g.p) {
-            stage.drg()
-        }
-
-        if (g.n) {
-            s2.A(stage)
-        }
-
-        if (bg) {
-            stage.bgi(bg)
-        }
-
-        return wMb(func, stage)
-
-    }
-}
 function yano(){
+
     Y = function self(page){
+
         self.render(page)
         return self
     }
+
     Y.render = function(page){
-        page = Y[page]
-        if(page){page(); return true}
-        return false
+        $l('in render')
+        if(Y[page]){
+            $l('found page: '+ page)
+            return Y[page]() || true
+        }
     }
+
     Y.run = function(app){
         app = app.toUpperCase()
         if(app = Y[app] || window[app]){
@@ -537,6 +438,8 @@ function yano(){
             return true
         }
     }
+
+
     Y.to=  Y.load =  function(a){  window.location = '/wap/' + a }
     Y.GuestPage =  function(){
 
@@ -603,47 +506,28 @@ function yano(){
             password:  password.find('input').val()} }
 
     }
+
     Y.HomePage =  function(){
-        Y.n()
+        z()
+
+
+        Y.nav()
+
         Y.run( wappyApp )
+
+
+        //update username on screen
         $.Gj('loggedIn', function(uN){$('#uname').text( _username  = $l(uN))})
     }
+
+
     Y.logOut = function(){$.Gj('logOut', function(){ Y('GuestPage') })}
-    Y.clr=  function(){z(); Y.n()}
-    Y.n= Y.nav= function(){z()
-        navbarCollapse = $.nbC().A(
-            $.n(
-                $.dd('create',[ 'upload','uploads','cutouts',  'edit', 'avatar','paint', 'filters','showcase', 'tween','tweenart', 'easing', 'pack','sprite','transform' , 'can' ,'rub','fan' ]),
-                $.dd('youplay',[ 'bod', 'invaders','thrust', 'starstruck', 'massvelocitytest','contactevents',  'ninjatilemap','launcher', 'groupvsgroup','shooty','hit','space','maggots']),
-                $.dd('play',[
-                    'iso', 'connect','matrix', 'ship',
-                    'circle','boxes','solar','canon','fullcan', 'tangle',
-                    'corners','borders','gquery','grid', 'bowl',  'gamer',
-                    'melon','meltut'  ]),
-
-                $.dd('share',[ 'universe', 'users', 'status' , 'messages','posts','chatrooms', 'ranky',  'profile', 'profiles','dirt','knocks', 'book','site','sorty','elements' ,'api' ,'object'   ]),
-
-
-                $.dd('box2d', [
-                        'box2d', 'wheel','heads', 'cups','pinball',
-                        'revdemo','shooter','thruster','jumper','warper' ]
-                )
-            ),
-            $.nR($.liA('logged: '+ _username), $.liA('logout', Y.logOut)) )
-        $.Ct().A($.nb().A($.nbH('wappy', '/wap/tween'), navbarCollapse))
-    }
-    Y.n= Y.nav= function(){z()
+    Y.clr=  function(){z(); Y.nav()}
+    Y.nav=   function(){
 
         navbarCollapse = $.nbC().A($.n(
 
-                $.dd('jq', [
-                    'tangle', 'corners', 'grid',  'borders',  'gamer'
-                ]),
-                $.dd('can',[
-                    'bowl',  'can','fan', 'fullcan', 'rub'
-                ]),
-                $.dd('easel',[
-                    'solar',  'ship',  'connect','matrix', 'iso', 'circle','boxes','canon']),
+                $.dd('stuff', ['tangle', 'corners', 'grid' , 'fullcan' , 'solar',  'ship',  'connect','matrix', 'iso' ]),
                 $.dd('anim',[
                     'tween', 'sprite', 'pack'
                 ]),
@@ -674,7 +558,9 @@ function yano(){
 
         $.Ct().A($.nb().A($.nbH('wappy', '/wap/tween'), navbarCollapse))
 
-    }
+    }//=Y.n
+
+
     Y.uPop=function(i,  size){
 
         i= (O(i) && F(i.u)) ? i.u() : i

@@ -261,7 +261,7 @@ function que(){
         img = this.getResult(img)
 
 
-        return cjs.bitmap(img)
+        return cjs.bm(img)
     }
     cjs.manifest = function (func) {
         var q = cjs.loadQueue()
@@ -289,7 +289,7 @@ function que(){
     cjs.mf = cjs.manifest = function (a) {
         var g = G(arguments), mf = []
         _.e(g, function (v) {
-            mf.push({src: cjs.src(v), id: v})
+            mf.push({src: _.src(v), id: v})
         })
         return mf
     }
@@ -307,7 +307,7 @@ function que(){
 
             mf.push({
 
-                src: cjs.src(v),
+                src: _.src(v),
                 id: v
 
             })

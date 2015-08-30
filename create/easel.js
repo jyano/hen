@@ -1,6 +1,7 @@
 J = cjs
 h =  cjs.Shape.prototype
 ct = cjs.Container.prototype
+
 gx = cjs.Graphics.prototype
 st = s = p = cjs.Stage.prototype
  T= cjs.Ticker
@@ -54,23 +55,11 @@ function contProto() {
     ct.st = function () {
         return this.stage
     }
+
     ct.bData = function (data) {
         return J.bm($.i().src($.parseJSON(data))).a2(this)
     }
-    ct.M = ct.mug = function () {
-        var ct = this, g = G(arguments), o
-        o = N(g[0]) ? {sc: g[0], fn: g[1]} : {fn: g[0]}
-        o.sc = N(o.sc) ? o.sc : 1
-        o.fn = o.fn || function () {
-        }
-        $.G('myMug', function (m) {
-            if (!m) {
-                alert('!mug')
-            }
-            ct.bm(m, o.sc, o.fn, g.p ? '+' : null)
-        })
-        return ct
-    }
+
     ct.clr = function () {
         var ct = this, arr = [];
         ct.ch(function (ch) {
@@ -220,7 +209,7 @@ function contProto() {
                         : {}
 
 
-        b2d.oDef(o)
+       oDef(o)
 
         ct2 = ct.ct()
 
@@ -255,20 +244,7 @@ function contProto() {
     ct.bData = function (data) {
         return J.bm($.i().src($.parseJSON(data))).a2(this)
     }
-    ct.M = ct.mug = function () {
-        var ct = this, g = G(arguments), o
-        o = N(g[0]) ? {sc: g[0], fn: g[1]} : {fn: g[0]}
-        o.sc = N(o.sc) ? o.sc : 1
-        o.fn = o.fn || function () {
-        }
-        $.G('myMug', function (m) {
-            if (!m) {
-                alert('!mug')
-            }
-            ct.bm(m, o.sc, o.fn, g.p ? '+' : null)
-        })
-        return ct
-    }
+
     ct.clr = function () {
         var ct = this, arr = [];
         ct.ch(function (ch) {
@@ -451,46 +427,68 @@ function contProto() {
     ct.st = function () {
         return this.stage
     }
-    ct.dot=function(c, x, y){
-        var that = this,
-            s=this,
-            dot,
-            tween
+    function toSpaz() {
+        ///WARNING ..USED B2D.ISGPOLY TO MAKE DOT
+        ct.dot = function (c, x, y) {
+            var that = this,
+                s = this,
+                dot,
+                tween
 
-        if(b2d.isGPoly(c)){
-            _.each(c.verts(), function(v){ s.dot(V(v))  })
-            return this}
-
-        if(A(c)){
-
-            _.each(c,
-                function(G){
-                    if(A(G)){s.dot.apply(s, G)}
-                    else{s.dot(G)}
+            if (b2d.isGPoly(c)) {
+                _.each(c.verts(), function (v) {
+                    s.dot(V(v))
                 })
+                return this
+            }
 
-            return }
+            if (A(c)) {
 
-        if(!S(c)){y=x; x=c; c='y'}
+                _.each(c,
+                    function (G) {
+                        if (A(G)) {
+                            s.dot.apply(s, G)
+                        }
+                        else {
+                            s.dot(G)
+                        }
+                    })
 
-        if(O(x)){y=x.y; x=x.x}
+                return
+            }
 
-        x = N(x)?x : s.W()/2
-        y = N(y)?y : s.H()/2
+            if (!S(c)) {
+                y = x;
+                x = c;
+                c = 'y'
+            }
 
-        //dot = s.circ(x,y, 6,  oO('c', c)).drag()//.opacity(.4)
+            if (O(x)) {
+                y = x.y;
+                x = x.x
+            }
 
-        //dot = s.h(x,y).circ(0,0, 6,  oO('c', c)).drag()//.opacity(.4)
+            x = N(x) ? x : s.W() / 2
+            y = N(y) ? y : s.H() / 2
 
-        dot =   s.h(x,y).circ(8, c,c).drag()
+            //dot = s.circ(x,y, 6,  oO('c', c)).drag()//.opacity(.4)
 
-        tween = dot.tweenLoop([{sxy:1.3},100],[{sxy:1},100]).toggle()
+            //dot = s.h(x,y).circ(0,0, 6,  oO('c', c)).drag()//.opacity(.4)
 
-        dot.$$(function(){tween.toggle()})
+            dot = s.h(x, y).circ(8, c, c).drag()
 
-        dot.N('dot')
+            tween = dot.tweenLoop([{sxy: 1.3}, 100], [{sxy: 1}, 100]).toggle()
 
-        return s}
+            dot.$$(function () {
+                tween.toggle()
+            })
+
+            dot.N('dot')
+
+            return s
+        }
+
+    }
     ct.squareDot=function(color, x, y){var squareDot, tween
         if(!S(color)){y=x; x=color; color='orange'}
         if(O(x)){y= x.y;x= x.x  }
@@ -504,6 +502,7 @@ function contProto() {
         // dot.$$(function(){tween.toggle()})
 
         return this}
+
     ct.chalk=function(){
         var height = 50,
             that=this,
@@ -1012,7 +1011,7 @@ cjs.RECT = function (c, W, H, x, y, a) {
     } else if (S(c)) {
         o = {c: c, w: W, h: H, x: x, y: y, a: a}
     }
-    o = b2d.oDef(o)
+    o =  oDef(o)
 
 
     h = ct.h(o.x, o.y).c(o.c, o.C, o.l).rot(o.a)
