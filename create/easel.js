@@ -52,8 +52,9 @@ function gxProto() {
     }
 }
 function contProto() {
-    ct.st = function () {
-        return this.stage
+
+    ct.st = function(){
+        return this.getStage()
     }
 
     ct.bData = function (data) {
@@ -71,12 +72,10 @@ function contProto() {
         this.A(J.cir(x, y, r, c));
         return this
     }
-    ct.T = ct.Tx = ct.text = function (t, f, c, x, y) {
-        var ct = this, o, cX
-        cX = this.st().cen().x
-        o = (N(x) && U(y)) ? {y: x, x: cX} : U(x) ? {x: cX, y: 100} : {t: t, f: f, c: c, x: x, y: y}
-        return J.T(o.t, o.f, o.c, o.x, o.y).a2(ct)
-    }
+
+
+
+
     ct.cen = function () {
         return V(this.W() / 2, this.H() / 2)
     }
@@ -256,12 +255,24 @@ function contProto() {
         this.A(J.cir(x, y, r, c));
         return this
     }
-    ct.T = ct.Tx = ct.text = function (t, f, c, x, y) {
-        var ct = this, o, cX
-        cX = this.st().cen().x
-        o = (N(x) && U(y)) ? {y: x, x: cX} : U(x) ? {x: cX, y: 100} : {t: t, f: f, c: c, x: x, y: y}
-        return J.T(o.t, o.f, o.c, o.x, o.y).a2(ct)
+
+    ct.T= ct.Tx = ct.text = function (t, f, c, x, y) {var ct = this, o, cX
+
+
+        st=this.getStage()
+        cX = st.cen().x
+
+        o = (N(x) && U(y)) ? {y: x, x: cX} :
+            U(x) ? {x: cX, y: 100} :
+            {t: t, f: f, c: c, x: x, y: y}
+
+        var t= cjs.T(o.t, o.f, o.c, o.x, o.y)
+
+        ct.A(t)
+
+        return t
     }
+
     ct.cen = function () {
         return V(this.W() / 2, this.H() / 2)
     }

@@ -817,7 +817,7 @@ function bmp(){
              return (  t.textBaseline   )
          }
      }
-     cjs.text = function(text, font, color,  x, y){
+     cjs.T=cjs.text = function(text, font, color,  x, y){
 
          x=N(x)?x:600
          y=N(y)?y:100

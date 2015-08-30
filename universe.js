@@ -5,22 +5,35 @@ Y.bM= Y.mByM=fetchMugByUserModel =  function(user, fn){$.G('mug/' + user.m, fn) 
 Y.bN= Y.mByN=fetchMugByUsername =  function(un, fn){
     $.P('mug', {u: un}, function(mug){if(mug){ fn(mug) }})
 }
-Y.t= Y.b= Y.bub=SpeechBubble =  function( t, x, y ){var g=G(arguments)
-    ct=   $Ct()
-    if( !window['uni'] ){alert('the universe is missing!');return}
+
+
+
+$Bub=   function( t, x, y ){
+
+    var g=G(arguments), ct=   $Ct() //if( !window['uni'] ){alert('the universe is missing!');return}
+
     text = g[0] || 'hi!'
     //so if you don't pass in coords, it relies on 'you'
     x = g[1] || you.x
     y = g[2] || you.y
     uni.A(ct)
-    ct.cir(x-150,y-150,100,'w').cir(x-50, y-50, 30, 'w').cir(x-20,y-20,10,'w')
-        .text(t, "20px Arial", "blue", x-200, y-200)
-    ct.tr( [{ a:0, sxy:.1, x:x-250, y:y-250 }, 20000])
+    ct.cir('w', 120, x-250,y-250,50)
+        .cir('b', 30, x-120, y-120, 30 )
+       .cir('g', 20, x-80, y-80 )
+        .text(t, "20px Arial", "blue", x-300, y-300)
+
+  $Tw( ct.tw([{ a:0, sxy:.1, x:x-250, y:y-250 }, 20000])
     _.in(10, function(){ct.rm()})
     //broadcast out your speech bubble
-    if(g.p){ k.emit('speechBubble', { t:t, x:x, y:y, u:_username } )}
+     if(g.p){
+         k.emit('speechBubble', {t:t, x:x, y:y, u:_username } )
+     }
+
     return ct
 }
+
+
+
 Y.loc=guyLocation=function(){  if( window['you'] ){
     return {u:_username, username:_username, x: you.x, y: you.y}
 }}//relies on 'you'.. actually just makes a similar object
@@ -45,7 +58,7 @@ Y.g=getGuy=    Y.A=addGuy=function(un, bm){//add guy to Y.GUYS
 
 }
 //get guy object by username or user.username //guy object has {user/username, x, y} //-- so this finds a guy in the Y.GUYS or returns false if he aint there
-Y.u= updateGuy =  function(u){var guy, bm
+Y.update= Y.u= updateGuy =  function(u){var guy, bm
 
     if(u){guy= Y.g( u.u )
         if(O(guy)){bm = guy.bm}
@@ -91,9 +104,10 @@ UNIVERSE=function(){z()
         d.A(
             $.br(3), $.ip('...', 'tx').id('textinput'),
             $.bt('send', function(){
-                Y.bub( $('#textinput').V(), '+')}))
+                $Bub( $('#textinput').V(), '+')
+            }))
 
-        _.ev(.1, Y.u)
+        _.ev(.1, Y.update)
 
         otherUsers()
         function otherUsers(){
