@@ -23,9 +23,7 @@ module.exports=function(io, ssK){ //session socket
         $K=function(K){
             K.o=function(ob){
                 var K=this
-                _.e(ob, function(v,k){
-                    K.on(k, v)
-                })}
+                _.e(ob, function(v,k){ K.on(k, v) })}
 
             K.em=  function(a,b,c,d){
                 if(A(a)){_.e(a, function(a){K.emit(a,b,c,d)})}
@@ -85,7 +83,11 @@ module.exports=function(io, ssK){ //session socket
                 $l('-newImg')
                 $m.img.create(data, function(z, i){  K.emit('newImgAck', i)   })
             },
-            bub:   function(speech){K.bc.e('bub', speech)},
+
+
+            bub:   function(speech){$l('new bub: '+ speech)
+                //K.bc.e('bub', speech)
+            },
 
             jRm: function(rm){
                 $l('joining room: ' + rm  )
@@ -106,7 +108,6 @@ module.exports=function(io, ssK){ //session socket
 
             r: function(data){  K.em('res',  data? room[data]  : RMS())   },
             who: function(username){  $l(  US.tUn(username))  },
-
 
             in:function(d){ var rm //client asks am I in this room
                 if(rm=RMS.rm(d)) {K.em('res', rm[ K.id ]? true: false ) }

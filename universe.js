@@ -22,11 +22,13 @@ $Bub=   function( t, x, y ){
        .cir('g', 20, x-80, y-80 )
         .text(t, "20px Arial", "blue", x-300, y-300)
 
-  $Tw( ct.tw([{ a:0, sxy:.1, x:x-250, y:y-250 }, 20000])
+  $Tw( ct,  [{ a:0, sxy:.1, x:x-250, y:y-250 }, 20000])
     _.in(10, function(){ct.rm()})
     //broadcast out your speech bubble
      if(g.p){
-         k.emit('speechBubble', {t:t, x:x, y:y, u:_username } )
+         $l('emitig.....')
+
+         k.emit('bub', {t:t, x:x, y:y, u:_username } )
      }
 
     return ct
@@ -66,8 +68,13 @@ Y.update= Y.u= updateGuy =  function(u){var guy, bm
     }
     else {  k.em('bc', 'updateGuy', Y.loc())  }
 }
+
 Y.iv= inviteToUniverse=function(toWho){
-    k.em('bc', 'invite', {from: _username, toWho: toWho})}
+    alert('inviting '+ toWho+ ' to my world, baby')
+
+    k.em('bc', 'invite', {from: _username, toWho: toWho})
+}
+
 Y.ac= acceptUniverseInvitation =  function(toWho){
     $l(_username + ' accepts from ' + toWho)
     k.em('bc',  'acceptUniverseInvitation',

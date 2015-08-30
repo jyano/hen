@@ -61,7 +61,15 @@ k.on('im', function(i){$.c().fit( i ) })
 
 
 //uv
-k.on('bub', function(bub){if( Y.g(bub.u) ){ Y.bub(bub.t, bub.x, bub.y)}})
+k.on('bub', function(bub){
+
+    $l('buuuuuuuuuuuuub')
+
+    if( Y.g(bub.u) ){ Y.bub(bub.t, bub.x, bub.y)}
+
+})
+
+
 k.on('updG', function(guy){ Y.u(guy) })
 k.on('ac', function(data){  if( _username == data.toWho){Y.U(data.from)}   })//if it was YOUR invitation that was accepted// here u should really just be able to 'addUser'
 k.on('iv', function(iv){if( _username == iv.toWho ){
