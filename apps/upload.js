@@ -1,9 +1,24 @@
+
+$.cut = function (m) {z(); //$.fm()
+     m=m|| 'me'
+    c = $.c('r', 500, 500).A().fit(m  )
+
+    $('body').A(
+        $.bt('save sprite', function () { c.snap(); EDIT() }), $.br(2),
+        $.bt('start cut', function () { c.dots() }), $.br(2),
+        $.bt('restart cut', function () {$.cut(m)}),  $.br(2),// $.bt('file uploads', function () {window.location = '/wap/uploads'}),
+        c
+
+    )
+}
+
 $.picDiv = function (top) {$l('in picDiv')
     return $.dA('b', '+').WH('auto').XY(200, top).K('pic')
         .pad(25)}
 $.pic = function (pic) {
     return $.i(pic._id + pic.ext).WH(120, 120).$(function(){
-        $.cut(pic._id + pic.ext) })}
+        $.cut(pic._id + pic.ext)
+    })}
 UPLOAD=function(){
     f =  $.f().attr({
         method:'post',
@@ -15,10 +30,9 @@ UPLOAD=function(){
 }
 UPLOADS=function(){
 
-    $l('in uploads')
+
     $.fm()
-    instr= 'You have uploaded these pics. Click to make a sprite, or hit the x to delete..'
-    y = 80
+     y = 80
     n=0
     $.eG('myPics',  function(p){
         $l('pic: ' + n++)
@@ -36,7 +50,7 @@ UPLOADS=function(){
 
      })*/
 
-    s2.A($.h4(instr))
+
 }
 function UpPic(p){return $.sp().A($.pic(p), $.delBt('/pic', p))}
 

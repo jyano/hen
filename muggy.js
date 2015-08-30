@@ -244,27 +244,6 @@ function ui(){
 }
 function muggy(){
 
-    $.cut = function (m) {
-        z()
-        $.fm()
-        c = $.c('r', 500, 500).A().fit(m || 'me')
-        s1.A(
-            $.bt('save sprite', function () {
-                c.snap();
-                EDIT()
-            }), $.br(2),
-            $.bt('start cut', function () {
-                c.dots();
-            }), $.br(2),
-            $.bt('restart cut', function () {
-                $.cut(m)
-            }), $.br(2),
-            $.bt('file uploads', function () {
-                window.location = '/wap/uploads'
-            })
-        )
-        s2.A($.h2('click to start cut-out..'), c)
-    }
     $.iMsg=   function(msgOb){
         //this is triggered within a chatroom when someone clicks on a user and 'chats' them up
 //will need to update other parts to also activate this (instant messages from other parts of the site)
