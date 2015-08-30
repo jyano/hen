@@ -34,6 +34,7 @@ $.wd=  $.w=$.win=function(a, size,  id){
     return wd
 
 }
+$ChatRmMs=function(rm, ms, un){un=un||window['_username']; return {rm:rm, ms: ms, un:un}}
 
 $.chat = function (title, color, id) {
     var ip, sendBt, picBt, popBt, messages, dUS = $.d()
@@ -49,28 +50,25 @@ $.chat = function (title, color, id) {
         'background-color': color
     })
 
+
+
+    sendBt = $.bt('send',  function(){
+        
+        var ms=$ChatRmMs(title, ip.V())
+        k.em('ChatMs', ms)
+    })
+
     wd.A($.R().A(
-        $.Cl(8,
-            messages = $.d().id('cbi').C('u').ov('auto'),
+        $.Cl(8, messages = $.d().id('cbi').C('u').ov('auto'),
             ip = $.ip().K('form-control'),
-            sendBt = $.bt('send', function () {
-                k.em('ChatMs', {
-
-                    rm: title,
-                    un: _username,
-                    ms: ip.V()
-
-                })
-            }),
-
+            sendBt,
             popBt = $.bt('pop', function () {
                 k.emit('p', ip.V(), title)
             }),
             picBt = $.bt('pic', function () {
                 $.pop('pic select')
             })),
-        $.Cl(4, $.h5('users:'), dUS))
-    )
+        $.Cl(4, $.h5('users:'), dUS)))
 
     uUS = function (users) {
         dUS.E()
