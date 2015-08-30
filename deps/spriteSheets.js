@@ -666,14 +666,14 @@ tweens.rpunch = function (arm) {
 
     //arm=arm|| c1.g('arm')
 
-    return cjs.tween(arm,
+    return $Tw(arm,
         [{r: 100, sx: -1}, 800],
         [{r: -20, sx: -2, sy: 2}, 400, 'eO'],
         [{r: 0, sy: 1, sx: -.8}, 200])
 }
 tweens.lpunch = function (lf) {
 
-    return cjs.tween(lf,
+    return $Tw(lf,
 
         [{r: 10, s: 1}, 800],
 
@@ -686,7 +686,7 @@ tweens.shakeY = function (a) {
 
     // EaselTween(  a,  [  {r:180, y:200, sxy:.5},  500  ]  )
 
-    cjs.tween(
+    $Tw(
         [a, 'l'],
         [{y: -10}, 500],
         [{y: 10}, 500],
@@ -696,7 +696,7 @@ tweens.shakeY = function (a) {
     return a
 }
 tweens.shakeX = function (a) {
-    return cjs.tween(
+    return $Tw(
         a,
 
         [
@@ -711,14 +711,14 @@ tweens.shakeX = function (a) {
 }
 tweens.rott = function (a) {
 
-    return cjs.tween(
+    return $Tw(
         a,
 
         [{r: 180, y: 200, sxy: .5}, 500]
     )
 }
 tweens.prod1 = function (a) {
-    return cjs.tween(
+    return $Tw(
         a,
         {x: -100, y: 200},
         [{x: 10, s: .5, y: -200}, 500],
@@ -727,7 +727,7 @@ tweens.prod1 = function (a) {
 }
 tweens.prod2 = function (a) {
 
-    return cjs.tween(
+    return $Tw(
         a,
         {x: 100, y: 200},
         [{x: 10, s: .5, y: 200}, 500],

@@ -13,7 +13,7 @@ TWEEN=function(a){
         TR(bm)
 
 
-        cjs.tween(
+        $Tw(
 
             [ bm, 'l' ],
 
@@ -37,7 +37,7 @@ TWEEN=function(a){
     bm.TR()
 
 
-        cjs.tween([bm,'l'],
+        $Tw([bm,'l'],
             {x:0,sxy:.7,r:-2},
             [{x:300,sxy:2.3,r:0,a:.2,kx:60},3000],
             [{x:320,a:1,sxy:2,r:-1},1000],

@@ -1,121 +1,9 @@
 
 
-b = cjs.SpriteSheetBuilder.prototype
-b.Z=function(sc){
-
-    if(U(sc)){return this.scale}
-    this.scale=sc;return this
-}
-b.maxW=function(sc){
-    if(U(sc)){return this.maxWidth}
-    this.maxWidth=sc;return this
-}
-b.A=function(mc){
-    this.addMovieClip(mc)
-    return this}
-b.complete=function(func){
-    this.on("complete", func)
-    return this}
-b.async=function(funcNum,num){
-    if(F(funcNum)){
-        this.complete(funcNum)
-        this.buildAsync(num)
-    }
-
-    else{this.buildAsync(funcNum)}
-
-
-    return this}
-cjs.builder = cjs.spriteSheetBuilder = cjs.sSB = cjs.ssB = cjs.ssb = function(mc){
-
-    ssb = new createjs.SpriteSheetBuilder()
-    if(mc){ssb.A(mc)}
-
-    return ssb}
-ss = cjs.SpriteSheet.prototype
-ss.addFlipped=function(a, b, c){
-    cjs.SpriteSheetUtils.addFlippedFrames(this,  a||true, b||false, c||false )
-    return this}
-cjs.spriteSheet   =function(a){return new cjs.SpriteSheet(a)}
-s=cjs.Sprite.prototype
-s.p = function(what){
-    if(U(what)){this.play()}
-    else {this.gotoAndPlay(what)}
-    return this}
-s.s= s.P=function(what){if(U(what)){this.stop()}
-else {this.gotoAndStop(what)};return this}
-s.skip=s.adv=function(num){this.advance(num);return this}
-s.cA = s.cAn = s.currAnim=function(){return this.currentAnimation}
-s.cAF= currAnimFrame = function(){return this.currentAnimationFrame}
-s.cF = s.cFr = s.currFrame=function(){return this.currentFrame}
-s.fR = s.rate = function(rate){
-    if(U(rate)){return this.framerate}
-    this.framerate=rate
-    return this
-}
-s.end=function(func){func=func||function(){n=N(window['n'])?n:0
-    $l('frame! '+ n++)}
-    this.on('animationend', func)
-    return this}
-cjs.sprite=$sprite=function(spriteSheet){
-//EaselSprite= J$=
-
-    if(spriteSheet.images){
-
-        spriteSheet=cjs.parseZoe(spriteSheet)
-        spriteSheet=new cjs.SpriteSheet(spriteSheet)
-    }
-
-
-    return new cjs.Sprite( spriteSheet )
-
-}
-cjs.sprite100 = function(a){
-
-    var spr = cjs.sprite(a)
-    spr.rXY(50)
-        .opacity(.8)
-    return spr}
-cjs.parseZoe=function(sprObj){
-
-
-    //fix source (needs a '/')
-    sprObj.images[ 0 ] = S.eL( sprObj.images[0] )
-
-    //set next to false, on all anims
-    //_.e(sprObj.animations, function(anim){anim.next = false})
-
-
-    //to do: parse it! (get rid of unnecessary json strings in keys)
-
-
-    return sprObj}
-cjs.tween= cjs.Tween
-p = cjs.Tween.prototype
-p.toggle=function(){
-
-    var isPaused = this._paused
-
-    if(isPaused){
-        this.setPaused(false)}
-
-    else{
-        this.setPaused(true)
-    }
-
-    return this
-
-}
-cjs.ease = function(e){return cjs.Ease[oO('E', e)]} //Ea =
-cjs.tween = function(a, b){ // EaselTween=tw=
+$Tw= function(a, b){ // EaselTween=tw=
 
 
     var displayObject = a
-
-
-
-
-
 
     cjs.ww =ww=function(o){var w={}
         if(N(o.x)){w.x=o.x}
@@ -141,7 +29,6 @@ cjs.tween = function(a, b){ // EaselTween=tw=
         if(o.v==1){w.visible=true}
         return w}
 
-
     tweenGet = function(a){//twg=
         //this returns tween-get on a display obj
         //you can optionally pass an array (ob, op1, op2..)
@@ -166,13 +53,6 @@ cjs.tween = function(a, b){ // EaselTween=tw=
         })
 
         return o}
-
-
-
-
-
-
-
 
 
     if( U(b) ){ return tweenGet( displayObject ) }
@@ -307,91 +187,169 @@ cjs.tween = function(a, b){ // EaselTween=tw=
             return w }
 
         return w}
-}
-tl= cjs.Timeline.prototype
-tl.remove = tl.rm = function(a){ this.removeTween(a); return this }
-tl.currentLabel = tl.cL=function(){return this.getCurrentLabel()}
-tl.labels = tl.lb=function(a){
-    var t=this;
-    if(U(a)){return this.getLabels()}
-    if(O(a)){this.setLabels(a);return this}
-    if(N(a) || S(a)){return resolve(a)}
-    return this
-}
-tl.add=function(tw){var that=this
+} //cjs.tween
 
-    this.addTween.apply(this, arguments)
-
-    return this}
-mc=cjs.MovieClip.prototype
-mc.play = mc.p = function(a,b){
-    if(this.setPaused){this.setPaused(false)} else { this.play() }
-    if(D(b)){
-
-        if(this.gotoAndPlay) {this.gotoAndPlay(a)}
-
-        if(this.setPosition) {this.setPosition(a,b)}
-
-        return this}
-}
-mc.stop = mc.s = function(a,b){
+cjs.ease = function(e){return cjs.Ease[oO('E', e)]} //Ea =
 
 
-    if(D(b)){
+    twPt()
+    function twPt() {
+        p = cjs.Tween.prototype
+        p.toggle = function () {
 
-        if(this.gotoAndStop) {this.gotoAndStop(a)}
+            var isPaused = this._paused
 
-        if(this.setPosition) {this.setPosition(a,b)}
+            if (isPaused) {
+                this.setPaused(false)
+            }
 
-        return this}
-}
-mc.lb = function(){return this.getLabels()}
-mc.cL=function(){return this.getCurrentLabel()}
-mc.start= mc.startPos= mc.sP=function(a){
-    if(U(a)){
-        return this.startPosition};
-    this.startPosition=a;
-    return this}
-mc.mo=function(a){
-    if(U(a)){return this.mode}
-    this.mode=a;
-    return tthis}
-mc.lp=function(a){ //loop
-    if(U(a)){ return this.loop }
-    this.loop=a
-    return this}
-mc.auto = mc.aR=function(auto){
-    if(U(auto)){ return this.autoReset }
-    this.autoReset = auto
-    return this}
-mc.actions = mc.aE = function(enabled){
+            else {
+                this.setPaused(true)
+            }
 
-    if( U(enabled) ){ return this.actionsEnabled }
+            return this
 
-    this.actionsEnabled = enabled
-
-    return this
-}
-mc.tl=function(){
-    this.timeline.addTween.apply(this.timeline, arguments)
-
-    return this}
-cjs.tl=function(args){var tl = new cjs.Timeline()
-    if(A(args)){
-
-        tl.add(args)
-    }
-    return tl}
-cjs.mc=function(a,b,c,d){var mc = new cjs.MovieClip(a,b,c,d)
-    return mc}
-
-function alpha(){
-    meSprite=function(){
-        return $sprite(   SS ).XY(10).drag()
+        }
     }
 
-}
+
 tran()
+spr()
+movie()
+function movie() {
+
+    cjs.tl=function(args){var tl = new cjs.Timeline()
+        if(A(args)){
+
+            tl.add(args)
+        }
+        return tl}
+    cjs.mc=function(a,b,c,d){var mc = new cjs.MovieClip(a,b,c,d)
+        return mc}
+
+    mcPt()
+    tlPt()
+    function tlPt() {
+        tl = cjs.Timeline.prototype
+        tl.remove = tl.rm = function (a) {
+            this.removeTween(a);
+            return this
+        }
+        tl.currentLabel = tl.cL = function () {
+            return this.getCurrentLabel()
+        }
+        tl.labels = tl.lb = function (a) {
+            var t = this;
+            if (U(a)) {
+                return this.getLabels()
+            }
+            if (O(a)) {
+                this.setLabels(a);
+                return this
+            }
+            if (N(a) || S(a)) {
+                return resolve(a)
+            }
+            return this
+        }
+        tl.add = function (tw) {
+            var that = this
+
+            this.addTween.apply(this, arguments)
+
+            return this
+        }
+    }
+
+    function mcPt() {
+        mc = cjs.MovieClip.prototype
+        mc.play = mc.p = function (a, b) {
+            if (this.setPaused) {
+                this.setPaused(false)
+            } else {
+                this.play()
+            }
+            if (D(b)) {
+
+                if (this.gotoAndPlay) {
+                    this.gotoAndPlay(a)
+                }
+
+                if (this.setPosition) {
+                    this.setPosition(a, b)
+                }
+
+                return this
+            }
+        }
+        mc.stop = mc.s = function (a, b) {
+
+
+            if (D(b)) {
+
+                if (this.gotoAndStop) {
+                    this.gotoAndStop(a)
+                }
+
+                if (this.setPosition) {
+                    this.setPosition(a, b)
+                }
+
+                return this
+            }
+        }
+        mc.lb = function () {
+            return this.getLabels()
+        }
+        mc.cL = function () {
+            return this.getCurrentLabel()
+        }
+        mc.start = mc.startPos = mc.sP = function (a) {
+            if (U(a)) {
+                return this.startPosition
+            }
+            ;
+            this.startPosition = a;
+            return this
+        }
+        mc.mo = function (a) {
+            if (U(a)) {
+                return this.mode
+            }
+            this.mode = a;
+            return tthis
+        }
+        mc.lp = function (a) { //loop
+            if (U(a)) {
+                return this.loop
+            }
+            this.loop = a
+            return this
+        }
+        mc.auto = mc.aR = function (auto) {
+            if (U(auto)) {
+                return this.autoReset
+            }
+            this.autoReset = auto
+            return this
+        }
+        mc.actions = mc.aE = function (enabled) {
+
+            if (U(enabled)) {
+                return this.actionsEnabled
+            }
+
+            this.actionsEnabled = enabled
+
+            return this
+        }
+        mc.tl = function () {
+            this.timeline.addTween.apply(this.timeline, arguments)
+
+            return this
+        }
+    }
+}
 function tran(){
 
 
@@ -710,5 +668,157 @@ cjs.scSh = cjs.scaleShake = function (bm) {
     $Tw([bm, 'l'], {sxy: 1}, [{sxy: .95}, 1], [{sxy: 1.05}, 1])
 
 }
+
+}
+function spr(){
+    cjs.spriteSheet   =function(a){return new cjs.SpriteSheet(a)}
+
+    cjs.sprite=$sprite=function(spriteSheet){
+//EaselSprite= J$=
+
+        if(spriteSheet.images){
+
+            spriteSheet=cjs.parseZoe(spriteSheet)
+            spriteSheet=new cjs.SpriteSheet(spriteSheet)
+        }
+
+
+        return new cjs.Sprite( spriteSheet )
+
+    }
+    cjs.sprite100 = function(a){
+
+        var spr = cjs.sprite(a)
+        spr.rXY(50)
+            .opacity(.8)
+        return spr}
+    cjs.parseZoe=function(sprObj){
+
+
+        //fix source (needs a '/')
+        sprObj.images[ 0 ] = S.eL( sprObj.images[0] )
+
+        //set next to false, on all anims
+        //_.e(sprObj.animations, function(anim){anim.next = false})
+
+
+        //to do: parse it! (get rid of unnecessary json strings in keys)
+
+
+        return sprObj}
+
+    cjs.builder = cjs.spriteSheetBuilder = cjs.sSB = cjs.ssB = cjs.ssb = function(mc){
+
+        ssb = new createjs.SpriteSheetBuilder()
+        if(mc){ssb.A(mc)}
+
+        return ssb}
+
+
+    protos()
+    function protos(){
+
+        sprShPt()
+        builderPt()
+
+            s = cjs.Sprite.prototype
+            s.p = function (what) {
+                if (U(what)) {
+                    this.play()
+                }
+                else {
+                    this.gotoAndPlay(what)
+                }
+                return this
+            }
+            s.s = s.P = function (what) {
+                if (U(what)) {
+                    this.stop()
+                }
+                else {
+                    this.gotoAndStop(what)
+                }
+                ;
+                return this
+            }
+            s.skip = s.adv = function (num) {
+                this.advance(num);
+                return this
+            }
+            s.cA = s.cAn = s.currAnim = function () {
+                return this.currentAnimation
+            }
+            s.cAF = currAnimFrame = function () {
+                return this.currentAnimationFrame
+            }
+            s.cF = s.cFr = s.currFrame = function () {
+                return this.currentFrame
+            }
+            s.fR = s.rate = function (rate) {
+                if (U(rate)) {
+                    return this.framerate
+                }
+                this.framerate = rate
+                return this
+            }
+            s.end = function (func) {
+                func = func || function () {
+                    n = N(window['n']) ? n : 0
+                    $l('frame! ' + n++)
+                }
+                this.on('animationend', func)
+                return this
+            }
+
+        function sprShPt() {
+            ss = cjs.SpriteSheet.prototype
+            ss.addFlipped = function (a, b, c) {
+                cjs.SpriteSheetUtils.addFlippedFrames(this, a || true, b || false, c || false)
+                return this
+            }
+        }
+        function builderPt(){
+            b = cjs.SpriteSheetBuilder.prototype
+            b.Z = function (sc) {
+
+                if (U(sc)) {
+                    return this.scale
+                }
+                this.scale = sc;
+                return this
+            }
+            b.maxW = function (sc) {
+                if (U(sc)) {
+                    return this.maxWidth
+                }
+                this.maxWidth = sc;
+                return this
+            }
+            b.A = function (mc) {
+                this.addMovieClip(mc)
+                return this
+            }
+            b.complete = function (func) {
+                this.on("complete", func)
+                return this
+            }
+            b.async = function (funcNum, num) {
+                if (F(funcNum)) {
+                    this.complete(funcNum)
+                    this.buildAsync(num)
+                }
+
+                else {
+                    this.buildAsync(funcNum)
+                }
+
+
+                return this
+            }
+        }
+    }
+
+
+
 
 }

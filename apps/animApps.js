@@ -580,8 +580,8 @@ STAGE=function(){z()
         m.rgc()
         m.xy(300)
 
-        cjs.tween(s, [{r:-10000 },300000])
-        cjs.tween(m, [{r:100000 },300000])
+        $Tw(s, [{r:-10000 },300000])
+        $Tw(m, [{r:100000 },300000])
 
 
     })
@@ -595,7 +595,7 @@ CJSSPINNER=function(){z()
 
     s= cjs.stage('purple', 1000).A().rCenter()
 
-    cjs.tween(s, [{r:-10000 },300000])
+    $Tw(s, [{r:-10000 },300000])
 
     s.bm('me',function(bm){m=bm.XY(500)
         SL(bm)})
@@ -660,19 +660,19 @@ TWEENART=function(a){
             b.xy(300);
             b.rgc(); //centers it's reg point?
             SK(b)
-            cjs.tween([b,'l'], {sxy:.5}, [{sxy:.7},500], [{sxy:.5},500])
+            $Tw([b,'l'], {sxy:.5}, [{sxy:.7},500], [{sxy:.5},500])
             wMb(function(b){s.a(b)//manual add necessary?
 
                 b.xy(200);b.rgc();
                 b.wh(200);
                 SL(b);
 
-                cjs.tween([b,'l'],{r:0},[{r:360},1000])
+                $Tw([b,'l'],{r:0},[{r:360},1000])
 
                 wMb(function(b){s.a(b);
                     b.rgc();b.xy(600);SC(b)
 
-                    cjs.tween([b,'l'],{kxy:0},
+                    $Tw([b,'l'],{kxy:0},
                         [{kxy:20},500],
                         [{kxy:0},500])
                 })})},  EDIT()
@@ -688,7 +688,7 @@ EASING=function(){
         function(b){
             bb= b
             b.sXY(.2).XY(50,100)
-            cjs.tween([b,'l'],   [{x:800},2000],  [{x:50},2000]
+            $Tw([b,'l'],   [{x:800},2000],  [{x:50},2000]
             )})
 
 
@@ -702,7 +702,7 @@ EASING=function(){
 
                 b.sXY(.2).XY(50,y)
 
-                cjs.tween([b,'l'], [{x:800},2000,e],  [{x:50},2000,e])
+                $Tw([b,'l'], [{x:800},2000,e],  [{x:50},2000,e])
 
                 b.$(function(){    pop(e + ' : ' + oO('E',e))   })
             })}
@@ -727,9 +727,9 @@ TWEENPOS1=function(){z()
 
             guy.XY(200)
 
-            w0 = cjs.tween(guy,   [{r:3000}, 100000]  )
+            w0 = $Tw(guy,   [{r:3000}, 100000]  )
 
-            w = cjs.tween(bm,  [{sx:3}, 1000]) .wait(1000).pause(w0).then({sy:3}, 4000).play(w0).then({sy:.3}, 4000)
+            w = $Tw(bm,  [{sx:3}, 1000]) .wait(1000).pause(w0).then({sy:3}, 4000).play(w0).then({sy:.3}, 4000)
 
 
         })
@@ -752,9 +752,9 @@ TWEENPOS=function(){z()
 
             guy.XY(200)
 
-            w0 = cjs.tween(guy, [ {r:90}, 100 ] ).pause().then({r: 3000}, 100000)
+            w0 = $Tw(guy, [ {r:90}, 100 ] ).pause().then({r: 3000}, 100000)
 
-            w = cjs.tween(bm, [{sx:3}, 10000] ).play( w0 )   })
+            w = $Tw(bm, [{sx:3}, 10000] ).play( w0 )   })
 
         setInterval(function(){ tweens.rpunch(g) },2000)
 
@@ -775,7 +775,7 @@ TWEENBOX=function(){z()
 
         SL(bm)
 
-        cjs.tween(
+        $Tw(
 
             [bm,'l'],
 
@@ -787,7 +787,7 @@ TWEENBOX=function(){z()
 
 
 
-        cjs.tween(
+        $Tw(
 
             [bm,'l'  ],
 
@@ -799,7 +799,7 @@ TWEENBOX=function(){z()
         )
 
 
-        //  cjs.tween(  [bm,'l'],  {x:0, sxy:.7,r:0},  [ {x:300,sxy:2.3,r:0}, 1000 ],  [ {x:0,sxy:.7,r:-30,a:.5},3000])
+        //  $Tw(  [bm,'l'],  {x:0, sxy:.7,r:0},  [ {x:300,sxy:2.3,r:0}, 1000 ],  [ {x:0,sxy:.7,r:-30,a:.5},3000])
 
     })
 
@@ -830,7 +830,7 @@ TWEENER = function(){z()
         g = guy
         b = bm
 
-        tween = cjs.tween(bm,
+        tween = $Tw(bm,
 
             //pass in objects and they are 'to', 'to', etc..
             [{sx: 2,sy: 2}, 3000 ], [{a:0}, 300],
@@ -839,12 +839,12 @@ TWEENER = function(){z()
             1000,
 
             //pass in a function and it will run when it's its turn
-            function(){  s.bm('chicks', function(b){ cjs.tween(b, [{sxy:.2}, 2000]) })  }
+            function(){  s.bm('chicks', function(b){ $Tw(b, [{sxy:.2}, 2000]) })  }
 
 
         ).then({x: 200}, 1000).to({ alpha:1, visible:true }, 30000)
 
-        tween3 = cjs.tween(g, [{r: 20},10000], [{r: 0},3000]   )
+        tween3 = $Tw(g, [{r: 20},10000], [{r: 0},3000]   )
 
         stop = function(){  tween.stop(); tween2.stop()  }
 
