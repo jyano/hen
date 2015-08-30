@@ -615,7 +615,7 @@ UNIVERSE=function(){z()
         ct.cir(x-150,y-150,100,'w').cir(x-50, y-50, 30, 'w').cir(x-20,y-20,10,'w')
             .text(t, "20px Arial", "blue", x-200, y-200)
         ct.tr( [{ a:0, sxy:.1, x:x-250, y:y-250 }, 20000])
-        $.in(10, function(){ct.rm()})
+        _.in(10, function(){ct.rm()})
         //broadcast out your speech bubble
         if(g.p){ k.emit('speechBubble', { t:t, x:x, y:y, u:_username } )}
         return ct
@@ -686,7 +686,7 @@ UNIVERSE=function(){z()
         d.A(
             $.br(3), $.ip('...', 'tx').id('textinput'),
             $.bt('send', function(){Y.bub( $('#textinput').V(), '+')}) )
-        $.ev(.1, Y.u)
+        _.ev(.1, Y.u)
     })
 
     //  userHolder = $.d('z').a2( $.R().A() )
