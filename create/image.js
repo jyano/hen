@@ -5,12 +5,9 @@ $.iI=function(i){
     }
 }
 
-
-
 _src=function(a){ a = _.ext(a);
     return s$(a).startsWith('/')? a : '/'+ a
 }
-
 _.src =    function f(e){
 
     //if(Q(e)){$l('q');e=$(e)[0]}
@@ -22,45 +19,30 @@ _.src =    function f(e){
         :  S(e) ?  _src(e)
         : 0
 }
-
 $.i= $.img=function(srce, fn){var g=G(arguments), o,i;
-
     $.im = function(img, func){
         i = $.img().src(img);
         func(i[0]);
         //s$(e).contains('data:')
         return i}
-
-
     o= F(g[0])? {fn:g[0]}: {src:g[0], fn:g[1]};
-
     i = $( new Image() );
-
-
-
     i.i=function(src){
         if(U(src)){return this[0].src}
         this.src(_.src(src));
         return this
     }
-
     i.r=function(fn){
         this.load(function(e){
             fn(e, i)
         })
         return this
     }
-
     i.r(function(_i){i._=_i.target})
-
     if(o.fn){i.r(o.fn)} //i.l(function(e){o.fn($(e.target), e)})
-
     if(o.src){i.i(o.src)}
-
     //i.A()
-
     return i
-
 }
 
 

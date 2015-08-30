@@ -414,7 +414,6 @@ function btn(){
         $.P('sRq', {to:user.u}) })}
     $.btPo=   function(){return $.bt('see posts', function(){})  }
 }
-
 function yano(){
 
     Y = function self(page){
@@ -422,7 +421,6 @@ function yano(){
         self.render(page)
         return self
     }
-
     Y.render = function(page){
         $l('in render')
         if(Y[page]){
@@ -430,7 +428,6 @@ function yano(){
             return Y[page]() || true
         }
     }
-
     Y.run = function(app){
         app = app.toUpperCase()
         if(app = Y[app] || window[app]){
@@ -438,8 +435,6 @@ function yano(){
             return true
         }
     }
-
-
     Y.to=  Y.load =  function(a){  window.location = '/wap/' + a }
     Y.GuestPage =  function(){
 
@@ -506,7 +501,6 @@ function yano(){
             password:  password.find('input').val()} }
 
     }
-
     Y.HomePage =  function(){
         z()
 
@@ -519,34 +513,27 @@ function yano(){
         //update username on screen
         $.Gj('loggedIn', function(uN){$('#uname').text( _username  = $l(uN))})
     }
-
-
     Y.logOut = function(){$.Gj('logOut', function(){ Y('GuestPage') })}
     Y.clr=  function(){z(); Y.nav()}
     Y.nav=   function(){
 
         navbarCollapse = $.nbC().A($.n(
 
-                $.dd('stuff', ['tangle', 'corners', 'grid' , 'fullcan' , 'solar',  'ship',  'connect','matrix', 'iso' ]),
-                $.dd('anim',[
-                    'tween', 'sprite', 'pack'
-                ]),
+               // $.dd('stuff', ['tangle', 'corners', 'grid' , 'fullcan' , 'solar',  'ship',  'connect','matrix', 'iso' ]),
+
                 $.dd('create',[
+
                     'upload','uploads','cutouts', 'edit', 'avatar','paint', 'filters','showcase'
                 ]),
-                $.dd('youplay',[
-                    'bod',  'hit','space'
+                $.dd('play',[
+                    'bod',  'tween', 'space', 'hit', 'sprite', 'pack'
                 ]),
-                $.dd('users',[
-                    'users', 'status' ,   'posts',    'profile', 'profiles'
-                ]),
-                $.dd('social',[
-                    'messages',    'chatrooms','universe'
-                ]),
-
-                $.dd('mvc',[
-                    'sorty', 'object', 'ranky',   'dirt','knocks',  'site'
+                $.dd('chat',[
+                    'universe',    'chatrooms',   'users', 'status' ,   'posts',    'messages',   'profile', 'profiles'
                 ])
+
+
+                //$.dd('mvc',['sorty', 'object', 'ranky',   'dirt','knocks',  'site'])
             ),
 
             $.nR(
@@ -559,8 +546,6 @@ function yano(){
         $.Ct().A($.nb().A($.nbH('wappy', '/wap/tween'), navbarCollapse))
 
     }//=Y.n
-
-
     Y.uPop=function(i,  size){
 
         i= (O(i) && F(i.u)) ? i.u() : i
