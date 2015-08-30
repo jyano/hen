@@ -123,6 +123,10 @@ function apps(){
 
 function users(){
 
+
+
+    //******
+
     $a.g('/users', function(q,p){
         // for all users g ->  [{id, username, mug, status}]
 
@@ -139,9 +143,12 @@ function users(){
                             return {
 
                                 id: u.id,
+                                u: u.username,
+                                un: u.username,
                                 username: u.username,
                                 mug: u.mug || 'no mug',
                                 status: u.status || 'no status'
+
                             }})
 
                     )
@@ -153,6 +160,24 @@ function users(){
 
 
     })///////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     $a.po('/user', function(q,p,n){
         models.user.create(q.body, function(z,u){if(z){$l(z.code==11000?'!!':'!'); $d(z); p.json('error'); n(z) }
             _.extend(q.session, {username: u.username, loggedIn :true}).save(function(){ p.json(u.username) })

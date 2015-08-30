@@ -38,6 +38,7 @@ function chat() {
 
 
 function univ(){
+
     k.on('bub', function(bub){
         alert('bub: '+ bub)
         console.dir(bub)
@@ -46,15 +47,18 @@ function univ(){
             Y.bub(bub.t, bub.x, bub.y)
         }
     })
+
     k.on('updG', function(guy){
         alert('updG')
         Y.update(guy)
     })
+
     k.on('ac', function(data){
         alert('ac')
         if( _username == data.toWho){
             Y.U(data.from)}
     })//if it was YOUR invitation that was accepted// here u should really just be able to 'addUser'
+
     k.on('iv', function(iv){
         alert('iv')
         if( _username == iv.toWho ){

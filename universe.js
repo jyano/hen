@@ -116,25 +116,39 @@ UNIVERSE=function(){z()
 
         _.ev(.1, Y.update)
 
-        otherUsers()
-        function otherUsers(){
 
             //  userHolder = $.d('z').a2( $.R().A() )
             $l('users:')
             n=0
+
+
             $.eG('users', function(u){
+
                 window['u'+ String(n++) ] =  u
+
+
+
                 $l(u.u)
+
                 if(!u.mug ){   $l('no mugURL!') }
+
                 else {$.i(u.mug ).WH(100).a2( d ).$(function(){
-                    $l(u.u); Y.iv( u.u )
+
+                    console.dir(u)
+
+                    $l(u.u);
+
+
+                    Y.iv( u.u )
+
+
                 })}
             })
 
             // fetchMugByMugId( user,  function(userMug){
             // theRow.A( $.thumbnail( $.span(user.u), userMug).WH(200).click(  function(){ inviteToUniverse(user.u)   }) )}) //RECIEVE speech bubble
 
-        }
+
     })
 
 
