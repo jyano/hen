@@ -2,7 +2,7 @@ ui()
 btn()
 
 yano()
-
+muggy()
 
 function ui(){
     $.dCt = $.ctD = function () {
@@ -251,6 +251,7 @@ function ui(){
 // on dblclick of .msg,// post its text to newMessage and run gMsgs?
 }
 function muggy(){
+
     $.cut = function (m) {
         z()
         $.fm()
