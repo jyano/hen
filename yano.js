@@ -64,24 +64,7 @@
             .fS(20).T(t||'msgText')
 
     }
-    $.wd=$.w= $.win =  function(a, size,  id){var g=G(arguments), t, w,wd, lBt,mBt,xBt,o
 
-        wd= w =  $.dA('b',  '+').WH('auto','auto')
-            .al(.9).ov('auto').pad(10).bW(4).bS('dashed')
-        wd.A(
-            mBt=$.btR('>', function(){w.WH(700); lBt.sh(); mBt.hd(); }),
-            lBt= $.btR('<', function(){w.WH('auto'); mBt.sh(); lBt.hd()}).hd(),
-            xBt = $.btL('X',function(){ w.rm() })
-        )
-
-        o=  N(g[0])? { size: g[0] }: O(g[0])? { ch:g[0] } : {t: g[0], size:g[1], id: g[2]}
-
-        if(o.ch){ w.A(o.ch) }
-        if(o.t){ w.tit(o.t)}
-        if(o.id){ w.id(o.id) }
-        return w
-
-    }
     $.pop=function(message, o){
 
         if( S(o) ){ return $.pop(o, { title: message } )    }
