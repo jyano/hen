@@ -42,13 +42,21 @@ k.on('IM', function(msgOb){
 })
 
 
-k.on('ChatMs', function(d){
+k.on('ChatRmMs', function(d){
+
+    alert('from room: '+ d.rm)
     var t = d.un + ': ' + d.ms;
-    $l(t )
+
+    $l(t)
+
     if(Y.CHATS[d.rm]){
+
         Y.CHATS[d.rm].write( t )
     }
 
+
+
+    function msStr(msOb){ return msOb.un + ': ' + msOb.ms }
 })
 
 

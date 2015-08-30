@@ -51,12 +51,14 @@ $.chat = function (title, color, id) {
     })
 
 
-
     sendBt = $.bt('send',  function(){
-        
+        //alpha:
+        $toRoom=function(title, msText){k.em('ChatMs', $ChatRmMs(title, msText))}
         var ms=$ChatRmMs(title, ip.V())
-        k.em('ChatMs', ms)
+        k.em('ChatRmMs', ms)
     })
+
+
 
     wd.A($.R().A(
         $.Cl(8, messages = $.d().id('cbi').C('u').ov('auto'),

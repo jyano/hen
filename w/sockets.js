@@ -73,13 +73,17 @@ module.exports=function(io, ssK){
             },
             r: function(data){  K.em('res',  data? room[data]  : RMS())   },
             who: function(username){  $l(  US.tUn(username))  },
-            in:function(d){ var rm //client asks am I in this room
-                if(rm=RMS.rm(d)) {K.em('res', rm[ K.id ]? true: false ) }
-                else  {$l('not room'); K.em('res', '-')}},
 
-            ChatMs: function (m) {$l('chatMsg-> '+m)
-                m.room = m.chatRoomName
-                KK.in(m.room).emit('ChatMs', m)
+            in:function(d){
+                var rm //client asks am I in this room
+
+                if(rm=RMS.rm(d)) {K.em('res', rm[ K.id ]? true: false ) }
+
+                else  {$l('not room'); K.em('res', '-')}
+            },
+
+            ChatRmMs: function (m) {$l('chatMsg-> '); console.dir(m)
+                KK.in(m.rm).emit('ChatRmMs', m)
             },
 
             IM: function(message){
