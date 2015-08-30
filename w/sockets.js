@@ -11,6 +11,17 @@ module.exports=function(io, ssK){
 
         $K(K).o({
 
+            //client asks am I in this room
+            in:function(d){var rm
+                if(rm=RMS.rm(d)) {K.em('res', rm[ K.id ]? true: false ) }
+                else  {$l('not room'); K.em('res', '-')}},
+            ChatRmMs: function (ms){$l('chatRmMs: '); console.dir(ms)
+                KK.in(ms.rm).emit('ChatRmMs', ms)},
+
+
+
+
+
             _l : function(){ K.em('l', 'hahhahahahahahahahahha') },
             l: function(d){d=d||'ping';  K.em('l', 'sent: '+$l(d))},
             p : function(d, rm){
@@ -74,17 +85,8 @@ module.exports=function(io, ssK){
             r: function(data){  K.em('res',  data? room[data]  : RMS())   },
             who: function(username){  $l(  US.tUn(username))  },
 
-            in:function(d){
-                var rm //client asks am I in this room
 
-                if(rm=RMS.rm(d)) {K.em('res', rm[ K.id ]? true: false ) }
 
-                else  {$l('not room'); K.em('res', '-')}
-            },
-
-            ChatRmMs: function (m) {$l('chatMsg-> '); console.dir(m)
-                KK.in(m.rm).emit('ChatRmMs', m)
-            },
 
             IM: function(message){
                 //this is triggered within a chatroom

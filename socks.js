@@ -15,7 +15,63 @@ $K=function(K){
 }
 k =  $K( io.connect() )
 
+chat()
+univ()
+function chat() {
+    k.on('ChatRmMs', function (d) {
+        var msTx = msStr(d);
+        $l('msTx: ' + msTx)
+        if (Y.CHATS[d.rm]) {
+            Y.CHATS[d.rm].write(msTx)
+        }
+        function msStr(msOb) {
+            return msOb.un + ': ' + msOb.ms
+        }
 
+    })
+
+
+
+
+}
+
+
+
+function univ(){
+    k.on('bub', function(bub){
+        alert('bub: '+ bub)
+        console.dir(bub)
+        $l('buuuuuuuuuuuuub')
+        if( Y.g(bub.u) ){
+            Y.bub(bub.t, bub.x, bub.y)
+        }
+    })
+    k.on('updG', function(guy){
+        alert('updG')
+        Y.update(guy)
+    })
+    k.on('ac', function(data){
+        alert('ac')
+        if( _username == data.toWho){
+            Y.U(data.from)}
+    })//if it was YOUR invitation that was accepted// here u should really just be able to 'addUser'
+    k.on('iv', function(iv){
+        alert('iv')
+        if( _username == iv.toWho ){
+            Y.mByN(iv.from, function(mug){
+                popIv = $.pop($.d().A(
+                    $.i( mug ).WH( 200,200 ),
+                    $.h1( 'chat with '+ iv.from + '?' ),
+                    $.bt( 'ya' , function(){
+                        popIv.modal('hide')
+                        Y.U( iv.from )//so u are just adding them in?// ah the function also supposedly takes into account the app not even being open// i could nix that for now
+                        Y.ac( iv.from )}),
+                    $.bt( 'na' , function(){
+                        popIv.modal('hide')})) )
+            })
+        }
+    })
+}
 
 
 k.emP= k.sop=function(m,u){ k.em('p' ,m, u)  }
@@ -34,82 +90,74 @@ k.on('dudPop', function(d,n){ dud(d, n)  })
 k.on('notice', function (d) {  $l('SERVER NOTICE: %s', d);  })
 k.on('p',function(e){$.pop(e)})
 
-//im
-k.on('IM', function(msgOb){
-    var iMsg = Y.IMS[msgOb.from]
-    if(iMsg){ iMsg.A( $.h4(msgOb.message) ) }
-    else { $.iMsg(msgOb) }
-})
+function alpha() {
+    k.on('IM', function (msgOb) {
+        var iMsg = Y.IMS[msgOb.from]
+        if (iMsg) {
+            iMsg.A($.h4(msgOb.message))
+        }
+        else {
+            $.iMsg(msgOb)
+        }
+    })
 
 
-k.on('ChatRmMs', function(d){
-
-    alert('from room: '+ d.rm)
-    var t = d.un + ': ' + d.ms;
-
-    $l(t)
-
-    if(Y.CHATS[d.rm]){
-
-        Y.CHATS[d.rm].write( t )
+    k.IM=function( toWho, ms ){
+        $l('toWho: '+ toWho + ', ms: '+ ms)
+        k.em(  'IM',  {  m: ms,  t:toWho,  f:_username  }  )
     }
 
 
-
-    function msStr(msOb){ return msOb.un + ': ' + msOb.ms }
-})
-
-
-
-k.on('rmUpd', function(d){if(Y.CHATS[d.rm]){Y.CHATS[d.rm].uUS(d.US)}})
-k.on('popbox', function(o){ $.pop(o); $('popbox').m() })
-k.on('v',function(d){VAR=d})
-k.on('newImgAck', function(d){ $.c().fit(d.u) })
-k.on('im', function(i){$.c().fit( i ) })
-
-
-//uv
-k.on('bub', function(bub){
-
-    $l('buuuuuuuuuuuuub')
-
-    if( Y.g(bub.u) ){ Y.bub(bub.t, bub.x, bub.y)}
-
-})
-
-
-k.on('updG', function(guy){ Y.u(guy) })
-k.on('ac', function(data){  if( _username == data.toWho){Y.U(data.from)}   })//if it was YOUR invitation that was accepted// here u should really just be able to 'addUser'
-k.on('iv', function(iv){if( _username == iv.toWho ){
-    Y.mByN(iv.from, function(mug){
-        popIv = $.pop($.d().A(
-            $.i( mug ).WH( 200,200 ),
-            $.h1( 'chat with '+ iv.from + '?' ),
-            $.bt( 'ya' , function(){popIv.modal('hide')
-                Y.U( iv.from )//so u are just adding them in?// ah the function also supposedly takes into account the app not even being open// i could nix that for now
-                Y.ac( iv.from )}),
-            $.bt( 'na' , function(){popIv.modal('hide')})) )
+    k.on('rmUpd', function (d) {
+        if (Y.CHATS[d.rm]) {
+            Y.CHATS[d.rm].uUS(d.US)
+        }
     })
-}})
+    k.on('popbox', function (o) {
+        $.pop(o);
+        $('popbox').m()
+    })
+    k.on('v', function (d) {
+        VAR = d
+    })
+    k.on('newImgAck', function (d) {
+        $.c().fit(d.u)
+    })
+    k.on('im', function (i) {
+        $.c().fit(i)
+    })
+}
 
+
+
+
+function game() {
 //game
-k.on('upd', function(guy){ updateGuy(guy) })
+    k.on('upd', function (guy) {
+        updateGuy(guy)
+    })
 
 //k.on('eG', nP)
 
-k.on('mU',function(m){uM(m)})// uM(m);
-k.on('map',function(m){uM(m)})
-k.on('fc',function(fc){
+    k.on('mU', function (m) {
+        uM(m)
+    })// uM(m);
+    k.on('map', function (m) {
+        uM(m)
+    })
+    k.on('fc', function (fc) {
 
-    // xy(gx.me, fc)
+        // xy(gx.me, fc)
 
-})
+    })
 
-
-k.on('map',function(gA){_e(gA,function(g){_e(sArray,function(g){c.a(p.me)})});xy(p.me,200,100);xy(p.me,f)})
-
-k.IM=function( toWho, ms ){
-    $l('toWho: '+ toWho + ', ms: '+ ms)
-    k.em(  'IM',  {  m: ms,  t:toWho,  f:_username  }  )
+    k.on('map', function (gA) {
+        _e(gA, function (g) {
+            _e(sArray, function (g) {
+                c.a(p.me)
+            })
+        });
+        xy(p.me, 200, 100);
+        xy(p.me, f)
+    })
 }
-
