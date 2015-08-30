@@ -132,38 +132,11 @@ function contProto() {
         }
         return h
     }
-    ct.bm = function () {
-        var ct = this, g = G(arguments), o, bm
-        o = N(g[1]) ? {i: g[0], sc: g[1], fn: g[2]} : {i: g[0], fn: g[1]}
-        o.sc = N(o.sc) ? o.sc : 1
-        if (J.iDU(o.i)) {
-            o.i = $.i(o.i)
-        }
 
-        if (O(o.i)) {
-            bmp = $Bm(o.i).a2(ct)
-            if (o.fn) {
-                o.fn(bmp)
-            }
-            return ct
-        }
-        $.i(o.i, function (e, i) {
-            bmp = $Bm(i)
-            bmp.a2(ct)
-            bmp.rC()
-            bmp.sXY(o.sc).a2(ct)
-            //bm.XY( that.W()/2, that.H()/2 )
-            // works with stage i guess.. but fucks with 'container' - cant check bounds
-            if (g.n) {
-                bmp.XY(-1000)
-            }
-            if (o.fn) {
-                o.fn(bmp)
-            }
-        })
 
-        return ct
-    }
+
+
+
     ct.mc = function () {
         return J.mc.apply(null, arguments).a2(this)
     }
@@ -330,7 +303,61 @@ function contProto() {
         }
         return nCt
     }
+
+
+    function ctBM() {
+        ct.bm = function () {
+            alert('ct.bm')
+            var ct = this, g = G(arguments), o, bmp
+            o = N(g[1]) ? {i: g[0], sc: g[1], fn: g[2]} : {i: g[0], fn: g[1]}
+            o.sc = N(o.sc) ? o.sc : 1
+
+
+            /*
+
+             if (J.iDU(o.i)) {
+             o.i = $.i(o.i)
+             }
+
+
+
+
+             if (O(o.i)) {
+             bmp = $Bm(o.i).a2(ct)
+             if (o.fn) {
+             o.fn(bmp)
+             }
+             return ct
+             }
+
+
+
+             $.i(o.i, function (e, i) {
+             bmp = $Bm(i)
+             bmp.a2(ct)
+             bmp.rC()
+             bmp.sXY(o.sc).a2(ct)
+             //bm.XY( that.W()/2, that.H()/2 )
+             // works with stage i guess.. but fucks with 'container' - cant check bounds
+             if (g.n) {
+             bmp.XY(-1000)
+             }
+             if (o.fn) {
+             o.fn(bmp)
+             }
+             })
+             */
+
+            return ct
+        }
+
+
+
+
+    }
+
     ct.bm = function () {
+
         var ct = this, g = G(arguments), o, bm
         o = N(g[1]) ? {i: g[0], sc: g[1], fn: g[2]} : {i: g[0], fn: g[1]}
         o.sc = N(o.sc) ? o.sc : 1
@@ -362,6 +389,7 @@ function contProto() {
 
         return ct
     }
+
     ct.mc = function () {
         return J.mc.apply(null, arguments).a2(this)
     }
