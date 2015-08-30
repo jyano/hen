@@ -680,6 +680,7 @@ function bmp(){
              }}
 
          return this}
+
      ob.gTL=function(x,y){
 
          if(O(x)){y= x.y;x= x.x}
@@ -687,10 +688,8 @@ function bmp(){
          return this.globalToLocal(x, y)
 
      }
-     ob.grow = function(){ this.tween( [{sxy:10},10000]); return this }
-     ob.RT = function(){RT(this);return this}
-     ob.TR = function(){TR(this);return this}
-     ob.dg=ob.drag=ob.SL = function(){SL(this);return this}
+
+
      ob.bounds=function(a,b,c,d) {
          this.nominalBounds = new cjs.Rectangle(a,b,c,d)
          return this}

@@ -80,43 +80,44 @@ UNIVERSE=function(){z()
 
     uv.bgI('/beach.jpg')
 
+    d=$.d('b', 1000, 'auto')//.pp2( $('body') )
+
     uv.mug(function(b){
 
-        you = b.rC().XY(600).sXY(.4).dg()
+        you = b.rC().XY(600)
+            .sXY(.4).dg()
 
         Y.GUYS.push({u :_username, b :you}) //b.$$( function(){ b.rm(); k.emit('X', _username)})
-
-        d=$.d('b', 1000, 'auto')//.pp2( $('body') )
-
         d.A(
-
             $.br(3), $.ip('...', 'tx').id('textinput'),
-            $.bt('send', function(){Y.bub( $('#textinput').V(), '+')})
-        )
+            $.bt('send', function(){
+                Y.bub( $('#textinput').V(), '+')}))
 
         _.ev(.1, Y.u)
 
+        otherUsers()
+        function otherUsers(){
 
+            //  userHolder = $.d('z').a2( $.R().A() )
+            $l('users:')
+            n=0
+            $.eG('users', function(u){
+                window['u'+ String(n++) ] =  u
+                $l(u.u)
+                if(!u.mug ){   $l('no mugURL!') }
+                else {$.i(u.mug ).WH(100).a2( d ).$(function(){
+                    $l(u.u); Y.iv( u.u )
+                })}
+            })
+
+            // fetchMugByMugId( user,  function(userMug){
+            // theRow.A( $.thumbnail( $.span(user.u), userMug).WH(200).click(  function(){ inviteToUniverse(user.u)   }) )}) //RECIEVE speech bubble
+
+        }
     })
 
 
 
 
-    otherUsers()
-    function otherUsers(){
 
-    //  userHolder = $.d('z').a2( $.R().A() )
-    $l('users:')
-    n=0
-    $.eG('users', function(u){
-        window['u'+ String(n++) ] =  u
-        $l(u.u)
-        if(!u.mug ){   $l('no mugURL!') }
-        else {$.i(u.mug ).WH(100).a2( d ).$(function(){$l(u.u); Y.iv( u.u ) })}
-    })
-
-    // fetchMugByMugId( user,  function(userMug){
-    // theRow.A( $.thumbnail( $.span(user.u), userMug).WH(200).click(  function(){ inviteToUniverse(user.u)   }) )}) //RECIEVE speech bubble
-
-}
 }

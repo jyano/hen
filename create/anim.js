@@ -225,16 +225,26 @@ function tran(){
 
                 b.on('pressmove', function (e) {
 
-                    if (g.P) {
+                    if (!g.p) {
                         b2.x = bx + e.rawX
                     }
-                    if (g.N) {
+                    if (!g.n) {
                         b2.y = by + e.rawY
                     }
                 })
             }
         )
+
     }
+
+
+
+
+
+
+
+
+
     cjs.LS = cjs.bindReverseSlide = LS = function (b, b2) {
         var g = G(arguments),
             b = g[0],
@@ -616,3 +626,15 @@ function spr(){
 
 }
 
+ob= cjs.DisplayObject.prototype
+
+
+ob.grow = function(){ this.tween( [{sxy:10},10000]); return this }
+ob.RT = function(){RT(this);return this}
+ob.TR = function(){TR(this);return this}
+
+
+ob.dg=ob.drag=ob.SL = function(){
+    SL(this);
+    return this
+}
