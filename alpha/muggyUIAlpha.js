@@ -1,4 +1,125 @@
 
+//eachImage = eaI=function(f){$.getJSON('/img', function(i){ _.e(i, f) } )}
+
+
+withMug = iCantBelieveThisMayReallyBeDep(){
+//PERHAPS.. JUST PERHAPS... everything below is ALREADY dep..
+// all have had 'alerts' since Aug 30 2015
+
+    withYourMugId = gMg = function (func) {
+        $l('call out from somewhere in withMug.js')
+        $.get('/gMg', func)
+    }  //should it try websocket first?
+    wM = withYourMugData = getMug = function (func) {
+        $l('call out from somewhere in withMug.js')
+        $.get('/myMug', func)
+    }
+//dep by withYourMugData?
+//wM=function(f){  withYourMugId(      function(mugId){ $.get('/mug/'+  mugId, f )   }     ) }
+    withYourMug = wMD = function (fn) {
+        $l('call out from somewhere in withMug.js')
+        withYourMugId(function (mugId) {
+            $.post('/dats', {d: mugId}, fn)
+        })
+
+    }
+    wMb = function () {
+        $l('call out from somewhere in withMug.js')
+        var g = G(arguments),
+
+            f = g[0], st = g[1]
+
+        wM(function (a) {
+
+            SuperBitmapAsync(
+                a,
+                function (b) {
+                    if (st) {
+                        st.A(b)
+                    }   // if stage passed, add bm to stage
+                    f(b, st)         //run cb, and pass it bm and stage
+                })
+        })
+
+        return st
+
+    }
+    $wMb = function (f, stage) {
+        $l('call out from somewhere in withMug.js')
+        wM(function (a) {
+
+            J.Bm(a, function (b) {
+
+                if (stage) {
+                    stage.A(b)
+                }   // if stage passed, add bm to stage
+
+                if (f) {
+                    f(b, stage)
+                }       //run cb, and pass it bm and stage
+
+            })
+        })
+
+        return stage
+    }
+//with mug, after creating and putting it on a stage
+    wMs = function (func, w, h, bg) {
+        $l('call out from somewhere in withMug.js')
+        var g = G(arguments)
+
+        func = g[0]
+        w = g[1]
+        h = g[2]
+        bg = g[3]
+
+        var stage = St(w || 1000, h || 800, '+')
+
+        if (g.p) {
+            stage.drg()
+        }
+
+        if (g.n) {
+            s2.A(stage)
+        }
+
+        if (bg) {
+            stage.bgi(bg)
+        }
+
+        return wMb(func, stage)
+
+    }
+    $wMs = function (func, w, h, bg) {
+        $l('call out from somewhere in withMug.js')
+        var g = G(arguments)
+
+        func = g[0]
+        w = g[1]
+        h = g[2]
+        bg = g[3]
+
+        var stage = St(w || 1000, h || 800, '+')
+
+        if (g.p) {
+            stage.drg()
+        }
+
+        if (g.n) {
+            s2.A(stage)
+        }
+
+        if (bg) {
+            stage.bgi(bg)
+        }
+
+        return wMb(func, stage)
+
+    }
+}
+
+
+
 $.dangMessage = function (msg) {
     alert('dangMessage')
     return $.sp().delButton().A($.h2(msg).K('alert alert-danger'))
