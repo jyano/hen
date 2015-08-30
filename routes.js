@@ -81,14 +81,11 @@ function uploadedPics(){
 
     })
 
-
     $a.del('/pic', function (q, p) {
-
         $l('remove a pic')//remove a pic
         models.pic.remove(q.body, function (z, d) {
             p.json(d)
         })
-
     })
 
 

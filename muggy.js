@@ -54,17 +54,11 @@ function ui(){
 
         return s
     }
-    $.picDiv = function (top) {
-        $l('in picDiv')
-        return $.dA('b', '+').WH('auto').XY(200, top).K('pic').pad(25)
-    }
-    $.pic = function (pic) {
-        i = $.i(pic._id + pic.ext).WH(120, 120)
-        i.click(function () {
-            $.cut(pic._id + pic.ext)
-        })
-        return i
-    }
+
+
+
+
+
     $.iD= $.imgDiv=function(st){
         d = $.d('y','+')
         $.eGj('img',  function(i){d.A($.c(100, 100).fit(i.d)

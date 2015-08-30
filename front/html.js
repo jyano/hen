@@ -11,14 +11,17 @@ frag()
 semantic()//CONSOLE!!
 // https://developer.mozilla.org/en-US/docs/Web/API/Console/info
 layout();
+
+
 $.delBt=function(url, data){var bt
 
     bt = $.bt('delete', function( el ){
 
-        $.ajax({
-            type: 'DELETE', data: data, url: url,
-            success: function (){$(el.target).closest('div').rm() }
-        })
+        $.ajax({type: 'DELETE',
+            data: data,
+            url: url,
+            success: function (){
+                $(el.target).closest('div').rm() }})
     })
 
 
