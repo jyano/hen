@@ -290,17 +290,6 @@ function atts() {
     $.fn.placeholder = function (forWhat) {
         return this.attr('placeholder', forWhat)
     }
-    $.fn.src = function (a) {
-
-
-        if (U(a)) {
-            return this.attr('src')
-        }
-
-        this.attr('src', src(a))
-
-        return this
-    }
     $.fn.role = function (role) {
         if (U(role)) {
             return this.attr('role')
@@ -310,13 +299,7 @@ function atts() {
 
     }
 
-    $.fn.src= function(a){
-        if( U(a) ){return this.attr('src')}
 
-        this.attr('src', J.src(a) )
-
-        return this
-    }
     $.fn.role=function(role){
         if(U(role)){return this.attr('role')}
         this.attr('role', role)
@@ -352,10 +335,7 @@ function background(){
     }
 
 
-    $.fn.bg = $.fn.bgI = function (url) {//set background image
-        this.bgI('url("' + Y.src(url) + '")');
-        return this
-    }
+
     $.fn.bp = $.positionBackgroundImage = function (x, y) {
         var g = G(arguments), x = g[0], y = g[1];
         x = N(x) ? x : 0;

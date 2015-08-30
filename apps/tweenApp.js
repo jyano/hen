@@ -32,10 +32,7 @@ TWEEN=function(a){
 
     st.mug(function(bm){
 
-
     bm.TR()
-
-
         $Tw([bm,'l'],
             {x:0,sxy:.7,r:-2},
             [{x:300,sxy:2.3,r:0,a:.2,kx:60},3000],

@@ -7,7 +7,7 @@ ipsum()
 frame()
 anchor()
 frag()
-image()
+
 semantic()//CONSOLE!!
 // https://developer.mozilla.org/en-US/docs/Web/API/Console/info
 layout();
@@ -731,63 +731,7 @@ inputs=function(){
     }
 }
 inputs()
-function image(){
 
-
-    $.i=$.img= function(srce, fn){var g=G(arguments), o,i;
-
-        $.im = function(img, func){
-            i = $.img().src(img);
-            func(i[0]);
-            //s$(e).contains('data:')
-            return i}
-        J.src =    function f(e){
-            var _src=function(a){ a = _.ext(a);
-                return s$(a).startsWith('/')? a : '/'+ a };
-            //if(Q(e)){$l('q');e=$(e)[0]}
-            if( e.image ){ e=e.image}
-            if( C(e) ){ e = C(e) }
-            if( e.src ){ e = e.src}
-            if( e.toDataURL ){  e=tDU(e) }
-            return s$(e).contains('data:')?  e
-                :  S(e) ?  _src(e)
-                : 0
-        };
-        o= F(g[0])? {fn:g[0]}: {src:g[0], fn:g[1]};
-        i = $( new Image() );
-        //gets rid of auto-scaling quirk
-        /*
-         i.i=i.l=i.load(function(i){
-         i._ =i[0]
-         //i = $(i.target)
-         // img.W( img.W() )
-         // img.H( img.H() )
-         })*/
-        i.i=function(src){
-            if(U(src)){return this[0].src}
-            this.src(J.src(src));
-            return this
-        };
-        i.r=function(fn){
-
-            this.load(function(e){
-                fn(e, i)
-            });
-            return this
-        };
-        i.r(function(_i){i._=_i.target});
-        if(o.fn){i.r(o.fn)}//i.l(function(e){o.fn($(e.target), e)})
-        if(o.src){i.i(o.src)}
-        i.A()
-        return i
-    }
-
-    $.iI=function(i){if(O(i)){
-        return S($(i)[0].src)}}
-
-
-
-}
 function frag(){
 
 
