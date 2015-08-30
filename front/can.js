@@ -9,13 +9,8 @@ E = function E(a, b, c) {
     }
 }
 
-$.c= $.canvas= $.can = function(col, width, height, x,y){
-
-
-    var g=G(arguments), el, el=$('<canvas>')
-
-
-
+$.c= $.canvas= $.can = function(col, width, height, x,y){var g=G(arguments),
+    el=$('<canvas>')
     if( S(col) ){
 
         el.css( 'backgroundColor', oO( 'c' , col ) )
@@ -26,19 +21,15 @@ $.c= $.canvas= $.can = function(col, width, height, x,y){
         if(N(x)){el.ab(x,y)}
         el= superCanvas(el)
     }
-
     else if( N(col) ){
         el =$.c( 'x', col, width,x,y   )
     }
-
     else {  superCanvas( el ).C( 'b' )   }
-
-
     if(!g.n){ el.A()}
-
     return el
-
     function superCanvas(el){
+
+        //attention!!!!  these can all just be written as jquery plugins!!!!! (at least that would be the equivalent of the way i'm doing it here!!!)
         el.canvas = $(el)[0]
         el.context = el.canvas.getContext('2d')
         el.stage = new J.Stage(el.canvas)
@@ -132,8 +123,6 @@ $.c= $.canvas= $.can = function(col, width, height, x,y){
         el.URL = el.dataURL = el.toDataURL=function(){
             return el.canvas.toDataURL()
         }
-
-
         el.img = $.img()
         el.img.src( el.toDataURL() )
         el.me=function me(n){//randomly draw my face
@@ -147,11 +136,9 @@ $.c= $.canvas= $.can = function(col, width, height, x,y){
         el.mugX=function(m){
             qP('/mug',{u:m}, function(m){x.fit(m)})
             return x}
-
         el.tick=function(){var ctx=this.ctx()
             ctx.tick.apply(ctx, arguments)
             return this}
-
         superCanvasGradient(el)
         superCanvasPixels(el)
         superCanvasText(el)
@@ -159,7 +146,7 @@ $.c= $.canvas= $.can = function(col, width, height, x,y){
         superCanvasPath(el)
         superCanvasEvents(el)
         superCanvasShadow(el)
-        cut(el)
+
         return el
     }
 }
@@ -176,44 +163,6 @@ $.fit =  function(a,b,c){
 
 }
 
-
-cut=function(el) {
-    el.snap = function (func) {var el=this
-        pams = {d: el.toDataURL(), dats: el.dats}
-        $.post('/img', pams, func)
-    }
-    el.dots = function () {
-        var el=this
-        el.copy()
-        el.DOTS = []
-        el.dats = []
-        el.$(function (x, y) {
-            x = parseInt(x)
-            y = parseInt(y)
-
-            el.cir(x, y)
-
-            el.DOTS.push([x, y])
-            el.dats.push(x)
-            el.dats.push(y)
-            el.line(el.DOTS)
-
-        })
-
-
-        el.$$(function (X, Y) {
-            var du
-            //el.C('X')
-            el.off('click')
-            el.closePath()  //el.paste() // el.copy()  //el.save()
-            el.clear() //du = el.toDataURL()
-            el.clip()
-            el.paste() //el.fit(du)
-        })
-
-        return el
-    }
-}
 
 
 superCanvasGradient = function (el) {
