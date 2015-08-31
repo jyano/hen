@@ -141,3 +141,40 @@ function network(){
         }
     }
 }
+
+$.wd=  $.w=$.win=function(a, size,  id){
+    var g=G(arguments),
+        t,  lBt,mBt,xBt, o, wd,w
+
+
+
+    w= wd = $.dA('b',  '+').WH('auto','auto').al(.9).
+        ov('auto').pad(10)
+        .bW(4).bS('dashed')
+        .dg()
+
+    wd.A(
+
+        mBt=$.btR('>', function(){
+            w.WH(700); lBt.sh(); mBt.hd();
+        }),
+
+        lBt= $.btR('<', function(){
+            w.WH('auto'); mBt.sh(); lBt.hd()
+        }).hd(),
+
+        xBt = $.btL('X',function(){
+            w.rm()
+        })
+    )
+
+    o= g.N_? { size: g.f }: g.O_? { ch: g.f } : {t: g.f, size: g.s, id: g.t}
+
+    if(o.ch){ w.A(o.ch) }
+    if(o.t){ w.tit(o.t)}
+    if(o.id){ w.id(o.id) }
+
+
+    return wd
+
+}

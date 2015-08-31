@@ -1,53 +1,122 @@
 module.exports=function(io, ssK){
 
-
     KK = sockets =  io.sockets
 
     US = []  //  array-hash: socketId, username
-    US.tUn = function(id){return  US[ id ]}
 
-    roomz()
+    $idToName=function(name){var id
+        id = _.invert(US)[name]
+        return id
+    }
+    $nameToId=function(id){
+        return US[id]
+    }
 
+    $in=  KK.rm = function (rm) {
+            var rm = KK.in(rm)
+            rm.em = rm.emit
+            return rm
+        }
+    RMS = KK.manager.rooms //an array of rooms //they all start with a slash
+    $rm= RMS.rm = function (rm) {return KK.manager.rooms['/' + rm]}
+
+    $getRoomUserIds=function(rm){
+        //$l('$getRoomUserIds')
+        var ids= KK.manager.rooms['/'+rm]
+        //console.dir(ids)
+        return ids
+    }
+
+
+
+    $getRoomUsernames=function(rm){
+        var ids,uns
+         //$l('$getRoomUsernames')
+
+        ids= $getRoomUserIds(rm)
+        uns= _.m(ids, function(id){
+            return US[id]
+        })
+         //console.dir(uns)
+        return uns
+    }
 
     KK.on('connection',  function(k){
+        k.on('id', function(un){
+        //k.em('l',  $l(k.id))  //server logs, client logs
 
+            US[ k.id ] = un  //associate socketId with username
 
+            //$l('US: ' + US +  US[ k.id ] ) //log USER and username
 
-            k.ON =k.o = function (ob) {
-                var K = this
-                _.e(ob, function (v, k) {
-                    K.on(k, v)
-                })
+            //all users should emit this initially
+            // to list its username with its id
 
-            }
+        }),
 
-            k.em = function (a, b, c, d) {
-                if (A(a)) {
-                    _.e(a, function (a) {
-                        k.emit(a, b, c, d)
-                    })
+        k.on('ChatRmMs', function (ms){
+            $l('chatRmMs: '); console.dir(ms)
+            KK.in(ms.rm).emit('ChatRmMs', ms)
+        })
+        k.on('jRm', function(rm){$l('joining room: ' + rm  )
+            k.join( rm )
+
+            k.emit( 'rmUd',  {rm: rm, US:   _.m(
+                $getRoomUserIds(rm),
+                function(un){
+                    return US[un]})
+
+            })})
+        k.on('rmUd', function(rm ){
+           // $l('on rmUd')
+
+            k.emit( 'rmUd',{  //$l('$RmUd')
+
+                    rm: rm,
+                    users: $getRoomUsernames(rm)
                 }
-                else {
-                    k.emit(a, b, c, d)
-                }
-                return k
-            }
 
-            k.l = function (t) {
-                this.em('l', t)
-            }
+                // console.log('ud: '); console.dir(ud)
 
-            k.bc = k.broadcast
+            )
+        })
 
-            k.bc.em = k.bc.emit
+        /*
 
-            k.bcEm = function (a, b, c, d) {
-                this.bc().em(a, b, c, d);
-                return this
-            }
+         k.ON =k.o= function (ob) {
+         var K = this
+         _.e(ob, function (v, k) {
+         K.on(k, v)
+         })
 
-            k.test = 1
+         }
 
+         k.em = function (a, b, c, d) {
+         if (A(a)) {
+         _.e(a, function (a) {
+         k.emit(a, b, c, d)
+         })
+         }
+         else {
+         k.emit(a, b, c, d)
+         }
+         return k
+         }
+
+         k.l = function (t) {
+         this.em('l', t)
+         }
+
+         k.bc = k.broadcast
+
+         k.bc.em = k.bc.emit
+
+         k.bcEm = function (a, b, c, d) {
+         this.bc().em(a, b, c, d);
+         return this
+         }
+
+         k.test = 1
 
 
 
@@ -58,72 +127,64 @@ module.exports=function(io, ssK){
                 $l('new bub: '+ tx)
                 k.bc.e('bub', tx)
             },
-
-
-
+            sendInvite:function(invite){
+                k.broadcast('someSentYouAnInvite', invite)
+            },
             //client asks am I in this room
             in: function(d){var rm
                 if(rm=RMS.rm(d)) {k.em('res', rm[ k.id ]? true: false ) }
-                else  {$l('not room'); k.em('res', '-')}},
-
-
-            ChatRmMs: function (ms){
-                $l('chatRmMs: '); console.dir(ms)
-                KK.in(ms.rm).emit('ChatRmMs', ms)
+                else  {$l('not room'); k.em('res', '-')}
             },
 
-            _l : function(){
-                k.em('l', 'hahhahahahahahahahahha')
 
+
+            r: function(data){//rooms?
+                k.em('res',  data? room[data]  : RMS())
             },
 
+
+
+            who: function(un){  //user
+
+
+         $l(    US[ un ] )  },
+
+
+            _l : function(){k.em('l', 'hahhahahahahahahahahha')},
             l: function(d){
-
                 d=d||'ping';
-
                 k.em('l', 'sent: '+$l(d))
-
             },
-
             p : function(d, rm){
                 return D(rm)? KK.rm(rm).em('p', d) :
                     k.bc.em('p', d)
             },
             em : function(a,b,c,d){ k.em(a,b,c,d)},
-
             bc : function(a,b,c,d){
 
                 $l('TOLD TO BROADCAST: '+ a)
+
                 k.bc.em(a,b,c,d)
 
-            },
+            }
 
+
+
+
+
+             ,
 
 
             fn:  function(fn,a,b,c){ global[fn](a,b,c)  },  //it calls itself
             upop: function(d,n){ k.bc.em('upop',d,n)},
 
-            id: function(un){ //k.em('l',  $l(k.id))  //server logs, client logs
-                US[ k.id ] = un  //associate socketId with username
-                //$l('US: ' + US +  US[ k.id ] ) //log USER and username
-
-                //all users should emit this initially
-                // to list its username with its id
-
-            },
 
             kk:  function(data){
                 k.em('res',  KK.clients(''))
             },
 
-
-            chat: function(data){
-                k.bc.e('newChat',   {    n: data.n,   m: data.m  })
-                k.em('youChat', {  n: data.n,  m: data.m  })
-                k.emit('chat', 'cool')
-            },
-
-            red:function(r,e,d){r=r||'frog';e=e||'frog';d=d||'frog';KK.in(r).emit(e,d)},
+            //chat: function(data){k.bc.e('newChat',   {    n: data.n,   m: data.m  });k.em('youChat', {  n: data.n,  m: data.m  });k.emit('chat', 'cool')},
+            //red:function(r,e,d){r=r||'frog';e=e||'frog';d=d||'frog';KK.in(r).emit(e,d)},
 
             x:function(m){
                 k.e.to('sex').emit('l',m||'sexy')
@@ -143,31 +204,6 @@ module.exports=function(io, ssK){
             },
 
 
-            //join room
-            jRm: function(rm){
-                $l('joining room: ' + rm  )
-                k.join( rm )
-                k.em( 'rmUpd',  {
-                    rm: rm,
-                    US:   _.m( RMS[   '/' + rm   ]  , function(un){return US[un] } )
-                })
-            },
-
-
-            //room update
-            rm: function(rm ){
-                k.em( 'rmUpd',  {
-                    rm: rm,
-                    US:   _.m( RMS[   '/' + rm   ]  , function(un){return US[un] } )
-                })
-            },
-
-            //rooms?
-            r: function(data){
-                k.em('res',  data? room[data]  : RMS())   },
-
-            //user
-            who: function(username){  $l(  US.tUn(username))  },
 
 
             //social
@@ -184,27 +220,16 @@ module.exports=function(io, ssK){
         })
 
         io.of('/chat').on('connection', function(d){$l('new chatter')})
-
+        */
     })
 
 
+
+
 }
 
 
-function roomz() {
 
-    KK.rm = function (rm) {
-        var rm = KK.in(rm)
-        rm.em = rm.emit
-        return rm
-    }
-
-    RMS = KK.manager.rooms //an array of rooms //they all start with a slash
-    RMS.rm = function (rm) {
-        return RMS['/' + rm]
-    }
-
-}
 
 function later() {
 
@@ -311,56 +336,7 @@ function later() {
             gMp[n] = {x: _.r(0, 830), y: _.r(0, 300)}
         }
     };
-    ROOMZ = function () {
-        z();
-        $.h1('roomz').A() //var usernames={}, $scope.$broadcast('', );
 
-
-        rooms = ['Lobby']
-        usernames = {}
-
-        io.sockets.on('connection', function (K) { // KK = io.sockets
-            K.on('adduser', function (un) {
-                K.username = un
-                K.room = 'Lobby'
-                usernames[un] = un
-                K.join('Lobby')
-                K.em('updatechat', 'SERVER', 'you have connected to Lobby')
-                K.bc.to('Lobby').emit('updatechat', 'SERVER', un + ' has connected to this room')
-                K.em('updaterooms', rooms, 'Lobby')
-            })
-
-            K.on('create', function (room) {
-                rooms.push(room)
-                K.em('updaterooms', rooms, k.room)
-            })
-
-            K.on('sendchat', function (d) {
-                KK.in(K.room).emit('updatechat', K.username, d)
-            })
-
-            K.on('switchRoom', function (newroom) {
-                var oldroom = K.room
-                K.leave(K.room)
-                K.join(newroom)
-                K.emit('updatechat', 'SERVER', 'you have connected to ' + newroom)
-                K.broadcast.to(oldroom).emit('updatechat', 'SERVER', K.un + ' has left this room')
-                K.room = newroom
-                K.broadcast.to(newroom).emit('updatechat', 'SERVER', K.un + ' joined')
-                K.emit('updaterooms', rooms, newroom)
-
-            })
-
-            K.on('disconnect', function () {
-                delete usernames[K.un]
-                KK.em('updateusers', usernames)
-                K.bc.em('updatechat', 'SERVER', K.username + ' has disconnected')
-                K.leave(K.room)
-            })
-
-
-        })
-    };
 
     miniSocketsNOSTALGIA = function () {
 

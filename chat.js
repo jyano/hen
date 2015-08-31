@@ -1,138 +1,149 @@
-$.wd=  $.w=$.win=function(a, size,  id){
-    var g=G(arguments),
-    t,  lBt,mBt,xBt, o, wd,w
+$CHATS={
+    //create/empty chat object..
+    // it will hold your chats
+
+    /// for example
+    /// sexy: chatControllerOb,
+    // fun: chatControllerOb
+    // controllerOb defined by $.chat
+}
+
+$.chatEl=function(n,id,c){
+    var wd =   $.w('chatroom: ' + n).id(id).css({'min-width': 600, 'min-height': 400}).C(   c || $r())
+    wd.messages = $.d().id('cbi').C('u').ov('auto')
+    wd.input = $.ip().K('form-control')
+    wd.usersDiv = $.d().A($.i('me').A())
+    wd.mainPanel = $.Cl(8, wd.messages, wd.input, $.bt('send', function () {
+        $sendChatRmMs(n, wd.input.V())
+    }))
+    wd.usersPanel = $.Cl(4, $.h3('users:'), wd.usersDiv)
+    wd.A($.R().A(wd.mainPanel, wd.usersPanel))
+    return wd
+}
+
+$.userLink=   function(un) {
+    return $.h5(un).$(function () {
+        $.popUser(un)
+    })
+}
+$.chat=function(n, c, id){
+    n = n || 'chatbox' //default chatRm
+    if ($CHATS[n]){$l('already in this room'); return} //singleton!
+    var wd= $.chatEl(n, id||'cbo', c||'o')
+
+    k.em('jRm', n)//why cant i change this emit name to joinRoom ???
+    $CHATS[n] = ChatController(wd)
+
+    _.ev(.5, function () {
+
+        k.em('rmUd', n)
+    }) //repeatedly emit 'room', which launches room user updates!
 
 
 
-   w= wd = $.dA('b',  '+').WH('auto','auto').al(.9).
-        ov('auto').pad(10)
-        .bW(4).bS('dashed')
-        .dg()
+    function ChatController(wd){
 
-    wd.A(
+        return {
 
-        mBt=$.btR('>', function(){
-            w.WH(700); lBt.sh(); mBt.hd();
-        }),
 
-        lBt= $.btR('<', function(){
-            w.WH('auto'); mBt.sh(); lBt.hd()
-        }).hd(),
+            updateUsersDiv: function (users) {wd.usersDiv.E() // clear the div
+                var n=1//$l('updateUsersDiv');// $d(users)if (!A(users)) {wd.usersDiv.A($.h5('no users'));return}
+                _.e(users, function (un) {
+                    $l('user num: ' + n++ +' -> '+un)
+                        wd.usersDiv.A($.userLink(un))
+                })
+            },
 
-        xBt = $.btL('X',function(){
-            w.rm()
-        })
+            wd: wd,
+            window: wd,
+            w: wd,
+            toggle: function () {
+                this.wd.toggle()
+                return wd
+            },
+            write: function (m) {
+                wd.messages.A($.h5(m).col('w'))
+            },
+            writeBlack: function (m) {
+                wd.messages.A($.h5(m).col('x'))
+            }
+        }
+
+    }
+
+}
+
+
+CHAT=function(){
+
+    k.on('ChatRmMs', function(d){
+
+        var msTx = msStr(d);
+        $l('msTx: ' + msTx)
+        if ($CHATS[d.rm]) {
+            $CHATS[d.rm].write(msTx)}
+        function msStr(msOb){
+            return msOb.un+': '+msOb.ms}
+    })
+
+
+
+    k.on('rmUd', function (d) {
+
+        $l('rmUd')
+        if ($CHATS[d.rm]) {
+            $CHATS[d.rm].updateUsersDiv(
+                d.users
+            )}
+    })
+
+
+
+
+
+    $.ChatBt= function(n){
+        return $.bt(n, function () {
+            $.chat(n)
+        }).mar(40)
+    }
+
+    $.d('g', 200, 200, '+')
+        .dg().left(400).WH('auto').pad(10).A(
+        $.ChatBt('general'),
+        $.ChatBt('fun'),$.ChatBt('sexy'),
+        ip = $.ip().K('form-control'),
+        $.bt('private room', function(){
+            $.chat(ip.v())
+        }).mar(40))
+
+}
+
+
+
+
+
+
+
+
+function $sendChatRmMs(rm,ms){
+
+    k.em('ChatRmMs',
+        $ChatRmMs(rm, ms)
     )
 
-    o= g.N_? { size: g.f }: g.O_? { ch: g.f } : {t: g.f, size: g.s, id: g.t}
-
-    if(o.ch){ w.A(o.ch) }
-    if(o.t){ w.tit(o.t)}
-    if(o.id){ w.id(o.id) }
-
-
-    return wd
-
-}
-$ChatRmMs=function(rm, ms, un){un=un||window['_username']; return {rm:rm, ms: ms, un:un}}
-
-$.chat = function (title, color, id) {
-    var ip, sendBt, picBt, popBt, messages, dUS = $.d()
-
-    if (Y.CHATS[title]) { $l('already in this room'); return }
-    title = title || 'chatbox'
-    color = color || 'b'
-    id = id || 'cbo'
-
-    wd = $.w('chatroom: ' + title).id(id).css({
-        'min-width': 600,
-        'min-height': 400,
-        'background-color': color
-    })
-
-
-    sendBt = $.bt('send',  function(){
-        //alpha:
-        $toRoom=function(title, msText){k.em('ChatMs', $ChatRmMs(title, msText))}
-        var ms=$ChatRmMs(title, ip.V())
-        k.em('ChatRmMs', ms)
-    })
-
-
-
-    wd.A($.R().A(
-        $.Cl(8, messages = $.d().id('cbi').C('u').ov('auto'),
-            ip = $.ip().K('form-control'),
-            sendBt,
-            popBt = $.bt('pop', function () {
-                k.emit('p', ip.V(), title)
-            }),
-            picBt = $.bt('pic', function () {
-                $.pop('pic select')
-            })),
-        $.Cl(4, $.h5('users:'), dUS)))
-
-    uUS = function (users) {
-        dUS.E()
-        if (A(users)) {
-            _.e(users, function (un) {
-                dUS.A(
-                    $.h5(un).$(function () {
-                        $.popUser(un)
-                    })
-                )
-            })
-        }
-        else {
-            dUS.A($.h5('no users'))
-        }
-    }
-    Y.CHATS[title] = chatController = {
-        uUS: uUS,
-        wd: wd, window: wd, w: wd,
-        toggle: function () {
-            return w.toggle()
-        },
-        write: function (m) {
-            messages.A($.h5(m).col('w'))
-        },
-        writeBlack: function (m) {
-            messages.A($.h5(m).col('z'))
+    function $ChatRmMs(rm, ms, un) {
+        return {
+            rm: rm,
+            ms: ms,
+            un: un || window['_username']
         }
     }
 
-
-    k.em('jRm', title)//why cant i change this emit name to joinRoom ???
-    _.ev(.5, function () {
-        k.em('rm', title)
-    }) //repeatedly emit 'room', which launches room user updates!
 }
 
+function later(){
 
+    //add this back to the chat rooms (after sendMessage bt):
+    // $.bt('pop', function () {k.emit('p', ip.V(), n)}), $.bt('pic', function () {$.pop('pic select')})
 
-$.btCh = function (n) {
-    return $.bt(n, function () {
-        $.chat(n)
-    }).mar(40)
-}
-
-
-
-CHATROOMS=CHAT=function () {
-
-
-    chats = $.d('g', 200, 200, '+').dg().left(400).WH('auto').pad(10)
-
-
-    chats.A(
-
-        $.btCh('general'),
-
-        $.btCh('fun'),
-
-        $.btCh('sexy'),
-
-        ip = $.ip().K('form-control'),
-
-        $.bt('private room', function () {$.chat( ip.v() ) }).mar(40) )
 }

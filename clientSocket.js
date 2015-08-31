@@ -15,47 +15,41 @@ $K=function(K){
 }
 k =  $K( io.connect() )
 
-chat()
-
-function chat() {
-    k.on('ChatRmMs', function (d) {
-        var msTx = msStr(d);
-        $l('msTx: ' + msTx)
-        if (Y.CHATS[d.rm]) {
-            Y.CHATS[d.rm].write(msTx)
-        }
-        function msStr(msOb) {
-            return msOb.un + ': ' + msOb.ms
-        }
-
-    })
-
-
-
-
-}
 
 
 
 
 
-k.emP= k.sop=function(m,u){ k.em('p' ,m, u)  }
-k.emEm = function(a,b){ k.em( 'em' ,  a,  b)  }
+
+
+
+k.emP= k.sop=function(m,u){
+    k.em('p' ,m, u)  }
+
+k.emEm = function(a,b){
+    k.em( 'em' ,  a,  b)  }
 
 //connect to the k //..need to change this on the deployment server!!!
-k.on('res', function(d){ _r =  res = d })
+
+k.on('res', function(d){
+    _r =  res = d
+})
+
+
+
 k.on('alert',  alert)
 k.on('l', $l); k.on('log', $l)
 k.on('dir',function(d){$l('SERVER: %j',d)})
 k.on('pop', $.pop)
 k.on('a',function(a){alert(a)})
 k.on('d',function(d){$l('SERVER: %j',d)})
-k.on('dpop', function(d,n){ dud(d, n)  })
+k.on('dpop', function(d,n){dud(d, n)  })
 k.on('dudPop', function(d,n){ dud(d, n)  })
 k.on('notice', function (d) {  $l('SERVER NOTICE: %s', d);  })
 k.on('p',function(e){$.pop(e)})
 
 function alpha() {
+
     k.on('IM', function (msgOb) {
         var iMsg = Y.IMS[msgOb.from]
         if (iMsg) {
@@ -73,11 +67,6 @@ function alpha() {
     }
 
 
-    k.on('rmUpd', function (d) {
-        if (Y.CHATS[d.rm]) {
-            Y.CHATS[d.rm].uUS(d.US)
-        }
-    })
     k.on('popbox', function (o) {
         $.pop(o);
         $('popbox').m()
@@ -91,6 +80,7 @@ function alpha() {
     k.on('im', function (i) {
         $.c().fit(i)
     })
+
 }
 
 

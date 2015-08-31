@@ -321,23 +321,23 @@
 
                 // $.dd('stuff', ['tangle', 'corners', 'grid' , 'fullcan' , 'solar',  'ship',  'connect','matrix', 'iso' ]),
 
-                $.dd('create',[
+                $.dd('make',['upload', 'uploads', 'cutouts', 'edit', 'avatar']),
+                $.dd('draw',['paint', 'filters','sprite', 'pack', 'showcase']),
+                $.dd('play',['bod',  'tween', 'space', 'hit','solar']),
 
-                    'upload','uploads','cutouts', 'edit', 'avatar','paint', 'filters','showcase'
-                ]),
-                $.dd('play',[
-                    'bod',  'tween', 'space', 'hit', 'sprite', 'pack'
-                ]),
-                $.dd('chat',[
-                    'universe',    'chatrooms',   'users', 'status' ,   'posts',    'messages',   'profile', 'profiles'
-                ])
+                $.dd('talk',[  'chat', 'universe', 'post']),
+                $.dd('social',['users', 'profiles', 'posts' ])
 
 
                 //$.dd('mvc',['sorty', 'object', 'ranky',   'dirt','knocks',  'site'])
             ),
 
+
+
             $.nR(
-                $.liA('logged: '+ _username), $.liA('logout', Y.logOut)
+                $.dd('account',[ 'status', 'profile', 'messages' ]),
+                $.liA('logged: '+ _username),
+                $.liA('logout', Y.logOut)
             )
 
         )
@@ -366,7 +366,7 @@
 
         return u
     }
-    Y.CHATS={}
+
 
 
     Y.IMS={}
