@@ -75,13 +75,25 @@ $Uni=  $UNI= startUniverse = function(un){
     else { $l('no guy'); $mug(un, function(mug){
             $Bm( mug,  function( bm ){
                 $addGuyToMe(un, bm)})})}}
+
+
 $mug=  function(un, fn){
-    $.po('/mug', {un: un}, function(mug){
+    $.po('/wap/mug', {un: un}, function(mug){
         if(mug){
             fn(mug)
         }
     })
 } //= $mugByUn=  Y.mugByUn // withMug ?
+
+
+$mug=  function(un, fn){
+    $.g('/mugByUsername/'+un,  function(mug){
+        if(mug){
+            fn(mug)
+        }
+    })
+} //= $mugByUn=  Y.mugByUn // withMug ?
+
 
 /*
  $Bub = function (t, x, y) {
@@ -137,7 +149,7 @@ function invite(){
 
         $l('$invite: ' + toWho)
 
-        k.em('sendInvite',  {
+        k.em('sendInvite', {
             from: _username,
             toWho: toWho
         })
@@ -165,13 +177,12 @@ function invite(){
     k.on('someSentYouAnInvite', function (invite){
         $l('someSentYouAnInvite: ')
         $d(invite)
-        /*
+
         // alert('invite toWho: '+ invite.toWho)
         if (_username == invite.toWho) {
-            alert('new invitation')
+           // alert('new invitation')
+
             $mug(invite.from, function (mug) {
-
-
                 popIv = $.pop($.d().A(
                     $.i(mug).WH(200, 200),
                     $.h1('chat with ' + invite.from + '?'),
@@ -189,12 +200,9 @@ function invite(){
 
 
             })
-        }
-        else {
-            // alert('nottt match')
-        }
+        }// else {         alert('nottt match')}
 
-   */
+
     })
 }
 

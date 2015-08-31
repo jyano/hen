@@ -54,21 +54,19 @@ module.exports=function(io, ssK){
 
         }),
 
-        k.on('ChatRmMs', function (ms){
-            $l('chatRmMs: '); console.dir(ms)
-            KK.in(ms.rm).emit('ChatRmMs', ms)
-        })
-        k.on('jRm', function(rm){$l('joining room: ' + rm  )
-            k.join( rm )
 
-            k.emit( 'rmUd',  {rm: rm, US:   _.m(
-                $getRoomUserIds(rm),
-                function(un){
-                    return US[un]})
+            k.on('jRm', function(rm){$l('joining room: ' + rm  )
+                k.join( rm )
 
-            })})
+                k.emit( 'rmUd',  {rm: rm, US:   _.m(
+                    $getRoomUserIds(rm),
+                    function(un){
+                        return US[un]})
+
+                })})
+
         k.on('rmUd', function(rm ){
-           // $l('on rmUd')
+            // $l('on rmUd')
 
             k.emit( 'rmUd',{  //$l('$RmUd')
 
@@ -80,6 +78,22 @@ module.exports=function(io, ssK){
 
             )
         })
+
+        k.on('ChatRmMs', function (ms){
+            $l('chatRmMs: '); console.dir(ms)
+            KK.in(ms.rm).emit('ChatRmMs', ms)
+        })
+
+
+        k.on('sendInvite', function(invite){
+            k.broadcast.emit('someSentYouAnInvite', invite)
+        })
+
+        k.on('bub', function(tx){$l('new bub: '+ tx)
+            k.broadcast.emit('bub', tx)
+        })
+
+
 
         /*
 
@@ -122,14 +136,7 @@ module.exports=function(io, ssK){
 
         k.o({
 
-            //universe
-            bub: function(tx){
-                $l('new bub: '+ tx)
-                k.bc.e('bub', tx)
-            },
-            sendInvite:function(invite){
-                k.broadcast('someSentYouAnInvite', invite)
-            },
+
             //client asks am I in this room
             in: function(d){var rm
                 if(rm=RMS.rm(d)) {k.em('res', rm[ k.id ]? true: false ) }

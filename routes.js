@@ -162,22 +162,6 @@ function users(){
     })///////////
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     $a.po('/user', function(q,p,n){
         models.user.create(q.body, function(z,u){if(z){$l(z.code==11000?'!!':'!'); $d(z); p.json('error'); n(z) }
             _.extend(q.session, {username: u.username, loggedIn :true}).save(function(){ p.json(u.username) })
@@ -242,17 +226,27 @@ function users(){
             p.send(u.mug)
         })
     })
+
+
+
     $a.g('/mugByUsername/:username', function(q,p){
-
         //$l('req.params.username: ' + req.params.username)
+        models.user.findOne({
+            username: q.params.username
+        }, function(z,u){
+        // $l(user + ', ' + user.mug)
+            p.send(u.mug)
+        })
+    })
 
-        models.user.findOne({username: q.params.username}, function(z,u){// $l(user + ', ' + user.mug)
-            p.send(u.mug)})})
+
     $a.po('/changeMug', $w.user, function(q,p){  // could be a put?
         q.user.mug =  q.body.url
         q.user.save( function(z,m){ p.send(m) })
     })
+
     ////delete user  // does this('del') work like post or get (in terms of express)?
+
     $a.del('/user', function(req, res, next){
         models.user.remove(req.body, function(err,data){res.json(data)})
     })
