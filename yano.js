@@ -367,7 +367,8 @@
         return u
     }
     Y.CHATS={}
-    Y.GUYS= Y.GUYS || []
+
+
     Y.IMS={}
     Y.chan=  function(chan, fn){
 

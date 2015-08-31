@@ -1,93 +1,176 @@
 module.exports=function(io, ssK){
-    KK = sockets =  $KK(io.sockets)
-    mg=  KK.manager
+
+
+    KK = sockets =  io.sockets
+
     US = []  //  array-hash: socketId, username
     US.tUn = function(id){return  US[ id ]}
-    RMS = KK.manager.rooms //an array of rooms //they all start with a slash
-    RMS.rm=function(rm){return RMS['/'+rm]}
+
+    roomz()
 
 
-    KK.on('connection',  function(K){
+    KK.on('connection',  function(k){
 
-        $K(K).o({
+
+
+            k.ON =k.o = function (ob) {
+                var K = this
+                _.e(ob, function (v, k) {
+                    K.on(k, v)
+                })
+
+            }
+
+            k.em = function (a, b, c, d) {
+                if (A(a)) {
+                    _.e(a, function (a) {
+                        k.emit(a, b, c, d)
+                    })
+                }
+                else {
+                    k.emit(a, b, c, d)
+                }
+                return k
+            }
+
+            k.l = function (t) {
+                this.em('l', t)
+            }
+
+            k.bc = k.broadcast
+
+            k.bc.em = k.bc.emit
+
+            k.bcEm = function (a, b, c, d) {
+                this.bc().em(a, b, c, d);
+                return this
+            }
+
+            k.test = 1
+
+
+
+
+        k.o({
+
+            //universe
+            bub: function(tx){
+                $l('new bub: '+ tx)
+                k.bc.e('bub', tx)
+            },
+
+
 
             //client asks am I in this room
-            in:function(d){var rm
-                if(rm=RMS.rm(d)) {K.em('res', rm[ K.id ]? true: false ) }
-                else  {$l('not room'); K.em('res', '-')}},
-            ChatRmMs: function (ms){$l('chatRmMs: '); console.dir(ms)
-                KK.in(ms.rm).emit('ChatRmMs', ms)},
+            in: function(d){var rm
+                if(rm=RMS.rm(d)) {k.em('res', rm[ k.id ]? true: false ) }
+                else  {$l('not room'); k.em('res', '-')}},
 
 
+            ChatRmMs: function (ms){
+                $l('chatRmMs: '); console.dir(ms)
+                KK.in(ms.rm).emit('ChatRmMs', ms)
+            },
 
+            _l : function(){
+                k.em('l', 'hahhahahahahahahahahha')
 
+            },
 
-            _l : function(){ K.em('l', 'hahhahahahahahahahahha') },
-            l: function(d){d=d||'ping';  K.em('l', 'sent: '+$l(d))},
+            l: function(d){
+
+                d=d||'ping';
+
+                k.em('l', 'sent: '+$l(d))
+
+            },
+
             p : function(d, rm){
                 return D(rm)? KK.rm(rm).em('p', d) :
-                    K.bc.em('p', d)
+                    k.bc.em('p', d)
             },
-            em : function(a,b,c,d){ K.em(a,b,c,d)},
-            bc : function(a,b,c,d){ K.bc.em(a,b,c,d)},
+            em : function(a,b,c,d){ k.em(a,b,c,d)},
+
+            bc : function(a,b,c,d){
+
+                $l('TOLD TO BROADCAST: '+ a)
+                k.bc.em(a,b,c,d)
+
+            },
+
+
+
             fn:  function(fn,a,b,c){ global[fn](a,b,c)  },  //it calls itself
-            upop: function(d,n){ K.bc.em('upop',d,n)},
-            id: function(un){ //K.em('l',  $l(K.id))  //server logs, client logs
-                US[ K.id ] = un  //associate socketId with username
-                //$l('US: ' + US +  US[ K.id ] ) //log USER and username
+            upop: function(d,n){ k.bc.em('upop',d,n)},
+
+            id: function(un){ //k.em('l',  $l(k.id))  //server logs, client logs
+                US[ k.id ] = un  //associate socketId with username
+                //$l('US: ' + US +  US[ k.id ] ) //log USER and username
 
                 //all users should emit this initially
                 // to list its username with its id
 
             },
-            kk:  function(data){K.em('res',  KK.clients(''))},
-            dpop:   function(data,n){  K.bc.e('dpop',data,n) },
+
+            kk:  function(data){
+                k.em('res',  KK.clients(''))
+            },
+
+
             chat: function(data){
-                K.bc.e('newChat',   {    n: data.n,   m: data.m  })
-                K.em('youChat', {  n: data.n,  m: data.m  })
-                K.emit('chat', 'cool')},
+                k.bc.e('newChat',   {    n: data.n,   m: data.m  })
+                k.em('youChat', {  n: data.n,  m: data.m  })
+                k.emit('chat', 'cool')
+            },
 
             red:function(r,e,d){r=r||'frog';e=e||'frog';d=d||'frog';KK.in(r).emit(e,d)},
 
-            x:function(m){K.e.to('sex').emit('l',m||'sexy')
-                KK.in('sex').emit('l',m||'sexy')},
+            x:function(m){
+                k.e.to('sex').emit('l',m||'sexy')
+                KK.in('sex').emit('l',m||'sexy')
+            },
+
+            dpop:   function(data,n){  k.bc.e('dpop',data,n) },
+
             du : function(data){
-
-                K.em('im', data)
-                K.bc.e('im', data); $m.img.create({})
-
+                k.em('im', data)
+                k.bc.e('im', data); $m.img.create({})
             },
 
             newImg :function(data){
                 $l('-newImg')
-                $m.img.create(data, function(z, i){  K.emit('newImgAck', i)   })
+                $m.img.create(data, function(z, i){  k.emit('newImgAck', i)   })
             },
 
-            bub:   function(speech){$l('new bub: '+ speech)
-                //K.bc.e('bub', speech)
-            },
 
+            //join room
             jRm: function(rm){
                 $l('joining room: ' + rm  )
-                K.join( rm )
-                K.em( 'rmUpd',  {
+                k.join( rm )
+                k.em( 'rmUpd',  {
                     rm: rm,
                     US:   _.m( RMS[   '/' + rm   ]  , function(un){return US[un] } )
                 })
             },
-            rm: function(rm ){
 
-                K.em( 'rmUpd',  {
+
+            //room update
+            rm: function(rm ){
+                k.em( 'rmUpd',  {
                     rm: rm,
                     US:   _.m( RMS[   '/' + rm   ]  , function(un){return US[un] } )
                 })
             },
-            r: function(data){  K.em('res',  data? room[data]  : RMS())   },
+
+            //rooms?
+            r: function(data){
+                k.em('res',  data? room[data]  : RMS())   },
+
+            //user
             who: function(username){  $l(  US.tUn(username))  },
 
 
-
-
+            //social
             IM: function(message){
                 //this is triggered within a chatroom
                 // when someone clicks on a user and 'chats' them up
@@ -103,48 +186,25 @@ module.exports=function(io, ssK){
         io.of('/chat').on('connection', function(d){$l('new chatter')})
 
     })
+
+
 }
 
 
-function $K(K){
+function roomz() {
 
-    K.o=function(ob){ var K=this
-        _.e(ob, function(v,k){
-            K.on(k, v)
-        })
-
-    }
-
-    K.em=  function(a,b,c,d){
-        if(A(a)){_.e(a, function(a){K.emit(a,b,c,d)})}
-        else {K.emit(a,b,c,d)}
-        return K
-    }
-
-    K.l=function(t){this.em('l', t)}
-
-    K.bc =   K.broadcast
-
-    K.bc.em=   K.bc.emit
-
-    K.bcEm = function(a,b,c,d){
-        this.bc().em(a,b,c,d); return this
-    }
-
-    K.test=1
-
-    return K
-}
-
-function $KK(KK){
-    KK.rm=function(rm){
+    KK.rm = function (rm) {
         var rm = KK.in(rm)
-        rm.em=rm.emit
-        return rm }
-    return KK
+        rm.em = rm.emit
+        return rm
+    }
+
+    RMS = KK.manager.rooms //an array of rooms //they all start with a slash
+    RMS.rm = function (rm) {
+        return RMS['/' + rm]
+    }
+
 }
-
-
 
 function later() {
 

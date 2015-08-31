@@ -125,7 +125,17 @@ function server(){
 
 }
 function sockets(){
+
     io = socketIO.listen(httpServer)
     io.set('log level', 1)
-    require('./sockets')(io, new sessionSocketIO(io, mongoStore, cookieParser))
+
+    require('./serverSocket')(
+        io,
+        new sessionSocketIO(
+            io,
+            mongoStore,
+            cookieParser))
+
+
+
 }

@@ -16,7 +16,7 @@ $K=function(K){
 k =  $K( io.connect() )
 
 chat()
-univ()
+
 function chat() {
     k.on('ChatRmMs', function (d) {
         var msTx = msStr(d);
@@ -37,45 +37,6 @@ function chat() {
 
 
 
-function univ(){
-
-    k.on('bub', function(bub){
-        alert('bub: '+ bub)
-        console.dir(bub)
-        $l('buuuuuuuuuuuuub')
-        if( Y.g(bub.u) ){
-            Y.bub(bub.t, bub.x, bub.y)
-        }
-    })
-
-    k.on('updG', function(guy){
-        alert('updG')
-        Y.update(guy)
-    })
-
-    k.on('ac', function(data){
-        alert('ac')
-        if( _username == data.toWho){
-            Y.U(data.from)}
-    })//if it was YOUR invitation that was accepted// here u should really just be able to 'addUser'
-
-    k.on('iv', function(iv){
-        alert('iv')
-        if( _username == iv.toWho ){
-            Y.mByN(iv.from, function(mug){
-                popIv = $.pop($.d().A(
-                    $.i( mug ).WH( 200,200 ),
-                    $.h1( 'chat with '+ iv.from + '?' ),
-                    $.bt( 'ya' , function(){
-                        popIv.modal('hide')
-                        Y.U( iv.from )//so u are just adding them in?// ah the function also supposedly takes into account the app not even being open// i could nix that for now
-                        Y.ac( iv.from )}),
-                    $.bt( 'na' , function(){
-                        popIv.modal('hide')})) )
-            })
-        }
-    })
-}
 
 
 k.emP= k.sop=function(m,u){ k.em('p' ,m, u)  }
