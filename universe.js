@@ -49,7 +49,6 @@ $sendMyUpdate=  function(){
 
 
 $updateGuyForMe=  function(userOb){var gut
-    $l('updateGuyForMe')
 
     if(!userOb){
         $l('!userOb');
@@ -66,7 +65,7 @@ $updateGuyForMe=  function(userOb){var gut
         }
         if(!guy.bm){
             alert('guy has !bm');return }
-        $l('updating guy for me..')
+
 
         guy.bm.XY( userOb.x, userOb.y )
     }
@@ -123,14 +122,21 @@ $Bub = function (t, x, y) {
     return ct
 }
 
-k.on('bub', function(bub){
-    alert('bub: '+ bub)
-    console.dir(bub)
-    $l('buuuuuuuuuuuuub')
-    if( Y.g(bub.u) ){
-        Y.bub(bub.t, bub.x, bub.y)
+k.on('bub', function(bub){var guy
+    $('body').C('w')
+
+    $l('buuuuuuuuuuub: ')
+    $d(bub)
+
+
+    if( guy = $getGuy(bub.u) ){
+
+        $l('got guy')
+
+      $Bub(bub.t, bub.x, bub.y)
     }
 
+    else {$l('not got guy')}
 })
 
 
