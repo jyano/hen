@@ -89,6 +89,13 @@ module.exports=function(io, ssK){
             k.broadcast.emit('someSentYouAnInvite', invite)
         })
 
+        k.on('acceptInvite', function(invite){
+            k.emit('inviteAccepted', invite)
+            k.broadcast.emit('inviteAccepted', invite)
+        })
+
+
+
         k.on('bub', function(tx){$l('new bub: '+ tx)
             k.broadcast.emit('bub', tx)
         })
