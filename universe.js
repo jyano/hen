@@ -37,13 +37,17 @@ $getGuyFromMe= $getGuy=function(un){
     })
     return targetGuy || false
 }
+
 $sendMyUpdate=  function(){
     $myLoc=  function(){
         if( window['yourBm']){if(_test){$l(yourBm.x + ', ' + yourBm.y)}
             return {
                 un: _username, x: yourBm.x, y: yourBm.y }}} //relies on 'you'.. actually just makes a similar object
-    k.em('bc', 'updateGuy', $myLoc())
+
+    k.em('myUpdate', $myLoc())
 }
+
+
 $updateGuyForMe=  function(userOb){var gut
     $l('updateGuyForMe')
 
@@ -90,7 +94,7 @@ $mug=  function(un, fn){
 } //= $mugByUn=  Y.mugByUn // withMug ?
 
 
-
+$GUYS=  []
 $Bub = function (t, x, y) {
 
     var g = G(arguments), ct = $Ct() //if( !window['uni'] ){alert('the universe is missing!');return}
@@ -155,7 +159,7 @@ k.on('inviteAccepted', function (invite) {
         if (_username == invite.toWho) {
 
             $('body').C('w')
-            alert('invite accepted by '+invite.from)
+            //alert('invite accepted by '+invite.from)
             $l("invite aaaaaaceeeptedddddd")
             $d(invite)
             $addGuy(invite.from)
@@ -223,24 +227,16 @@ UNIVERSE=function(){z()
 
     uni = $St(1000, 800)
     uni.bgI('/beach.jpg')
+    uni.mug(function(b){if(O(b)){yourBm=    b.dg().rC().XY(600).sXY(.4)}  //add you to the screen
 
-    uni.mug(function(b){
 
-        //add you to the screen
-
-        yourBm=  _prepareMug(b)
-
-        $GUYS=  [{
+       $GUYS.push({
             //add you to your own array
-
             un :_username,
-
             bm : yourBm
-        }] //b.$$( function(){ b.rm(); k.emit('X', _username)})
-
+        }) //b.$$( function(){ b.rm(); k.emit('X', _username)})
 
         page =  $.d('b', 1000, 'auto').A($.br(3))
-
         page.A(
             chatMessageInputTextBox = $.ip('...', 'tx').id('textinput'),
             chatSendButton = $.bt('send', function(){
@@ -254,34 +250,22 @@ UNIVERSE=function(){z()
             window['u'+String(n++)]=user; $l(user.un)
             if(user.mug ){
                 page.A(mug=  $.i(user.mug).WH(100).$(function(){
-
-
                     $invite( user.un )
-                })) }
+                }))
+            }
         })
 
-        //_.ev(.1, $sendMyUpdate)
+         _.ev(.1, $sendMyUpdate)
 
         //  userHolder = $.d('z').a2( $.R().A() ); $l('users:')
         // fetchMugByMugId( user,  function(userMug){
         // theRow.A( $.thumbnail( $.span(user.u), userMug).WH(200).click(  function(){ inviteToUniverse(user.u)   }) )}) //RECIEVE speech bubble
-        function _prepareMug(b){
 
-            if(O(b))
 
-                b.dg()
-            b.rC()
-            b.XY(600)
-            b.sXY(.4)
-            return b
-        }
 
 
 
     })
-
-
-
 
 }
 

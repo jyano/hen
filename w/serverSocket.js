@@ -27,8 +27,6 @@ module.exports=function(io, ssK){
         return ids
     }
 
-
-
     $getRoomUsernames=function(rm){
         var ids,uns
          //$l('$getRoomUsernames')
@@ -84,6 +82,10 @@ module.exports=function(io, ssK){
             KK.in(ms.rm).emit('ChatRmMs', ms)
         })
 
+
+        k.on('myUpdate', function(ud){
+            k.broadcast.emit('updateGuy', ud)
+        })
 
         k.on('sendInvite', function(invite){
             k.broadcast.emit('someSentYouAnInvite', invite)
